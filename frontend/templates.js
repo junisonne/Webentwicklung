@@ -1,0 +1,118 @@
+export const getMainMenuTemplate = () => `
+    <main>
+        <div class="container">
+            <h1>📊 Poll System</h1>
+            <button id="joinPoll">Join Poll</button>
+            <button id="createPoll" class="secondary">Create Poll (Admin)</button>
+        </div>
+    </main>
+`;
+
+export const getJoinPollTemplate = () => `
+    <main>
+        <div class="container">
+            <h1>Join Poll</h1>
+            <input type="text" id="pollCode" placeholder="Enter Poll Code" />
+            <br>
+            <button id="enterPoll">Join Poll</button>
+            <button id="backToMenu" class="back-button">Back</button>
+            <div id="message"></div>
+        </div>
+    </main>
+`;
+
+export const getPollQuestionsTemplate = (poll) => `
+    <main>
+        <div class="container">
+            <h1>${poll.title}</h1>
+            ${poll.questions.map((q, i) => getQuestionTemplate(q, i)).join('')}
+            <button id="submitResponses">Submit Responses</button>
+            <button id="backToMenu" class="back-button">Back to Menu</button>
+            <div id="message"></div>
+        </div>
+    </main>
+`;
+
+const getQuestionTemplate = (question, index) => `
+    <div class="question-container">
+        <div class="question-title">
+            ${index + 1}. ${question.question}
+            <small style="color: #666;">(${question.type === 'single' ? 'Single choice' : 'Multiple choice'})</small>
+        </div>
+        ${question.options.map(opt => `
+            <button class="option-button" data-question="${index}" data-option="${opt}">
+                ${opt}
+            </button>
+        `).join('')}
+    </div>
+`;
+
+export const getCreatePollTemplate = () => `
+    <main>
+        <div class="container">
+            <h1>Create New Poll</h1>
+            <input type="text" id="pollTitle" placeholder="Poll Title" />
+            <input type="password" id="adminPassword" placeholder="Admin Password" />
+            <h2>Questions</h2>
+            <div id="questionsContainer">
+                <div class="question-builder">
+                    <input type="text" placeholder="Question 1" class="question-input" />
+                    <select class="question-type">
+                        <option value="single">Single Choice</option>
+                        <option value="multiple">Multiple Choice</option>
+                    </select>
+                    <div class="options-container">
+                        <input type="text" placeholder="Option 1" class="option-input" />
+                        <input type="text" placeholder="Option 2" class="option-input" />
+                    </div>
+                    <button type="button" class="add-option secondary">+ Add Option</button>
+                </div>
+            </div>
+            <button id="addQuestion" class="secondary">+ Add Question</button>
+            <br>
+            <button id="createPollBtn">Create Poll</button>
+            <button id="backToMenu" class="back-button">Back</button>
+            <div id="message"></div>
+        </div>
+    </main>
+`;
+
+export const getAdminPanelTemplate = ({ poll, results }) => `
+    <main>
+        <div class="container">
+            <h1>📊 Admin Panel</h1>
+            <div class="poll-info">
+                <strong>${poll.title}</strong><br>
+                Code: ${poll.code} | Status: ${poll.active ? '🟢 Active' : '🔴 Inactive'}<br>
+                Total Responses: ${poll.totalResponses}
+            </div>
+            <div class="admin-controls">
+                <button id="togglePoll">${poll.active ? 'Deactivate' : 'Activate'} Poll</button>
+                <button id="refreshResults" class="secondary">Refresh Results</button>
+            </div>
+            <h2>Results</h2>
+            ${results.map(getResultTemplate).join('')}
+            <button id="backToMenu" class="back-button">Back to Menu</button>
+        </div>
+    </main>
+`;
+
+const getResultTemplate = (result) => {
+    const total = result.totalResponses;
+    return `
+        <div class="results-container">
+            <h3>${result.question}</h3>
+            <p><small>Type: ${result.type} choice | Total responses: ${total}</small></p>
+            ${Object.entries(result.results).map(([option, count]) => {
+                const percentage = total > 0 ? ((count / (result.type === 'multiple' ? total : result.questionTotal)) * 100).toFixed(1) : 0;
+                const questionTotal = result.results[option];
+                return `
+                    <div class="result-bar">
+                        <div class="result-fill" style="width: ${percentage}%"></div>
+                        <div class="result-text">${option}: ${count} votes (${percentage}%)</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+};
