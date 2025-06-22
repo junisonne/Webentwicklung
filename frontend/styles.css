@@ -1,0 +1,190 @@
+:host {
+    font-family: Arial, sans-serif;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 12px;
+    margin: 8px;
+    width: 250px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007BFF;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 8px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 120px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button.secondary {
+    background-color: #6c757d;
+}
+
+button.secondary:hover {
+    background-color: #545b62;
+}
+
+.question-container {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.question-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.option-button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.option-button:hover {
+    border-color: #007BFF;
+    background-color: #f8f9fa;
+}
+
+.option-button.selected {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+}
+
+.option-button.multiple.selected {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.results-container {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+.result-bar {
+    margin: 8px 0;
+    padding: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    position: relative;
+}
+
+.result-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #007BFF;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.result-text {
+    position: relative;
+    z-index: 1;
+    color: #333;
+    font-weight: 500;
+}
+
+.loading {
+    color: #666;
+    font-style: italic;
+}
+
+.error {
+    color: #dc3545;
+    background-color: #f8d7da;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.success {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.back-button {
+    background-color: #6c757d;
+    margin-top: 20px;
+}
+
+.back-button:hover {
+    background-color: #545b62;
+}
+
+.admin-controls {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff3cd;
+    border-radius: 8px;
+}
+
+.poll-info {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #d1ecf1;
+    border-radius: 8px;
+    color: #0c5460;
+}
