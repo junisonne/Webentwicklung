@@ -289,6 +289,11 @@ app.get('/polls', (req, res) => {
 // Static files (für deine HTML/JS files)
 app.use(express.static('.'));
 
+// Für den redirect zu index.html falls unbekannte url
+app.get('*', (req, res) => {
+    res.sendFile('index.html', { root: '.' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);

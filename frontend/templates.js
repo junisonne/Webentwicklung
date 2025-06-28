@@ -2,8 +2,8 @@ export const getMainMenuTemplate = () => `
     <main>
         <div class="container">
             <h1>📊 Poll System</h1>
+            <button id="createPoll" class="secondary">Create Poll as Admin</button>
             <button id="joinPoll">Join Poll</button>
-            <button id="createPoll" class="secondary">Create Poll (Admin)</button>
         </div>
     </main>
 `;
@@ -14,8 +14,8 @@ export const getJoinPollTemplate = () => `
             <h1>Join Poll</h1>
             <input type="text" id="pollCode" placeholder="Enter Poll Code" />
             <br>
-            <button id="enterPoll">Join Poll</button>
             <button id="backToMenu" class="back-button">Back</button>
+            <button id="enterPoll">Join Poll</button>
             <div id="message"></div>
         </div>
     </main>
@@ -26,8 +26,8 @@ export const getPollQuestionsTemplate = (poll) => `
         <div class="container">
             <h1>${poll.title}</h1>
             ${poll.questions.map((q, i) => getQuestionTemplate(q, i)).join('')}
-            <button id="submitResponses">Submit Responses</button>
             <button id="backToMenu" class="back-button">Back to Menu</button>
+            <button id="submitResponses">Submit Responses</button>
             <div id="message"></div>
         </div>
     </main>
@@ -70,8 +70,8 @@ export const getCreatePollTemplate = () => `
             </div>
             <button id="addQuestion" class="secondary">+ Add Question</button>
             <br>
-            <button id="createPollBtn">Create Poll</button>
             <button id="backToMenu" class="back-button">Back</button>
+            <button id="createPollBtn">Create Poll</button>
             <div id="message"></div>
         </div>
     </main>
