@@ -233,6 +233,15 @@ class Poll extends HTMLElement {
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
         ]);
+        const qrTarget = `${location.origin}/poll/${data.poll.code}`;
+        const canvas = this.shadowRoot.getElementById('qrcode');
+
+        if (canvas && window.QRCode) {
+            QRCode.toCanvas(canvas, qrTarget, { width: 200 }, (error) => {
+        if (error) console.error('QR-Code Fehler:', error);
+    });
+}
+
     }
 
     async togglePoll(pollCode) {

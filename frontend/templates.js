@@ -86,6 +86,10 @@ export const getAdminPanelTemplate = ({ poll, results }) => `
                 Code: ${poll.code} | Status: ${poll.active ? '🟢 Active' : '🔴 Inactive'}<br>
                 Total Responses: ${poll.totalResponses}
             </div>
+            <div id="qrcodeContainer" style="margin-top: 20px;">
+            <h3>Beitreten per QR-Code:</h3>
+            <canvas id="qrcode"></canvas>
+            </div>
             <div class="admin-controls">
                 <button id="togglePoll">${poll.active ? 'Deactivate' : 'Activate'} Poll</button>
                 <button id="refreshResults" class="secondary">Refresh Results</button>
