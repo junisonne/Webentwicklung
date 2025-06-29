@@ -94,11 +94,12 @@ button.secondary:hover {
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
+    color: black;
 }
 
 .option-button:hover {
     border-color: #007BFF;
-    background-color: #f8f9fa;
+    background-color: #e6f3ff;
 }
 
 .option-button.selected {
