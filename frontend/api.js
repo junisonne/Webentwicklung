@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/poll';
+const API_URL = 'http://localhost:3000';
 
 async function request(endpoint, options = {}) {
     try {
@@ -17,27 +17,36 @@ async function request(endpoint, options = {}) {
     }
 }
 
-export const joinPoll = (code) => request('/enter', {
+export const joinPoll = (code) => request('/poll/enter', {
     method: 'POST',
     body: JSON.stringify({ code }),
 });
 
-export const submitResponses = (code, responses) => request(`/${code}/respond`, {
+export const submitResponses = (code, responses) => request(`/poll/${code}/respond`, {
     method: 'POST',
     body: JSON.stringify({ responses }),
 });
 
-export const createPoll = (pollData) => request('/create', {
+export const createPoll = (pollData) => request('/poll/create', {
     method: 'POST',
     body: JSON.stringify(pollData),
 });
 
-export const getAdminData = (code, adminPassword) => request(`/${code}/admin`, {
+export const getAdminData = (code, adminPassword) => request(`/poll/${code}/admin`, {
     method: 'POST',
     body: JSON.stringify({ adminPassword }),
 });
 
-export const togglePollStatus = (code, adminPassword) => request(`/${code}/toggle`, {
+export const togglePollStatus = (code, adminPassword) => request(`/poll/${code}/toggle`, {
     method: 'PUT',
     body: JSON.stringify({ adminPassword }),
+});
+
+export const banIP = (ip) => request('/poll/ban', {
+    method: 'POST',
+    body: JSON.stringify({ ip }),
+});
+
+export const getAllPolls = () => request('/polls', {
+    method: 'GET',
 });

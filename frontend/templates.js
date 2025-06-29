@@ -77,7 +77,7 @@ export const getCreatePollTemplate = () => `
     </main>
 `;
 
-export const getAdminPanelTemplate = ({ poll, results }) => `
+export const getAdminPanelTemplate = ({ poll, results, participantEntries }) => `
     <main>
         <div class="container">
             <h1>📊 Admin Panel</h1>
@@ -92,6 +92,15 @@ export const getAdminPanelTemplate = ({ poll, results }) => `
             </div>
             <h2>Results</h2>
             ${results.map(getResultTemplate).join('')}
+            <h2>IP Addresses</h2>
+            <div class="ip-list">
+                ${participantEntries.length > 0 ? participantEntries.map(ip => `
+                    <div class="ip-entry">
+                        <span>${ip.ip} <small>${new Date(ip.timestamp).toLocaleString()}</small></span>
+                        <button id="banIP" class="ban-ip-btn" data-ip="${ip.ip}">Ban</button>
+                    </div>
+                `).join('') : '<p>No IP addresses recorded.</p>'}
+            </div>
             <button id="backToMenu" class="back-button">Back to Menu</button>
         </div>
     </main>

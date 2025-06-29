@@ -12,7 +12,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// In-Memory Storage (später optional durch Datenbank ersetzen)
 let polls = [
     {
         code: "test123",
@@ -22,7 +21,7 @@ let polls = [
             {
                 id: 1,
                 question: "Welche Farbe magst du?",
-                type: "single", // "single" oder "multiple"
+                type: "single",
                 options: ["Rot", "Blau", "Grün", "Gelb"]
             }
         ],
@@ -33,8 +32,8 @@ let polls = [
 ];
 
 let pollEntries = [];
+let bannedIPs = [];
 
-// Helper Function: Unique Code Generator
 function generateUniqueCode() {
     let code;
     do {
@@ -43,7 +42,6 @@ function generateUniqueCode() {
     return code;
 }
 
-// Helper Function: Find Poll by Code
 function findPoll(code) {
     return polls.find(poll => poll.code === code);
 }
@@ -53,10 +51,15 @@ app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
     
-    if (poll && poll.active) {
+    if(req.ip && bannedIPs.includes(req.ip)) {
+        return res.status(403).json({ message: 'Your IP is banned from entering polls.' });
+    }
+    else if (poll && poll.active) {
         pollEntries.push({ 
             code: pollCode, 
-            ip: req.ip, 
+            ip: req.headers['x-forwarded-for'] ||
+                req.headers['x-real-ip'] ||
+                req.socket.remoteAddress || '', 
             timestamp: new Date() 
         });
         res.status(200).json({ 
@@ -198,6 +201,7 @@ app.post('/poll/:code/admin', (req, res) => {
         if (poll.adminPassword !== adminPassword) {
             return res.status(401).json({ message: 'Invalid admin password' });
         }
+        const participantEntries = pollEntries.filter(entry => entry.code === req.params.code);
         
         // Calculate results
         const results = poll.questions.map(question => {
@@ -222,13 +226,14 @@ app.post('/poll/:code/admin', (req, res) => {
                 }
             });
             
+            
             return {
                 questionId: question.id,
                 question: question.question,
                 type: question.type,
                 options: question.options,
                 results: optionCounts,
-                totalResponses: poll.responses.length
+                totalResponses: poll.responses.length,
             };
         });
         
@@ -240,7 +245,8 @@ app.post('/poll/:code/admin', (req, res) => {
                 createdAt: poll.createdAt,
                 totalResponses: poll.responses.length
             },
-            results
+            results,
+            participantEntries
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -274,16 +280,32 @@ app.put('/poll/:code/toggle', (req, res) => {
 
 // 6. GET ALL POLLS (Debug/Overview)
 app.get('/polls', (req, res) => {
-    const pollsOverview = polls.map(poll => ({
-        code: poll.code,
-        title: poll.title,
-        active: poll.active,
-        createdAt: poll.createdAt,
-        responseCount: poll.responses.length,
-        questionCount: poll.questions.length
-    }));
+    // const pollsOverview = polls.map(poll => ({
+    //     code: poll.code,
+    //     title: poll.title,
+    //     active: poll.active,
+    //     createdAt: poll.createdAt,
+    //     responseCount: poll.responses.length,
+    //     questionCount: poll.questions.length,
+    //     adminPassword: poll.adminPassword
+    // }));
     
-    res.json({ polls: pollsOverview });
+    res.json({ polls });
+});
+
+app.post('/poll/ban', (req, res) => {
+    const { ip } = req.body;
+    
+    if (!ip) {
+        return res.status(400).json({ message: 'IP address is required' });
+    }
+    
+    if (!bannedIPs.includes(ip)) {
+        bannedIPs.push(ip);
+        res.json({ message: `IP ${ip} has been banned from entering polls` });
+    } else {
+        res.status(400).json({ message: `IP ${ip} is already banned` });
+    }
 });
 
 // Static files (für deine HTML/JS files)

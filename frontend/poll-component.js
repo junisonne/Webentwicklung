@@ -48,7 +48,7 @@ class Poll extends HTMLElement {
     async joinPoll() {
         const pollCode = this.shadowRoot.getElementById('pollCode').value;
         const messageEl = this.shadowRoot.getElementById('message');
-        
+
         if (!pollCode) {
             messageEl.innerHTML = '<div class="error">Please enter a poll code.</div>';
             return;
@@ -231,7 +231,8 @@ class Poll extends HTMLElement {
         this.render(templates.getAdminPanelTemplate(data), [
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
-            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
+            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+            { selector: 'banIP', event: 'click', handler: this.banIP(this.shadowRoot.getElementById('banIP')) }
         ]);
     }
 

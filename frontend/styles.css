@@ -90,6 +90,7 @@ button.secondary:hover {
     padding: 12px;
     background-color: white;
     border: 2px solid #ddd;
+    color: #007BFF;
     border-radius: 6px;
     cursor: pointer;
     text-align: left;
