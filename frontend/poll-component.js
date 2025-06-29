@@ -8,18 +8,25 @@ fetch('./frontend/styles.css')
 
 class Poll extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.adoptedStyleSheets = [pollStyles];
-        
-        this.state = {
-            currentPoll: null,
-            userResponses: [],
-            adminPassword: null,
-        };
-        
-        this.showMainMenu();
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.adoptedStyleSheets = [pollStyles];
+    this.state = { currentPoll: null, userResponses: [], adminPassword: null };
+  }
+
+  connectedCallback() {
+    // 1. Query-Parameter auslesen
+    const params   = new URLSearchParams(window.location.search);
+    const pollCode = params.get('code');
+
+    if (pollCode) {
+      // 2. Wenn ein code da ist, direkt auto-join
+      this.autoJoinPoll(pollCode);
+    } else {
+      // 3. Ansonsten das Main-Menu zeigen
+      this.showMainMenu();
     }
+  }
 
     render(template, eventHandlers = []) {
         this.shadowRoot.innerHTML = template;
@@ -234,6 +241,15 @@ class Poll extends HTMLElement {
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
             { selector: 'banIP', event: 'click', handler: this.banIP(this.shadowRoot.getElementById('banIP')) }
         ]);
+        const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`;
+        const canvas   = this.shadowRoot.getElementById('qrcode');
+
+        if (canvas && window.QRCode) {
+            QRCode.toCanvas(canvas, qrTarget, { width: 200 }, (error) => {
+        if (error) console.error('QR-Code Fehler:', error);
+            });
+        }
+
     }
 
     async togglePoll(pollCode) {
@@ -245,6 +261,18 @@ class Poll extends HTMLElement {
             alert(error.message);
         }
     }
+
+    async autoJoinPoll(pollCode) {
+    try {
+        const data = await api.joinPoll(pollCode);
+        this.state.currentPoll = data.poll;
+        this.state.userResponses = new Array(data.poll.questions.length).fill(null);
+        this.showPollQuestions();
+    } catch (error) {
+        this.showMainMenu();
+        alert(`Poll "${pollCode}" konnte nicht geladen werden: ${error.message}`);
+    }
+}
 }
 
 customElements.define('poll-component', Poll);
