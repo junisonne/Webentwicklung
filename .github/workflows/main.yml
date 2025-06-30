@@ -1,0 +1,42 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} \
+            >> ~/.ssh/known_hosts
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync to Server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SERVER_PORT }}" \
+            ./dist/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/myapp/
+
+      - name: Restart Service
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "sudo systemctl restart myapp"
