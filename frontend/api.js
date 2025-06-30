@@ -1,14 +1,19 @@
 const API_URL = 'http://localhost:3000';
 
 async function request(endpoint, options = {}) {
+    console.log(`API Request: ${API_URL}${endpoint}`, options);
     try {
         const response = await fetch(`${API_URL}${endpoint}`, {
             headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options,
         });
+        console.log(`API Response: ${response.status} ${response.statusText}`);
+        console.log(response);
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.message || 'An error occurred');
+            const error = new Error(data.message || 'An error occurred');
+            error.status = response.status;
+            throw error;
         }
         return data;
     } catch (error) {

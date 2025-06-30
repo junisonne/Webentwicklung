@@ -280,17 +280,17 @@ app.put('/poll/:code/toggle', (req, res) => {
 
 // 6. GET ALL POLLS (Debug/Overview)
 app.get('/polls', (req, res) => {
-    // const pollsOverview = polls.map(poll => ({
-    //     code: poll.code,
-    //     title: poll.title,
-    //     active: poll.active,
-    //     createdAt: poll.createdAt,
-    //     responseCount: poll.responses.length,
-    //     questionCount: poll.questions.length,
-    //     adminPassword: poll.adminPassword
-    // }));
+    const pollsOverview = polls.map(poll => ({
+        code: poll.code,
+        title: poll.title,
+        active: poll.active,
+        createdAt: poll.createdAt,
+        responseCount: poll.responses.length,
+        questionCount: poll.questions.length,
+        adminPassword: poll.adminPassword
+    }));
     
-    res.json({ polls });
+    res.json({ pollsOverview });
 });
 
 app.post('/poll/ban', (req, res) => {

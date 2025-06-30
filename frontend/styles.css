@@ -190,3 +190,24 @@ button.secondary:hover {
     border-radius: 8px;
     color: #0c5460;
 }
+
+.banned-error {
+    background-color: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.banned-error h4 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #dc3545;
+}
+
+.banned-error p {
+    margin: 8px 0;
+    line-height: 1.4;
+}

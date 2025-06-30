@@ -4,6 +4,7 @@ export const getMainMenuTemplate = () => `
             <h1>📊 Poll System</h1>
             <button id="createPoll" class="secondary">Create Poll as Admin</button>
             <button id="joinPoll">Join Poll</button>
+            <button id="viewPolls" class="secondary">View Polls</button>
         </div>
     </main>
 `;
@@ -129,3 +130,22 @@ const getResultTemplate = (result) => {
         </div>
     `;
 };
+
+export const getPollListTemplate = (polls) => `
+    <main>
+        <div class="container">
+            <h1>Available Polls</h1>
+            <ul class="poll-list">
+                ${polls.length > 0 ? polls.map(poll => `
+                    <li id="pollItem" class="poll-item" data-code="${poll.code}">
+                        <span>${poll.title} (Code: ${poll.code})</span>
+                        <input id="adminInput" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" />
+                        <div id="message"></div>
+                        <button id="adminButton" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
+                    </li>
+                `).join('') : '<li>No polls available</li>'}
+            </ul>
+            <button id="backToMenu" class="back-button">Back to Menu</button>
+        </div>
+    </main>
+`;
