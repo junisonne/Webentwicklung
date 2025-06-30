@@ -74,7 +74,7 @@ class Poll extends HTMLElement {
                 messageEl.innerHTML = `
                     <div class="error banned-error">
                         <h4>🚫 Access Denied</h4>
-                        <p>Your IP address has been banned from entering polls.</p>
+                        <p>Your IP address has been banned from entering this poll.</p>
                     </div>
                 `;
             } else {
@@ -85,8 +85,9 @@ class Poll extends HTMLElement {
 
     async showAllPolls() {
         const polls = await api.getAllPolls();
-        console.log('Available Polls:', polls);
-        this.render(templates.getPollListTemplate(polls.polls), []);
+        this.render(templates.getPollListTemplate(polls.polls), [
+            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+        ]);
         this.shadowRoot.querySelectorAll('#adminButton').forEach(button => {
             button.addEventListener('click', (e) => {
                 const pollCode = e.target.dataset.code;
@@ -280,12 +281,32 @@ class Poll extends HTMLElement {
     }
 
     showAdminResults(data) {
+        console.log('Admin Data:', data);
         this.render(templates.getAdminPanelTemplate(data), [
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
-            { selector: 'banIP', event: 'click', handler: () => this.banIP(this.shadowRoot.getElementById('banIP')) }
+            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
         ]);
+
+        this.shadowRoot.querySelectorAll('.ban-ip-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
+                    this.banIP(ip, data.poll.code);
+                }
+            });
+        });
+
+        this.shadowRoot.querySelectorAll('.unban-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
+                    this.unbanIP(ip, data.poll.code);
+                }
+            });
+        });
+
         const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`;
         const canvas   = this.shadowRoot.getElementById('qrcode');
 
@@ -307,6 +328,66 @@ class Poll extends HTMLElement {
         }
     }
 
+    async banNewIP(pollCode) {
+        const ipInput = this.shadowRoot.getElementById('ipToBan');
+        const messageEl = this.shadowRoot.getElementById('banIPMessage');
+        const ip = ipInput.value.trim();
+
+        if (!ip) {
+            messageEl.innerHTML = '<div class="error">Please enter an IP address</div>';
+            return;
+        }
+
+        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipRegex.test(ip)) {
+            messageEl.innerHTML = '<div class="error">Please enter a valid IP address</div>';
+            return;
+        }
+
+        try {
+            messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+            const data = await api.banIP(ip, pollCode);
+            messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            ipInput.value = '';
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        }
+    }
+
+    async banIP(ip, pollCode) {
+        const messageEl = this.shadowRoot.getElementById('banMessage');
+        console.log('Banning IP:', ip, 'for poll:', pollCode);
+        try {
+            messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+            const data = await api.banIP(ip, pollCode);
+            messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        }
+    }
+
+    async unbanIP(ip, pollCode) {
+        try {
+            const data = await api.unbanIP(ip, pollCode);
+            
+            const messageEl = this.shadowRoot.getElementById('banIPMessage') || this.shadowRoot.getElementById('banMessage');
+            if (messageEl) {
+                messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            }
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            const messageEl = this.shadowRoot.getElementById('banIPMessage') || this.shadowRoot.getElementById('banMessage');
+            if (messageEl) {
+                messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+            }
+        }
+    }
+
     async autoJoinPoll(pollCode) {
         try {
             const data = await api.joinPoll(pollCode);
@@ -315,14 +396,6 @@ class Poll extends HTMLElement {
             this.showPollQuestions();
         } catch (error) {
             this.showMainMenu();
-        }
-    }
-    async banIP(ip) {
-        try {
-            const response = await api.banIP(ip);
-            console.log(`IP ${ip} wurde erfolgreich gebannt.: ${response.message}`);
-        } catch (error) {
-            console.error(`Fehler beim Bannen der IP: ${error.message}`);
         }
     }
 }

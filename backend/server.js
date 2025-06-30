@@ -27,12 +27,12 @@ let polls = [
         ],
         responses: [],
         createdAt: new Date(),
-        active: true
+        active: true,
+        bannedIPs: []
     }
 ];
 
 let pollEntries = [];
-let bannedIPs = [];
 
 function generateUniqueCode() {
     let code;
@@ -50,16 +50,17 @@ function findPoll(code) {
 app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
+    const ip = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
     
-    if(req.ip && bannedIPs.includes(req.ip)) {
-        return res.status(403).json({ message: 'Your IP is banned from entering polls.' });
+    if(req.ip && poll.bannedIPs.includes(ip)) {
+        return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
     else if (poll && poll.active) {
         pollEntries.push({ 
             code: pollCode, 
-            ip: req.headers['x-forwarded-for'] ||
-                req.headers['x-real-ip'] ||
-                req.socket.remoteAddress || '', 
+            ip: ip,
             timestamp: new Date() 
         });
         res.status(200).json({ 
@@ -104,7 +105,8 @@ app.post('/poll/create', (req, res) => {
             adminPassword,
             responses: [],
             createdAt: new Date(),
-            active: true
+            active: true,
+            bannedIPs: []
         };
         
         polls.push(newPoll);
@@ -243,7 +245,8 @@ app.post('/poll/:code/admin', (req, res) => {
                 title: poll.title,
                 active: poll.active,
                 createdAt: poll.createdAt,
-                totalResponses: poll.responses.length
+                totalResponses: poll.responses.length,
+                bannedIPs: poll.bannedIPs
             },
             results,
             participantEntries
@@ -287,24 +290,45 @@ app.get('/polls', (req, res) => {
         createdAt: poll.createdAt,
         responseCount: poll.responses.length,
         questionCount: poll.questions.length,
-        adminPassword: poll.adminPassword
+        adminPassword: poll.adminPassword,
     }));
     
-    res.json({ pollsOverview });
+    res.json({ polls: pollsOverview });
 });
 
 app.post('/poll/ban', (req, res) => {
-    const { ip } = req.body;
+    const { ip, code } = req.body;
+    const poll = findPoll(code);
+
     
     if (!ip) {
         return res.status(400).json({ message: 'IP address is required' });
     }
     
-    if (!bannedIPs.includes(ip)) {
-        bannedIPs.push(ip);
-        res.json({ message: `IP ${ip} has been banned from entering polls` });
+    if (!poll.bannedIPs.includes(ip)) {
+        poll.bannedIPs.push(ip);
+        res.json({ message: `IP ${ip} has been banned from entering poll ${code}` });
     } else {
         res.status(400).json({ message: `IP ${ip} is already banned` });
+    }
+});
+
+// Unban IP address
+app.post('/poll/unban', (req, res) => {
+    const { ip, code } = req.body;
+    const poll = findPoll(code);
+
+    if (!ip) {
+        return res.status(400).json({ message: 'IP address is required' });
+    }
+    
+    const bannedIndex = poll.bannedIPs.indexOf(ip);
+
+    if (bannedIndex > -1) {
+        poll.bannedIPs.splice(bannedIndex, 1);
+        res.json({ message: `IP ${ip} has been unbanned` });
+    } else {
+        res.status(400).json({ message: `IP ${ip} is not banned` });
     }
 });
 

@@ -17,7 +17,7 @@ async function request(endpoint, options = {}) {
         }
         return data;
     } catch (error) {
-        console.error(`API Error on ${endpoint}:`, error);
+        // console.error(`API Error on ${endpoint}:`, error);
         throw error;
     }
 }
@@ -47,9 +47,14 @@ export const togglePollStatus = (code, adminPassword) => request(`/poll/${code}/
     body: JSON.stringify({ adminPassword }),
 });
 
-export const banIP = (ip) => request('/poll/ban', {
+export const banIP = (ip, code) => request('/poll/ban', {
     method: 'POST',
-    body: JSON.stringify({ ip }),
+    body: JSON.stringify({ ip, code }),
+});
+
+export const unbanIP = (ip, code) => request('/poll/unban', {
+    method: 'POST',
+    body: JSON.stringify({ ip, code }),
 });
 
 export const getAllPolls = () => request('/polls', {
