@@ -8,25 +8,25 @@ fetch('./frontend/styles.css')
 
 class Poll extends HTMLElement {
     constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.adoptedStyleSheets = [pollStyles];
-    this.state = { currentPoll: null, userResponses: [], adminPassword: null };
-  }
-
-  connectedCallback() {
-    // 1. Query-Parameter auslesen
-    const params   = new URLSearchParams(window.location.search);
-    const pollCode = params.get('code');
-
-    if (pollCode) {
-      // 2. Wenn ein code da ist, direkt auto-join
-      this.autoJoinPoll(pollCode);
-    } else {
-      // 3. Ansonsten das Main-Menu zeigen
-      this.showMainMenu();
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.adoptedStyleSheets = [pollStyles];
+        this.state = { currentPoll: null, userResponses: [], adminPassword: null };
     }
-  }
+
+    connectedCallback() {
+        // 1. Query-Parameter auslesen
+        const params   = new URLSearchParams(window.location.search);
+        const pollCode = params.get('code');
+
+        if (pollCode) {
+        // 2. Wenn ein code da ist, direkt auto-join
+        this.autoJoinPoll(pollCode);
+        } else {
+        // 3. Ansonsten das Main-Menu zeigen
+        this.showMainMenu();
+        }
+    }
 
     render(template, eventHandlers = []) {
         this.shadowRoot.innerHTML = template;
@@ -41,7 +41,8 @@ class Poll extends HTMLElement {
     showMainMenu() {
         this.render(templates.getMainMenuTemplate(), [
             { selector: 'joinPoll', event: 'click', handler: this.showJoinPoll },
-            { selector: 'createPoll', event: 'click', handler: this.showCreatePoll }
+            { selector: 'createPoll', event: 'click', handler: this.showCreatePoll },
+            { selector: 'viewPolls', event: 'click', handler: this.showAllPolls }
         ]);
     }
 
@@ -55,7 +56,7 @@ class Poll extends HTMLElement {
     async joinPoll() {
         const pollCode = this.shadowRoot.getElementById('pollCode').value;
         const messageEl = this.shadowRoot.getElementById('message');
-        
+
         if (!pollCode) {
             messageEl.innerHTML = '<div class="error">Please enter a poll code.</div>';
             return;
@@ -69,9 +70,54 @@ class Poll extends HTMLElement {
             this.state.userResponses = new Array(data.poll.questions.length).fill(null);
             this.showPollQuestions();
         } catch (error) {
-            messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+            if (error.status === 403) {
+                messageEl.innerHTML = `
+                    <div class="error banned-error">
+                        <h4>🚫 Access Denied</h4>
+                        <p>Your IP address has been banned from entering this poll.</p>
+                    </div>
+                `;
+            } else {
+                messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+            }
         }
     }
+
+    async showAllPolls() {
+        const polls = await api.getAllPolls();
+        this.render(templates.getPollListTemplate(polls.polls), [
+            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+        ]);
+        this.shadowRoot.querySelectorAll('#adminButton').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pollCode = e.target.dataset.code;
+                const pollItem = e.target.closest('#pollItem');
+                const adminInput = pollItem.querySelector('#adminInput').value;
+                
+                if (!adminInput) {
+                    const messageEl = this.shadowRoot.getElementById('message');
+                    if (messageEl) {
+                        messageEl.innerHTML = '<div class="error">Please enter admin password</div>';
+                    }
+                    return;
+                }
+                else {
+                    const poll = polls.polls.find(p => p.code === pollCode);
+                    if(poll.adminPassword === adminInput) {
+                        this.state.adminPassword = adminInput;
+                        this.showAdminPanel(pollCode);
+                    } else {
+                        console.error('Invalid admin password for poll:', pollCode);
+                        const messageEl = this.shadowRoot.getElementById('message');
+                        if (messageEl) {
+                            messageEl.innerHTML = '<div class="error">Invalid admin password</div>';
+                        }
+                    }
+                }
+            });
+        });
+    }
+
 
     showPollQuestions() {
         this.render(templates.getPollQuestionsTemplate(this.state.currentPoll), [
@@ -235,11 +281,32 @@ class Poll extends HTMLElement {
     }
 
     showAdminResults(data) {
+        console.log('Admin Data:', data);
         this.render(templates.getAdminPanelTemplate(data), [
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
-            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
+            { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
         ]);
+
+        this.shadowRoot.querySelectorAll('.ban-ip-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
+                    this.banIP(ip, data.poll.code);
+                }
+            });
+        });
+
+        this.shadowRoot.querySelectorAll('.unban-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
+                    this.unbanIP(ip, data.poll.code);
+                }
+            });
+        });
+
         const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`;
         const canvas   = this.shadowRoot.getElementById('qrcode');
 
@@ -261,17 +328,76 @@ class Poll extends HTMLElement {
         }
     }
 
-    async autoJoinPoll(pollCode) {
-    try {
-        const data = await api.joinPoll(pollCode);
-        this.state.currentPoll = data.poll;
-        this.state.userResponses = new Array(data.poll.questions.length).fill(null);
-        this.showPollQuestions();
-    } catch (error) {
-        this.showMainMenu();
-        alert(`Poll "${pollCode}" konnte nicht geladen werden: ${error.message}`);
+    async banNewIP(pollCode) {
+        const ipInput = this.shadowRoot.getElementById('ipToBan');
+        const messageEl = this.shadowRoot.getElementById('banIPMessage');
+        const ip = ipInput.value.trim();
+
+        if (!ip) {
+            messageEl.innerHTML = '<div class="error">Please enter an IP address</div>';
+            return;
+        }
+
+        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipRegex.test(ip)) {
+            messageEl.innerHTML = '<div class="error">Please enter a valid IP address</div>';
+            return;
+        }
+
+        try {
+            messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+            const data = await api.banIP(ip, pollCode);
+            messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            ipInput.value = '';
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        }
     }
-}
+
+    async banIP(ip, pollCode) {
+        const messageEl = this.shadowRoot.getElementById('banMessage');
+        console.log('Banning IP:', ip, 'for poll:', pollCode);
+        try {
+            messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+            const data = await api.banIP(ip, pollCode);
+            messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        }
+    }
+
+    async unbanIP(ip, pollCode) {
+        try {
+            const data = await api.unbanIP(ip, pollCode);
+            
+            const messageEl = this.shadowRoot.getElementById('banIPMessage') || this.shadowRoot.getElementById('banMessage');
+            if (messageEl) {
+                messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+            }
+            
+            this.showAdminPanel(pollCode);
+        } catch (error) {
+            const messageEl = this.shadowRoot.getElementById('banIPMessage') || this.shadowRoot.getElementById('banMessage');
+            if (messageEl) {
+                messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+            }
+        }
+    }
+
+    async autoJoinPoll(pollCode) {
+        try {
+            const data = await api.joinPoll(pollCode);
+            this.state.currentPoll = data.poll;
+            this.state.userResponses = new Array(data.poll.questions.length).fill(null);
+            this.showPollQuestions();
+        } catch (error) {
+            this.showMainMenu();
+        }
+    }
 }
 
 customElements.define('poll-component', Poll);

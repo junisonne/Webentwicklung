@@ -4,6 +4,7 @@ export const getMainMenuTemplate = () => `
             <h1>📊 Poll System</h1>
             <button id="createPoll" class="secondary">Create Poll as Admin</button>
             <button id="joinPoll">Join Poll</button>
+            <button id="viewPolls" class="secondary">View Polls</button>
         </div>
     </main>
 `;
@@ -77,7 +78,7 @@ export const getCreatePollTemplate = () => `
     </main>
 `;
 
-export const getAdminPanelTemplate = ({ poll, results }) => `
+export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
     <main>
         <div class="container">
             <h1>📊 Admin Panel</h1>
@@ -96,6 +97,38 @@ export const getAdminPanelTemplate = ({ poll, results }) => `
             </div>
             <h2>Results</h2>
             ${results.map(getResultTemplate).join('')}
+            <h2>IP Addresses</h2>
+            <div class="ip-list">
+                ${participantEntries.length > 0 ? participantEntries.map(ip => `
+                    <div class="ip-entry">
+                        <span>${ip.ip} <small>${new Date(ip.timestamp).toLocaleString()}</small></span>
+                        <button class="ban-ip-btn" data-ip="${ip.ip}">Ban</button>
+                    </div>
+                `).join('') : '<p>No IP addresses recorded.</p>'}
+                <div id="banMessage"></div>
+            </div>
+
+            <h2>Ban IP Address</h2>
+            <div class="ban-ip-section">
+                <div class="ban-ip-input">
+                    <input type="text" id="ipToBan" placeholder="Enter IP address to ban (e.g. 192.168.1.100)" />
+                    <button id="banIPButton" class="ban-confirm-btn">Ban IP</button>
+                </div>
+                <div id="banIPMessage"></div>
+            </div>
+            
+            <h2>Banned IP Addresses</h2>
+            <div class="banned-ip-list">
+                <div id="bannedIPsList">
+                    ${poll.bannedIPs.length > 0 ? poll.bannedIPs.map(ip => `
+                        <div class="banned-ip-entry">
+                            <span class="banned-ip">${ip}</span>
+                            <button class="unban-btn" data-ip="${ip}">Unban</button>
+                        </div>
+                    `).join('') : '<p>No IP addresses are currently banned.</p>'}
+                </div>
+            </div>
+            
             <button id="backToMenu" class="back-button">Back to Menu</button>
         </div>
     </main>
@@ -108,7 +141,7 @@ const getResultTemplate = (result) => {
             <h3>${result.question}</h3>
             <p><small>Type: ${result.type} choice | Total responses: ${total}</small></p>
             ${Object.entries(result.results).map(([option, count]) => {
-                const percentage = total > 0 ? ((count / (result.type === 'multiple' ? total : result.questionTotal)) * 100).toFixed(1) : 0;
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
                 const questionTotal = result.results[option];
                 return `
                     <div class="result-bar">
@@ -120,3 +153,22 @@ const getResultTemplate = (result) => {
         </div>
     `;
 };
+
+export const getPollListTemplate = (polls) => `
+    <main>
+        <div class="container">
+            <h1>Available Polls</h1>
+            <ul class="poll-list">
+                ${polls.length > 0 ? polls.map(poll => `
+                    <li id="pollItem" class="poll-item" data-code="${poll.code}">
+                        <span>${poll.title} (Code: ${poll.code})</span>
+                        <input id="adminInput" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" />
+                        <div id="message"></div>
+                        <button id="adminButton" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
+                    </li>
+                `).join('') : '<li>No polls available</li>'}
+            </ul>
+            <button id="backToMenu" class="back-button">Back to Menu</button>
+        </div>
+    </main>
+`;
