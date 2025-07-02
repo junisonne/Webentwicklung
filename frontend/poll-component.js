@@ -200,6 +200,7 @@ class Poll extends HTMLElement {
                 <option value="single">Single Choice</option>
                 <option value="multiple">Multiple Choice</option>
             </select>
+            <button type="button" class="remove-question"> Remove Question</button>
             <div class="options-container">
                 <input type="text" placeholder="Option 1" class="option-input" />
                 <input type="text" placeholder="Option 2" class="option-input" />
@@ -208,16 +209,30 @@ class Poll extends HTMLElement {
         `;
         container.appendChild(questionDiv);
         questionDiv.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
+        questionDiv.querySelector('.remove-question').addEventListener('click', () => {
+            container.removeChild(questionDiv);
+        });
     }
 
     addOption(event) {
         const optionsContainer = event.target.previousElementSibling;
         const optionCount = optionsContainer.children.length + 1;
+        const optionRow = document.createElement('div');
+        optionRow.className = 'option-row';
+
         const optionInput = document.createElement('input');
         optionInput.type = 'text';
-        optionInput.placeholder = `Option ${optionCount}`;
         optionInput.className = 'option-input';
-        optionsContainer.appendChild(optionInput);
+        optionInput.placeholder = `Option ${optionCount}`;
+
+        const optionRemoveButton = document.createElement('button');
+        optionRemoveButton.textContent = 'Remove';
+        optionRemoveButton.addEventListener('click', () => {
+            optionsContainer.removeChild(optionRow);
+        });
+        optionRow.appendChild(optionInput);
+        optionRow.appendChild(optionRemoveButton);
+        optionsContainer.appendChild(optionRow);
     }
 
     async createPoll() {
