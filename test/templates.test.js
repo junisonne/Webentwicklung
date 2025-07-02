@@ -46,8 +46,9 @@ describe("Test PollQuestionsTemplate", () => {
     poll.questions.forEach((q, i) => {
       const prefix = `${i + 1}. ${q.question}`;
       expect(template).toContain(prefix);
-      const choiceType = q.type === "single" ? "Single choice" : "Multiple choice";
-      expect(template).toContain(`(${choiceType})`);
+      // Updated expectations to match the actual template text
+      const choiceType = q.type === "single" ? "one option" : "one or more options";
+      expect(template).toContain(`(Select ${choiceType})`);
       q.options.forEach(opt => {
         expect(template).toContain(`data-question="${i}"`);
         expect(template).toContain(`data-option="${opt}"`);
