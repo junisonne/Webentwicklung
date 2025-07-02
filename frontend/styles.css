@@ -12,7 +12,7 @@ main {
     min-height: 100vh;
     padding: 20px;
 
-    & .container {
+    .container {
         text-align: center;
         background-color: #f8f9fa;
         padding: 30px;
@@ -37,27 +37,27 @@ h2 {
 /* Form elements */
 .form-group {
     margin-bottom: 15px;
-    
-    & > label {
+
+    > label {
         display: block;
         margin-bottom: 5px;
         font-weight: 500;
         color: #333;
     }
-    
-    & + .form-group {
+
+    + .form-group {
         margin-top: 20px;
     }
-    
-    & input[type="text"], 
-    & input[type="password"] {
+
+    input[type="text"],
+    input[type="password"] {
         margin-top: 5px;
         width: 100%;
     }
 }
 
 input {
-    &[type="text"], 
+    &[type="text"],
     &[type="password"] {
         padding: 12px;
         margin: 8px;
@@ -65,20 +65,20 @@ input {
         border: 2px solid #ddd;
         border-radius: 6px;
         font-size: 16px;
-        
+
         &:focus {
             outline: none;
             border-color: #007BFF;
         }
-        
-        & + label {
+
+        + label {
             margin-top: 5px;
             display: block;
             color: #666;
             font-size: 14px;
         }
     }
-    
+
     &:disabled {
         background-color: #f2f2f2;
         cursor: not-allowed;
@@ -96,29 +96,29 @@ button {
     cursor: pointer;
     font-size: 16px;
     min-width: 120px;
-    
+
     &:hover {
         background-color: #0056b3;
     }
-    
+
     &.secondary {
         background-color: #6c757d;
-        
+
         &:hover {
             background-color: #545b62;
         }
     }
-    
+
     &.back-button {
         background-color: #6c757d;
         margin-top: 20px;
-        
+
         &:hover {
             background-color: #545b62;
         }
     }
-    
-    & + button {
+
+    + button {
         margin-left: 10px;
     }
 }
@@ -127,10 +127,10 @@ button {
     display: flex;
     gap: 10px;
     margin: 15px 0;
-    
-    & > button {
+
+    > button {
         margin: 0;
-        
+
         &:first-child {
             margin-left: 0;
         }
@@ -144,19 +144,19 @@ button {
     background-color: white;
     border-radius: 8px;
     text-align: left;
-    
-    & .question-title {
+
+    .question-title {
         font-weight: bold;
         margin-bottom: 12px;
         color: #333;
-        
-        & + p {
+
+        + p {
             margin-top: 0;
             color: #666;
         }
     }
-    
-    & > .option-button:first-of-type {
+
+    > .option-button:first-of-type {
         margin-top: 16px;
     }
 }
@@ -175,24 +175,24 @@ button {
     text-align: left;
     transition: all 0.2s;
     color: black;
-    
+
     &:hover {
         border-color: #007BFF;
         background-color: #e6f3ff;
     }
-    
+
     &.selected {
         background-color: #007BFF;
         color: white;
         border-color: #007BFF;
     }
-    
+
     &.multiple.selected {
         background-color: #28a745;
         border-color: #28a745;
     }
-    
-    & + .option-button {
+
+    + .option-button {
         margin-top: 10px;
     }
 }
@@ -203,21 +203,21 @@ button {
     padding: 15px;
     background-color: white;
     border-radius: 8px;
-    
-    & > h3 {
+
+    > h3 {
         margin-top: 0;
         margin-bottom: 15px;
         color: #333;
     }
-    
-    & .result-bar {
+
+    .result-bar {
         margin: 8px 0;
         padding: 8px;
         background-color: #e9ecef;
         border-radius: 4px;
         position: relative;
-        
-        & .result-fill {
+
+        .result-fill {
             position: absolute;
             top: 0;
             left: 0;
@@ -226,20 +226,20 @@ button {
             border-radius: 4px;
             transition: width 0.5s ease;
         }
-        
-        & .result-text {
+
+        .result-text {
             position: relative;
             z-index: 1;
             color: #333;
             font-weight: 500;
         }
-        
-        & + .result-bar {
+
+        + .result-bar {
             margin-top: 12px;
         }
     }
-    
-    & + .admin-controls {
+
+    + .admin-controls {
         margin-top: 30px;
     }
 }
@@ -251,12 +251,13 @@ button {
 }
 
 /* Message styles with combinators and shared properties */
-.error, .success {
+.error,
+.success {
     padding: 12px;
     border-radius: 6px;
     margin: 10px 0;
-    
-    & + form {
+
+    + form {
         margin-top: 20px;
     }
 }
@@ -264,8 +265,8 @@ button {
 .error {
     color: #dc3545;
     background-color: #f8d7da;
-    
-    & > * {
+
+    > * {
         color: inherit;
     }
 }
@@ -273,8 +274,8 @@ button {
 .success {
     color: #155724;
     background-color: #d4edda;
-    
-    & > * {
+
+    > * {
         color: inherit;
     }
 }
@@ -295,6 +296,7 @@ button {
     color: #0c5460;
 }
 
+/* Banned sections */
 .banned-error {
     background-color: #f8d7da;
     border: 2px solid #dc3545;
@@ -303,15 +305,15 @@ button {
     border-radius: 8px;
     margin: 15px 0;
     text-align: center;
-}
 
-.banned-error h4 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    color: #dc3545;
-}
+    h4 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #dc3545;
+    }
 
-.banned-error p {
-    margin: 8px 0;
-    line-height: 1.4;
+    p {
+        margin: 8px 0;
+        line-height: 1.4;
+    }
 }
