@@ -57,12 +57,15 @@ export const getCreatePollTemplate = () => `
             <input type="password" id="adminPassword" placeholder="Admin Password" />
             <h2>Questions</h2>
             <div id="questionsContainer">
-                <div class="question-builder">
-                    <input type="text" placeholder="Question 1" class="question-input" />
-                    <select class="question-type">
-                        <option value="single">Single Choice</option>
-                        <option value="multiple">Multiple Choice</option>
-                    </select>
+                <div class="question-builder" data-question-number="1">
+                    <div class="question-header">
+                        <input type="text" placeholder="Question 1" class="question-input" />
+                        <select class="question-type">
+                            <option value="single">Single Choice</option>
+                            <option value="multiple">Multiple Choice</option>
+                        </select>
+                        <button type="button" class="reset-question">Reset</button>
+                    </div>
                     <div class="options-container">
                         <input type="text" placeholder="Option 1" class="option-input" />
                         <input type="text" placeholder="Option 2" class="option-input" />

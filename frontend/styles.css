@@ -403,3 +403,81 @@ button {
     margin: 8px 0;
     line-height: 1.4;
 }
+
+/* Question builder styles */
+.question-builder {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+    
+    & .question-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        
+        & .question-input {
+            flex: 1;
+            margin: 0;
+        }
+        
+        & .question-type {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            
+            &:focus {
+                outline: none;
+                border-color: #007BFF;
+            }
+        }
+        
+        & .reset-question,
+        & .delete-question {
+            padding: 8px 16px;
+            min-width: auto;
+            font-size: 14px;
+        }
+    }
+    
+    & .options-container {
+        margin-bottom: 15px;
+        
+        & .option-input {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        & .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+            
+            & .option-input {
+                flex: 1;
+                margin: 0;
+            }
+            
+            & button {
+                padding: 8px 16px;
+                min-width: auto;
+                font-size: 14px;
+                background-color: #007BFF;
+                
+                &:hover {
+                    background-color: #0056b3;
+                }
+            }
+        }
+    }
+    
+    & .add-option {
+        margin-top: 10px;
+    }
+}

@@ -192,7 +192,10 @@ class Poll extends HTMLElement {
             { selector: 'createPollBtn', event: 'click', handler: this.createPoll },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
         ]);
+        
+        // Add event listeners for the first question
         this.shadowRoot.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
+        this.shadowRoot.querySelector('.reset-question').addEventListener('click', (e) => this.resetQuestion(e));
     }
 
     addQuestion() {
@@ -200,13 +203,16 @@ class Poll extends HTMLElement {
         const questionCount = container.children.length + 1;
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-builder';
+        questionDiv.dataset.questionNumber = questionCount;
         questionDiv.innerHTML = `
-            <input type="text" placeholder="Question ${questionCount}" class="question-input" />
-            <select class="question-type">
-                <option value="single">Single Choice</option>
-                <option value="multiple">Multiple Choice</option>
-            </select>
-            <button type="button" class="remove-question"> Remove Question</button>
+            <div class="question-header">
+                <input type="text" placeholder="Question ${questionCount}" class="question-input" />
+                <select class="question-type">
+                    <option value="single">Single Choice</option>
+                    <option value="multiple">Multiple Choice</option>
+                </select>
+                <button type="button" class="delete-question">Delete</button>
+            </div>
             <div class="options-container">
                 <input type="text" placeholder="Option 1" class="option-input" />
                 <input type="text" placeholder="Option 2" class="option-input" />
@@ -215,7 +221,7 @@ class Poll extends HTMLElement {
         `;
         container.appendChild(questionDiv);
         questionDiv.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
-        questionDiv.querySelector('.remove-question').addEventListener('click', () => {
+        questionDiv.querySelector('.delete-question').addEventListener('click', () => {
             container.removeChild(questionDiv);
         });
     }
@@ -453,6 +459,45 @@ class Poll extends HTMLElement {
         } catch (error) {
             this.showMainMenu();
         }
+    }
+
+    resetQuestion(event) {
+        console.log('Reset question called', event);
+        const questionBuilder = event.target.closest('.question-builder');
+        
+        if (!questionBuilder) {
+            console.error('Question builder not found');
+            return;
+        }
+        
+        const questionInput = questionBuilder.querySelector('.question-input');
+        const questionType = questionBuilder.querySelector('.question-type');
+        const optionsContainer = questionBuilder.querySelector('.options-container');
+        const questionNumber = questionBuilder.dataset.questionNumber || '1';
+        
+        console.log('Found elements:', { questionInput, questionType, optionsContainer });
+        
+        // Reset question text and placeholder
+        if (questionInput) {
+            questionInput.value = '';
+            questionInput.placeholder = `Question ${questionNumber}`;
+            questionInput.classList.remove('input-error');
+        }
+        
+        // Reset question type to single choice
+        if (questionType) {
+            questionType.value = 'single';
+        }
+        
+        // Reset options to just 2 default options
+        if (optionsContainer) {
+            optionsContainer.innerHTML = `
+                <input type="text" placeholder="Option 1" class="option-input" />
+                <input type="text" placeholder="Option 2" class="option-input" />
+            `;
+        }
+        
+        console.log('Question reset completed');
     }
 }
 
