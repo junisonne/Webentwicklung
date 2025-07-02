@@ -261,11 +261,6 @@ class Poll extends HTMLElement {
         let hasEmptyFields = false;
         const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
         
-        if (questionBuilders.length === 0) {
-            messageEl.innerHTML = '<div class="error">Please add at least one question.</div>';
-            return;
-        }
-
         questionBuilders.forEach(builder => {
             const questionText = builder.querySelector('.question-input').value.trim();
             const questionType = builder.querySelector('.question-type').value;
@@ -285,7 +280,7 @@ class Poll extends HTMLElement {
                 hasEmptyFields = true;
             }
             
-            // Mark all empty option inputs as errors, even if some options are filled
+            // Mark all empty option inputs as errors
             optionInputs.forEach(input => {
                 if (!input.value.trim()) {
                     hasEmptyFields = true;
@@ -302,11 +297,6 @@ class Poll extends HTMLElement {
 
         if (hasEmptyFields) {
             messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
-            return;
-        }
-
-        if (questions.length === 0) {
-            messageEl.innerHTML = '<div class="error">Please add at least one complete question with two options.</div>';
             return;
         }
 
