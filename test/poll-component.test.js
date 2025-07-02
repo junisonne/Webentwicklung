@@ -5,10 +5,10 @@
 import { getByText, fireEvent, waitFor } from '@testing-library/dom'
 import '@testing-library/jest-dom'
 import fetchMock from 'jest-fetch-mock'
-import '../frontend/poll-component.js' // registriert <poll-component>
+import '../frontend/poll-component.js'
 
 beforeAll(() => {
-  // stub CSSStyleSheet (kommt aus jest.setup.js)
+  // stub CSSStyleSheet
   global.CSSStyleSheet = class {
     replaceSync() {}
   }
@@ -20,7 +20,6 @@ beforeEach(() => {
 })
 
 function mountComponent(query = '') {
-  // URL-Query simulieren
   delete window.location
   window.location = new URL(`http://localhost${query}`)
   const el = document.createElement('poll-component')
@@ -31,9 +30,7 @@ function mountComponent(query = '') {
 test('connectedCallback ohne code rendert Main Menu', () => {
   const el = mountComponent()
   const root = el.shadowRoot
-  // Überschrift vorhanden
   expect(root.querySelector('h1')).toHaveTextContent('📊 Poll System')
-  // Buttons
   expect(root.getElementById('joinPoll')).toBeInTheDocument()
   expect(root.getElementById('createPoll')).toBeInTheDocument()
   expect(root.getElementById('viewPolls')).toBeInTheDocument()
@@ -42,9 +39,7 @@ test('connectedCallback ohne code rendert Main Menu', () => {
 test('showJoinPoll zeigt Eingabeformular und Fehlermeldung bei leerem Code', () => {
   const el = mountComponent()
   const root = el.shadowRoot
-  // wechsle ins Join-Form
   fireEvent.click(root.getElementById('joinPoll'))
-  // klick ohne Eingabe
   fireEvent.click(root.getElementById('enterPoll'))
   expect(root.getElementById('message')).toHaveTextContent('Please enter a poll code.')
 })
@@ -63,22 +58,18 @@ test('joinPoll lädt Fragen und rendert Poll Questions', async () => {
   const el = mountComponent()
   const root = el.shadowRoot
   fireEvent.click(root.getElementById('joinPoll'))
-  // input befüllen
   const input = root.getElementById('pollCode')
   input.value = 'ABC123'
   fireEvent.click(root.getElementById('enterPoll'))
-  // warte auf asynchrone render-Aufrufe
   await waitFor(() => {
     expect(root.querySelector('h1')).toHaveTextContent('Fun Poll')
   })
-  // Option-Buttons vorhanden
   const btns = root.querySelectorAll('.option-button')
   expect(btns.length).toBe(2)
 })
 
 test('selectOption single choice markiert und State updated', async () => {
   const el = mountComponent()
-  // direkt Fragen in den State setzen und rendern
   el.state.currentPoll = {
     code: 'X',
     title: 'T',
@@ -115,14 +106,10 @@ test('showCreatePoll und addQuestion / addOption funktionieren', () => {
   const el = mountComponent()
   fireEvent.click(el.shadowRoot.getElementById('createPoll'))
   const root = el.shadowRoot
-  // initial eine Frage
   expect(root.querySelectorAll('.question-builder').length).toBe(1)
-  // neue Frage hinzufügen
   fireEvent.click(root.getElementById('addQuestion'))
   expect(root.querySelectorAll('.question-builder').length).toBe(2)
-  // neue Option in erster Frage
   const firstAddOpt = root.querySelector('.question-builder .add-option')
   fireEvent.click(firstAddOpt)
-  // eine zusätzliche .option-row erwartet
   expect(root.querySelectorAll('.option-row').length).toBe(1)
 })
