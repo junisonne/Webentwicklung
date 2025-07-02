@@ -130,17 +130,23 @@ class Poll extends HTMLElement {
     }
 
     selectOption(event) {
-        const questionIndex = parseInt(event.target.dataset.question);
-        const option = event.target.dataset.option;
+        // Get the button element, which could be the target or its parent
+        const button = event.target.closest('.option-button');
+        if (!button) return;
+        
+        const questionIndex = parseInt(button.dataset.question);
+        const option = button.dataset.option;
         const question = this.state.currentPoll.questions[questionIndex];
 
         if (question.type === 'single') {
-            this.shadowRoot.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
+            this.shadowRoot.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
             this.state.userResponses[questionIndex] = option;
         } else {
-            event.target.classList.toggle('selected');
-            event.target.classList.toggle('multiple');
+            button.classList.toggle('selected');
+            button.classList.toggle('multiple');
             
             if (!this.state.userResponses[questionIndex]) {
                 this.state.userResponses[questionIndex] = [];
@@ -186,7 +192,10 @@ class Poll extends HTMLElement {
             { selector: 'createPollBtn', event: 'click', handler: this.createPoll },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
         ]);
+        
+        // Add event listeners for the first question
         this.shadowRoot.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
+        this.shadowRoot.querySelector('.reset-question').addEventListener('click', (e) => this.resetQuestion(e));
     }
 
     addQuestion() {
@@ -194,13 +203,16 @@ class Poll extends HTMLElement {
         const questionCount = container.children.length + 1;
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-builder';
+        questionDiv.dataset.questionNumber = questionCount;
         questionDiv.innerHTML = `
-            <input type="text" placeholder="Question ${questionCount}" class="question-input" />
-            <select class="question-type">
-                <option value="single">Single Choice</option>
-                <option value="multiple">Multiple Choice</option>
-            </select>
-            <button type="button" class="remove-question"> Remove Question</button>
+            <div class="question-header">
+                <input type="text" placeholder="Question ${questionCount}" class="question-input" />
+                <select class="question-type">
+                    <option value="single">Single Choice</option>
+                    <option value="multiple">Multiple Choice</option>
+                </select>
+                <button type="button" class="delete-question">Delete</button>
+            </div>
             <div class="options-container">
                 <input type="text" placeholder="Option 1" class="option-input" />
                 <input type="text" placeholder="Option 2" class="option-input" />
@@ -209,7 +221,7 @@ class Poll extends HTMLElement {
         `;
         container.appendChild(questionDiv);
         questionDiv.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
-        questionDiv.querySelector('.remove-question').addEventListener('click', () => {
+        questionDiv.querySelector('.delete-question').addEventListener('click', () => {
             container.removeChild(questionDiv);
         });
     }
@@ -237,8 +249,8 @@ class Poll extends HTMLElement {
 
     async createPoll() {
         const messageEl = this.shadowRoot.getElementById('message');
-        const title = this.shadowRoot.getElementById('pollTitle').value;
-        const adminPassword = this.shadowRoot.getElementById('adminPassword').value;
+        const title = this.shadowRoot.getElementById('pollTitle').value.trim();
+        const adminPassword = this.shadowRoot.getElementById('adminPassword').value.trim();
 
         if (!title || !adminPassword) {
             messageEl.innerHTML = '<div class="error">Please provide title and admin password.</div>';
@@ -246,20 +258,45 @@ class Poll extends HTMLElement {
         }
 
         const questions = [];
-        this.shadowRoot.querySelectorAll('.question-builder').forEach(builder => {
-            const questionText = builder.querySelector('.question-input').value;
+        let hasEmptyFields = false;
+        const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
+        
+        questionBuilders.forEach(builder => {
+            const questionText = builder.querySelector('.question-input').value.trim();
             const questionType = builder.querySelector('.question-type').value;
-            const options = Array.from(builder.querySelectorAll('.option-input'))
-                .map(input => input.value.trim())
-                .filter(value => value);
+            const optionInputs = Array.from(builder.querySelectorAll('.option-input'));
+            const options = optionInputs.map(input => input.value.trim()).filter(value => value);
+
+            // Check for empty question text
+            if (!questionText) {
+                hasEmptyFields = true;
+                builder.querySelector('.question-input').classList.add('input-error');
+            } else {
+                builder.querySelector('.question-input').classList.remove('input-error');
+            }
+
+            // Check for empty options
+            if (optionInputs.length < 2 || options.length < 2) {
+                hasEmptyFields = true;
+            }
+            
+            // Mark all empty option inputs as errors
+            optionInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    hasEmptyFields = true;
+                    input.classList.add('input-error');
+                } else {
+                    input.classList.remove('input-error');
+                }
+            });
 
             if (questionText && options.length >= 2) {
                 questions.push({ question: questionText, type: questionType, options });
             }
         });
 
-        if (questions.length === 0) {
-            messageEl.innerHTML = '<div class="error">Please add at least one question with two options.</div>';
+        if (hasEmptyFields) {
+            messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
             return;
         }
 
@@ -412,6 +449,45 @@ class Poll extends HTMLElement {
         } catch (error) {
             this.showMainMenu();
         }
+    }
+
+    resetQuestion(event) {
+        console.log('Reset question called', event);
+        const questionBuilder = event.target.closest('.question-builder');
+        
+        if (!questionBuilder) {
+            console.error('Question builder not found');
+            return;
+        }
+        
+        const questionInput = questionBuilder.querySelector('.question-input');
+        const questionType = questionBuilder.querySelector('.question-type');
+        const optionsContainer = questionBuilder.querySelector('.options-container');
+        const questionNumber = questionBuilder.dataset.questionNumber || '1';
+        
+        console.log('Found elements:', { questionInput, questionType, optionsContainer });
+        
+        // Reset question text and placeholder
+        if (questionInput) {
+            questionInput.value = '';
+            questionInput.placeholder = `Question ${questionNumber}`;
+            questionInput.classList.remove('input-error');
+        }
+        
+        // Reset question type to single choice
+        if (questionType) {
+            questionType.value = 'single';
+        }
+        
+        // Reset options to just 2 default options
+        if (optionsContainer) {
+            optionsContainer.innerHTML = `
+                <input type="text" placeholder="Option 1" class="option-input" />
+                <input type="text" placeholder="Option 2" class="option-input" />
+            `;
+        }
+        
+        console.log('Question reset completed');
     }
 }
 
