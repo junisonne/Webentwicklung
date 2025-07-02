@@ -1,24 +1,41 @@
 export const getMainMenuTemplate = () => `
     <main>
-        <section class="container">
-            <h1>📊 Poll System</h1>
-                <button id="createPoll" class="secondary">Create Poll as Admin</button>
-                <button id="joinPoll">Join Poll</button>
-                <button id="viewPolls" class="secondary">View Polls</button>
-        </section>
+        <div class="container">
+            <header>
+                <h1>📊 Poll System</h1>
+            </header>
+            <section class="menu-section">
+                <nav class="menu-navigation">
+                    <div class="button-container">
+                        <button id="createPoll" class="secondary">Create Poll as Admin</button>
+                        <button id="joinPoll">Join Poll</button>
+                        <button id="viewPolls" class="secondary">View Polls</button>
+                    </div>
+                </nav>
+            </section>
+        </div>
     </main>
 `;
 
 export const getJoinPollTemplate = () => `
     <main>
-        <section class="container">
-            <h1>Join Poll</h1>
-            <input type="text" id="pollCode" placeholder="Enter Poll Code" />
-            <br>
-            <button id="backToMenu" class="back-button">Back</button>
-            <button id="enterPoll">Join Poll</button>
-            <div id="message"></div>
-        </section>
+        <div class="container">
+            <header>
+                <h1>Join Poll</h1>
+            </header>
+            <section class="poll-form">
+                <form class="join-poll-form" onsubmit="return false;">
+                    <div class="input-group">
+                        <input type="text" id="pollCode" placeholder="Enter Poll Code" aria-label="Poll Code" />
+                    </div>
+                    <div class="action-buttons">
+                        <button id="backToMenu" class="back-button">Back</button>
+                        <button id="enterPoll" type="submit">Join Poll</button>
+                    </div>
+                </form>
+                <div id="message" class="message-container" aria-live="polite"></div>
+            </section>
+        </div>
     </main>
 `;
 
