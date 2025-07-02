@@ -56,6 +56,25 @@ h2 {
     }
 }
 
+/* Input validation styles */
+.input-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+.question-input {
+    &.input-error + .question-type {
+        border-color: #dc3545;
+    }
+}
+
 input {
     &[type="text"],
     &[type="password"] {
@@ -144,13 +163,23 @@ button {
     background-color: white;
     border-radius: 8px;
     text-align: left;
-
-    .question-title {
+    position: relative;
+    border-left: 6px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+    & .question-title {
         font-weight: bold;
         margin-bottom: 12px;
         color: #333;
-
-        + p {
+        
+        & small {
+            font-weight: normal;
+            color: #666;
+            display: block;
+            margin-top: 4px;
+        }
+        
+        & + p {
             margin-top: 0;
             color: #666;
         }
@@ -159,7 +188,42 @@ button {
     > .option-button:first-of-type {
         margin-top: 16px;
     }
+    
+    &.single-choice {
+        border-left-color: #007BFF;
+        
+        &::before {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+    }
+    
+    &.multiple-choice {
+        border-left-color: #28a745;
+        
+        &::before {
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+    }
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0 8px 8px 0;
+        z-index: 0;
+        opacity: 0.7;
+    }
+    
+    & > * {
+        position: relative;
+        z-index: 1;
+    }
 }
+
+/* Removing question-type-indicator styles as they're no longer needed */
 
 /* Option buttons */
 .option-button {
@@ -169,13 +233,12 @@ button {
     padding: 12px;
     background-color: white;
     border: 2px solid #ddd;
-    color: #007BFF;
+    color: black;
     border-radius: 6px;
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
-    color: black;
-
+    
     &:hover {
         border-color: #007BFF;
         background-color: #e6f3ff;
@@ -194,6 +257,31 @@ button {
 
     + .option-button {
         margin-top: 10px;
+    }
+    
+    & .option-indicator {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 18px;
+        vertical-align: middle;
+        pointer-events: none; /* Ensures clicks pass through to the button */
+        transition: all 0.2s;
+    }
+    
+    &.selected .option-indicator {
+        &::before {
+            content: attr(data-selected);
+        }
+    }
+    
+    &:not(.selected) .option-indicator {
+        &::before {
+            content: attr(data-unselected);
+        }
+    }
+    
+    & .option-text {
+        pointer-events: none; /* Ensures clicks pass through to the button */
     }
 }
 
@@ -312,8 +400,85 @@ button {
         color: #dc3545;
     }
 
-    p {
-        margin: 8px 0;
-        line-height: 1.4;
+.banned-error p {
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+/* Question builder styles */
+.question-builder {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+    
+    & .question-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        
+        & .question-input {
+            flex: 1;
+            margin: 0;
+        }
+        
+        & .question-type {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            
+            &:focus {
+                outline: none;
+                border-color: #007BFF;
+            }
+        }
+        
+        & .reset-question,
+        & .delete-question {
+            padding: 8px 16px;
+            min-width: auto;
+            font-size: 14px;
+        }
+    }
+    
+    & .options-container {
+        margin-bottom: 15px;
+        
+        & .option-input {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        & .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+            
+            & .option-input {
+                flex: 1;
+                margin: 0;
+            }
+            
+            & button {
+                padding: 8px 16px;
+                min-width: auto;
+                font-size: 14px;
+                background-color: #007BFF;
+                
+                &:hover {
+                    background-color: #0056b3;
+                }
+            }
+        }
+    }
+    
+    & .add-option {
+        margin-top: 10px;
     }
 }

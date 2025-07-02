@@ -35,14 +35,15 @@ export const getPollQuestionsTemplate = (poll) => `
 `;
 
 const getQuestionTemplate = (question, index) => `
-    <div class="question-container">
+    <div class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
         <div class="question-title">
             ${index + 1}. ${question.question}
-            <small style="color: #666;">(${question.type === 'single' ? 'Single choice' : 'Multiple choice'})</small>
+            <small>(Select ${question.type === 'single' ? 'one option' : 'one or more options'})</small>
         </div>
         ${question.options.map(opt => `
             <button class="option-button" data-question="${index}" data-option="${opt}">
-                ${opt}
+                <span class="option-indicator" data-selected="${question.type === 'single' ? '◉' : '☑'}" data-unselected="${question.type === 'single' ? '○' : '□'}"></span>
+                <span class="option-text">${opt}</span>
             </button>
         `).join('')}
     </div>
@@ -56,12 +57,15 @@ export const getCreatePollTemplate = () => `
             <input type="password" id="adminPassword" placeholder="Admin Password" />
             <h2>Questions</h2>
             <div id="questionsContainer">
-                <div class="question-builder">
-                    <input type="text" placeholder="Question 1" class="question-input" />
-                    <select class="question-type">
-                        <option value="single">Single Choice</option>
-                        <option value="multiple">Multiple Choice</option>
-                    </select>
+                <div class="question-builder" data-question-number="1">
+                    <div class="question-header">
+                        <input type="text" placeholder="Question 1" class="question-input" />
+                        <select class="question-type">
+                            <option value="single">Single Choice</option>
+                            <option value="multiple">Multiple Choice</option>
+                        </select>
+                        <button type="button" class="reset-question">Reset</button>
+                    </div>
                     <div class="options-container">
                         <input type="text" placeholder="Option 1" class="option-input" />
                         <input type="text" placeholder="Option 2" class="option-input" />
