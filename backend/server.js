@@ -340,9 +340,15 @@ app.get('*', (req, res) => {
     res.sendFile('index.html', { root: '.' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+
+if (process.env.NODE_ENV !== 'test') { //For the server.test.js to work, because there was an TypeError: app.address is not a function
+  const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
     console.log(`📊 Test poll available at: http://localhost:${PORT}/poll/test123`);
     console.log(`📝 All polls overview: http://localhost:${PORT}/polls`);
 });
+}
+
+export default app;
