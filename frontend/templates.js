@@ -35,14 +35,15 @@ export const getPollQuestionsTemplate = (poll) => `
 `;
 
 const getQuestionTemplate = (question, index) => `
-    <div class="question-container">
+    <div class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
         <div class="question-title">
             ${index + 1}. ${question.question}
-            <small style="color: #666;">(${question.type === 'single' ? 'Single choice' : 'Multiple choice'})</small>
+            <small>(Select ${question.type === 'single' ? 'one option' : 'one or more options'})</small>
         </div>
         ${question.options.map(opt => `
             <button class="option-button" data-question="${index}" data-option="${opt}">
-                ${opt}
+                <span class="option-indicator" data-selected="${question.type === 'single' ? '◉' : '☑'}" data-unselected="${question.type === 'single' ? '○' : '□'}"></span>
+                <span class="option-text">${opt}</span>
             </button>
         `).join('')}
     </div>

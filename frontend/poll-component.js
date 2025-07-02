@@ -130,17 +130,23 @@ class Poll extends HTMLElement {
     }
 
     selectOption(event) {
-        const questionIndex = parseInt(event.target.dataset.question);
-        const option = event.target.dataset.option;
+        // Get the button element, which could be the target or its parent
+        const button = event.target.closest('.option-button');
+        if (!button) return;
+        
+        const questionIndex = parseInt(button.dataset.question);
+        const option = button.dataset.option;
         const question = this.state.currentPoll.questions[questionIndex];
 
         if (question.type === 'single') {
-            this.shadowRoot.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
+            this.shadowRoot.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
             this.state.userResponses[questionIndex] = option;
         } else {
-            event.target.classList.toggle('selected');
-            event.target.classList.toggle('multiple');
+            button.classList.toggle('selected');
+            button.classList.toggle('multiple');
             
             if (!this.state.userResponses[questionIndex]) {
                 this.state.userResponses[questionIndex] = [];
