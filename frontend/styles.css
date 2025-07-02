@@ -11,16 +11,16 @@ main {
     justify-content: center;
     min-height: 100vh;
     padding: 20px;
+}
 
-    .container {
-        text-align: center;
-        background-color: #f8f9fa;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        width: 100%;
-    }
+.container {
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
 }
 
 /* Typography */
@@ -157,6 +157,48 @@ button {
 }
 
 /* Question components */
+
+/* Poll questions styling */
+.poll-questions {
+    width: 100%;
+    margin: 20px 0;
+    
+    .questions-form {
+        width: 100%;
+        
+        fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+            
+            legend.sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+    }
+    
+    .message-container {
+        margin-top: 20px;
+        min-height: 30px;
+    }
+}
+
+/* Question article styling */
 .question-container {
     margin: 20px 0;
     padding: 20px;
@@ -167,42 +209,28 @@ button {
     border-left: 6px solid #ddd;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     
-    & .question-title {
-        font-weight: bold;
+    .question-title {
         margin-bottom: 12px;
-        color: #333;
         
-        & small {
-            font-weight: normal;
-            color: #666;
-            display: block;
-            margin-top: 4px;
+        h2 {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: #333;
         }
         
-        & + p {
-            margin-top: 0;
-            color: #666;
+        p {
+            margin: 0;
+            
+            small {
+                font-weight: normal;
+                color: #666;
+            }
         }
     }
-
-    > .option-button:first-of-type {
+    
+    .options-group {
         margin-top: 16px;
-    }
-    
-    &.single-choice {
-        border-left-color: #007BFF;
-        
-        &::before {
-            background-color: rgba(0, 123, 255, 0.05);
-        }
-    }
-    
-    &.multiple-choice {
-        border-left-color: #28a745;
-        
-        &::before {
-            background-color: rgba(40, 167, 69, 0.05);
-        }
     }
     
     &::before {
@@ -220,6 +248,22 @@ button {
     & > * {
         position: relative;
         z-index: 1;
+    }
+    
+    &.single-choice {
+        border-left-color: #007BFF;
+        
+        &::before {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+    }
+    
+    &.multiple-choice {
+        border-left-color: #28a745;
+        
+        &::before {
+            background-color: rgba(40, 167, 69, 0.05);
+        }
     }
 }
 
@@ -399,6 +443,7 @@ button {
         font-size: 18px;
         color: #dc3545;
     }
+}
 
 .banned-error p {
     margin: 8px 0;
@@ -414,18 +459,18 @@ button {
     border: 1px solid #ddd;
     text-align: left;
     
-    & .question-header {
+    .question-header {
         display: flex;
         align-items: center;
         gap: 10px;
         margin-bottom: 15px;
         
-        & .question-input {
+        .question-input {
             flex: 1;
             margin: 0;
         }
         
-        & .question-type {
+        .question-type {
             padding: 8px;
             border: 2px solid #ddd;
             border-radius: 6px;
@@ -437,35 +482,35 @@ button {
             }
         }
         
-        & .reset-question,
-        & .delete-question {
+        .reset-question,
+        .delete-question {
             padding: 8px 16px;
             min-width: auto;
             font-size: 14px;
         }
     }
     
-    & .options-container {
+    .options-container {
         margin-bottom: 15px;
         
-        & .option-input {
+        .option-input {
             display: block;
             width: 100%;
             margin: 5px 0;
         }
         
-        & .option-row {
+        .option-row {
             display: flex;
             align-items: center;
             gap: 10px;
             margin: 5px 0;
             
-            & .option-input {
+            .option-input {
                 flex: 1;
                 margin: 0;
             }
             
-            & button {
+            button {
                 padding: 8px 16px;
                 min-width: auto;
                 font-size: 14px;
@@ -478,8 +523,12 @@ button {
         }
     }
     
-    & .add-option {
+    .question-footer {
         margin-top: 10px;
+        
+        .add-option {
+            margin: 0;
+        }
     }
 }
 
@@ -556,4 +605,65 @@ header {
         }
     }
 }
+
+/* Poll creator styling */
+.poll-creator {
+    width: 100%;
+    margin: 20px 0;
+    
+    .create-poll-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        .form-group {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+            text-align: left;
+            
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #333;
+                text-align: left;
+            }
+            
+            input {
+                width: 100%;
+                margin: 0;
+            }
+        }
+        
+        .questions-fieldset {
+            width: 100%;
+            border: none;
+            margin: 20px 0;
+            padding: 0;
+            
+            legend {
+                font-size: 1.3em;
+                font-weight: bold;
+                color: #555;
+                margin-bottom: 15px;
+                width: 100%;
+                text-align: left;
+            }
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    }
+    
+    .message-container {
+        margin-top: 20px;
+        min-height: 30px;
+    }
 }

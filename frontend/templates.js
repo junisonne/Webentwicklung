@@ -41,61 +41,98 @@ export const getJoinPollTemplate = () => `
 
 export const getPollQuestionsTemplate = (poll) => `
     <main>
-        <section class="container">
-            <h1>${poll.title}</h1>
-            ${poll.questions.map((q, i) => getQuestionTemplate(q, i)).join('')}
-            <button id="backToMenu" class="back-button">Back to Menu</button>
-            <button id="submitResponses">Submit Responses</button>
-            <div id="message"></div>
-        </section>
+        <div class="container">
+            <header>
+                <h1>${poll.title}</h1>
+            </header>
+            <section class="poll-questions">
+                <form class="questions-form" onsubmit="return false;">
+                    <fieldset>
+                        <legend class="sr-only">Poll Questions</legend>
+                        ${poll.questions.map((q, i) => getQuestionTemplate(q, i)).join('')}
+                    </fieldset>
+                    <div class="action-buttons">
+                        <button id="backToMenu" class="back-button" type="button">Back to Menu</button>
+                        <button id="submitResponses" type="submit">Submit Responses</button>
+                    </div>
+                </form>
+                <div id="message" class="message-container" aria-live="polite"></div>
+            </section>
+        </div>
     </main>
 `;
 
 const getQuestionTemplate = (question, index) => `
-    <div class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
-        <div class="question-title">
-            ${index + 1}. ${question.question}
-            <small>(Select ${question.type === 'single' ? 'one option' : 'one or more options'})</small>
+    <article class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
+        <header class="question-title">
+            <h2>${index + 1}. ${question.question}</h2>
+            <p><small>(Select ${question.type === 'single' ? 'one option' : 'one or more options'})</small></p>
+        </header>
+        <div class="options-group" role="group" aria-labelledby="question-${index}">
+            ${question.options.map(opt => `
+                <button class="option-button" 
+                        type="button" 
+                        data-question="${index}" 
+                        data-option="${opt}" 
+                        role="${question.type === 'single' ? 'radio' : 'checkbox'}" 
+                        aria-checked="false">
+                    <span class="option-indicator" data-selected="${question.type === 'single' ? '◉' : '☑'}" data-unselected="${question.type === 'single' ? '○' : '□'}" aria-hidden="true"></span>
+                    <span class="option-text">${opt}</span>
+                </button>
+            `).join('')}
         </div>
-        ${question.options.map(opt => `
-            <button class="option-button" data-question="${index}" data-option="${opt}">
-                <span class="option-indicator" data-selected="${question.type === 'single' ? '◉' : '☑'}" data-unselected="${question.type === 'single' ? '○' : '□'}"></span>
-                <span class="option-text">${opt}</span>
-            </button>
-        `).join('')}
-    </div>
+    </article>
 `;
 
 export const getCreatePollTemplate = () => `
     <main>
-        <section class="container">
-            <h1>Create New Poll</h1>
-            <input type="text" id="pollTitle" placeholder="Poll Title" />
-            <input type="password" id="adminPassword" placeholder="Admin Password" />
-            <h2>Questions</h2>
-            <div id="questionsContainer">
-                <div class="question-builder" data-question-number="1">
-                    <div class="question-header">
-                        <input type="text" placeholder="Question 1" class="question-input" />
-                        <select class="question-type">
-                            <option value="single">Single Choice</option>
-                            <option value="multiple">Multiple Choice</option>
-                        </select>
-                        <button type="button" class="reset-question">Reset</button>
+        <div class="container">
+            <header>
+                <h1>Create New Poll</h1>
+            </header>
+            <section class="poll-creator">
+                <form class="create-poll-form" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="pollTitle">Poll Title</label>
+                        <input type="text" id="pollTitle" placeholder="Enter poll title" aria-required="true" />
                     </div>
-                    <div class="options-container">
-                        <input type="text" placeholder="Option 1" class="option-input" />
-                        <input type="text" placeholder="Option 2" class="option-input" />
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Password</label>
+                        <input type="password" id="adminPassword" placeholder="Create admin password" aria-required="true" />
                     </div>
-                    <button type="button" class="add-option secondary">+ Add Option</button>
-                </div>
-            </div>
-            <button id="addQuestion" class="secondary">+ Add Question</button>
-            <br>
-            <button id="backToMenu" class="back-button">Back</button>
-            <button id="createPollBtn">Create Poll</button>
-            <div id="message"></div>
-        </section>
+                    
+                    <fieldset class="questions-fieldset">
+                        <legend>Questions</legend>
+                        <div id="questionsContainer">
+                            <article class="question-builder" data-question-number="1">
+                                <header class="question-header">
+                                    <input type="text" placeholder="Question 1" class="question-input" aria-label="Question 1" />
+                                    <select class="question-type" aria-label="Question type">
+                                        <option value="single">Single Choice</option>
+                                        <option value="multiple">Multiple Choice</option>
+                                    </select>
+                                    <button type="button" class="reset-question" aria-label="Reset question">Reset</button>
+                                </header>
+                                <div class="options-container">
+                                    <input type="text" placeholder="Option 1" class="option-input" aria-label="Option 1" />
+                                    <input type="text" placeholder="Option 2" class="option-input" aria-label="Option 2" />
+                                </div>
+                                <footer class="question-footer">
+                                    <button type="button" class="add-option secondary" aria-label="Add option">+ Add Option</button>
+                                </footer>
+                            </article>
+                        </div>
+                        <button type="button" id="addQuestion" class="secondary" aria-label="Add another question">+ Add Question</button>
+                    </fieldset>
+                    
+                    <div class="action-buttons">
+                        <button type="button" id="backToMenu" class="back-button">Back</button>
+                        <button type="submit" id="createPollBtn">Create Poll</button>
+                    </div>
+                </form>
+                <div id="message" class="message-container" aria-live="polite"></div>
+            </section>
+        </div>
     </main>
 `;
 
