@@ -200,6 +200,7 @@ class Poll extends HTMLElement {
                 <option value="single">Single Choice</option>
                 <option value="multiple">Multiple Choice</option>
             </select>
+            <button type="button" class="remove-question"> Remove Question</button>
             <div class="options-container">
                 <input type="text" placeholder="Option 1" class="option-input" />
                 <input type="text" placeholder="Option 2" class="option-input" />
@@ -208,6 +209,9 @@ class Poll extends HTMLElement {
         `;
         container.appendChild(questionDiv);
         questionDiv.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
+        questionDiv.querySelector('.remove-question').addEventListener('click', () => {
+            container.removeChild(questionDiv);
+        });
     }
 
     addOption(event) {
