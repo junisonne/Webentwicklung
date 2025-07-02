@@ -56,6 +56,25 @@ h2 {
     }
 }
 
+/* Input validation styles */
+.input-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+.question-input {
+    &.input-error + .question-type {
+        border-color: #dc3545;
+    }
+}
+
 input {
     &[type="text"], 
     &[type="password"] {

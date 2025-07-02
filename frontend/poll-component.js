@@ -237,8 +237,8 @@ class Poll extends HTMLElement {
 
     async createPoll() {
         const messageEl = this.shadowRoot.getElementById('message');
-        const title = this.shadowRoot.getElementById('pollTitle').value;
-        const adminPassword = this.shadowRoot.getElementById('adminPassword').value;
+        const title = this.shadowRoot.getElementById('pollTitle').value.trim();
+        const adminPassword = this.shadowRoot.getElementById('adminPassword').value.trim();
 
         if (!title || !adminPassword) {
             messageEl.innerHTML = '<div class="error">Please provide title and admin password.</div>';
@@ -246,20 +246,55 @@ class Poll extends HTMLElement {
         }
 
         const questions = [];
-        this.shadowRoot.querySelectorAll('.question-builder').forEach(builder => {
-            const questionText = builder.querySelector('.question-input').value;
+        let hasEmptyFields = false;
+        const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
+        
+        if (questionBuilders.length === 0) {
+            messageEl.innerHTML = '<div class="error">Please add at least one question.</div>';
+            return;
+        }
+
+        questionBuilders.forEach(builder => {
+            const questionText = builder.querySelector('.question-input').value.trim();
             const questionType = builder.querySelector('.question-type').value;
-            const options = Array.from(builder.querySelectorAll('.option-input'))
-                .map(input => input.value.trim())
-                .filter(value => value);
+            const optionInputs = Array.from(builder.querySelectorAll('.option-input'));
+            const options = optionInputs.map(input => input.value.trim()).filter(value => value);
+
+            // Check for empty question text
+            if (!questionText) {
+                hasEmptyFields = true;
+                builder.querySelector('.question-input').classList.add('input-error');
+            } else {
+                builder.querySelector('.question-input').classList.remove('input-error');
+            }
+
+            // Check for empty options
+            if (optionInputs.length < 2 || options.length < 2) {
+                hasEmptyFields = true;
+            }
+            
+            // Mark all empty option inputs as errors, even if some options are filled
+            optionInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    hasEmptyFields = true;
+                    input.classList.add('input-error');
+                } else {
+                    input.classList.remove('input-error');
+                }
+            });
 
             if (questionText && options.length >= 2) {
                 questions.push({ question: questionText, type: questionType, options });
             }
         });
 
+        if (hasEmptyFields) {
+            messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
+            return;
+        }
+
         if (questions.length === 0) {
-            messageEl.innerHTML = '<div class="error">Please add at least one question with two options.</div>';
+            messageEl.innerHTML = '<div class="error">Please add at least one complete question with two options.</div>';
             return;
         }
 
