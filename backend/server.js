@@ -32,8 +32,6 @@ let polls = [
     }
 ];
 
-let pollEntries = [];
-
 function generateUniqueCode() {
     let code;
     do {
@@ -57,12 +55,10 @@ app.post('/poll/enter', (req, res) => {
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
+    else if(poll.responses.find(entry => entry.code === pollCode && entry.ip === ip)) {
+        return res.status(400).json({ message: 'You have already entered this poll.' });
+    }
     else if (poll && poll.active) {
-        pollEntries.push({ 
-            code: pollCode, 
-            ip: ip,
-            timestamp: new Date() 
-        });
         res.status(200).json({ 
             message: 'Poll entry successful',
             poll: {
@@ -83,7 +79,6 @@ app.post('/poll/create', (req, res) => {
     try {
         const { title, questions, adminPassword } = req.body;
         
-        // Validation
         if (!title || !questions || !adminPassword) {
             return res.status(400).json({ message: 'Title, questions, and admin password are required' });
         }
@@ -99,7 +94,7 @@ app.post('/poll/create', (req, res) => {
             questions: questions.map((q, index) => ({
                 id: index + 1,
                 question: q.question,
-                type: q.type || 'single', // default to single choice
+                type: q.type || 'single',
                 options: q.options || []
             })),
             adminPassword,
@@ -167,7 +162,6 @@ app.post('/poll/:code/respond', (req, res) => {
             return res.status(400).json({ message: 'Responses must be an array' });
         }
         
-        // Validate responses match questions
         if (responses.length !== poll.questions.length) {
             return res.status(400).json({ message: 'Response count must match question count' });
         }
@@ -175,7 +169,9 @@ app.post('/poll/:code/respond', (req, res) => {
         const newResponse = {
             id: poll.responses.length + 1,
             responses,
-            ip: req.ip,
+            ip: req.headers['x-forwarded-for'] ||
+                req.headers['x-real-ip'] ||
+                req.socket.remoteAddress || '',
             timestamp: new Date()
         };
         
@@ -203,9 +199,11 @@ app.post('/poll/:code/admin', (req, res) => {
         if (poll.adminPassword !== adminPassword) {
             return res.status(401).json({ message: 'Invalid admin password' });
         }
-        const participantEntries = pollEntries.filter(entry => entry.code === req.params.code);
+        const participantEntries = poll.responses.map(res => ({
+            ip: res.ip,
+            timestamp: res.timestamp,
+        }));
         
-        // Calculate results
         const results = poll.questions.map(question => {
             const questionResponses = poll.responses.map(r => r.responses[question.id - 1]);
             const optionCounts = {};
@@ -307,6 +305,7 @@ app.post('/poll/ban', (req, res) => {
     
     if (!poll.bannedIPs.includes(ip)) {
         poll.bannedIPs.push(ip);
+        poll.responses = poll.responses.filter(response => response.ip !== ip);
         res.json({ message: `IP ${ip} has been banned from entering poll ${code}` });
     } else {
         res.status(400).json({ message: `IP ${ip} is already banned` });
