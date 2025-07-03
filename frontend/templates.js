@@ -1,3 +1,9 @@
+// Templates.js - Contains HTML templates for the poll application UI components
+// Each function returns a template string that can be injected into the DOM
+
+/**
+ * Generates the main menu interface with options to create, join, or view polls
+ */
 export const getMainMenuTemplate = () => `
     <main>
         <div class="container">
@@ -17,6 +23,9 @@ export const getMainMenuTemplate = () => `
     </main>
 `;
 
+/**
+ * Generates the join poll interface where users can enter a poll code
+ */
 export const getJoinPollTemplate = () => `
     <main>
         <div class="container">
@@ -39,6 +48,10 @@ export const getJoinPollTemplate = () => `
     </main>
 `;
 
+/**
+ * Generates the poll questions interface for participants to answer questions
+ * @param {Object} poll - The poll object containing title and questions
+ */
 export const getPollQuestionsTemplate = (poll) => `
     <main>
         <div class="container">
@@ -62,6 +75,13 @@ export const getPollQuestionsTemplate = (poll) => `
     </main>
 `;
 
+/**
+ * Helper function that generates the HTML for an individual question
+ * Renders question text with numbering and creates interactive option buttons
+ * that display differently based on question type (single/multiple choice)
+ * @param {Object} question - Question object with type, text and options
+ * @param {Number} index - Question index for numbering and data attributes
+ */
 const getQuestionTemplate = (question, index) => `
     <article class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
         <header class="question-title">
@@ -84,6 +104,10 @@ const getQuestionTemplate = (question, index) => `
     </article>
 `;
 
+/**
+ * Generates the poll creation interface for administrators
+ * Includes form fields for poll title, password, and dynamic question creation
+ */
 export const getCreatePollTemplate = () => `
     <main>
         <div class="container">
@@ -136,6 +160,10 @@ export const getCreatePollTemplate = () => `
     </main>
 `;
 
+/**
+ * Generates the admin panel interface with poll management capabilities
+ * @param {Object} params - Object containing poll data, results, and participant information
+ */
 export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
     <main>
         <div class="container">
@@ -223,7 +251,12 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
     </main>
 `;
 
+/**
+ * Helper function that generates the HTML for displaying individual question results
+ * @param {Object} result - Result data for a single question with options and vote counts
+ */
 const getResultTemplate = (result) => {
+    // Calculate total responses for percentage calculations
     const total = result.totalResponses;
     return `
         <article class="results-container">
@@ -233,6 +266,7 @@ const getResultTemplate = (result) => {
             </header>
             <section class="result-bars">
                 ${Object.entries(result.results).map(([option, count]) => {
+                    // Calculate percentage with 1 decimal place, handling zero total case
                     const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
                     return `
                         <div class="result-bar" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100" data-percentage="${percentage}">
@@ -246,6 +280,10 @@ const getResultTemplate = (result) => {
     `;
 };
 
+/**
+ * Generates the polls list interface showing available polls and admin access forms
+ * @param {Array} polls - Array of poll objects to display
+ */
 export const getPollListTemplate = (polls) => `
     <main>
         <div class="container">
