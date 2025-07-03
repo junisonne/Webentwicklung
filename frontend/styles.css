@@ -1,4 +1,14 @@
-/* Base & Reset */
+/**
+ * Main Application Styles
+ * 
+ * This stylesheet contains all styling for the polling application interface.
+ * Organized into logical sections based on components and functionality.
+ */
+
+/* ========================================================================
+   BASE & RESET
+   Core styling fundamentals and CSS reset
+   ======================================================================== */
 :host {
     font-family: Arial, sans-serif;
 }
@@ -7,7 +17,10 @@
     box-sizing: border-box;
 }
 
-/* Core Layout */
+/* ========================================================================
+   CORE LAYOUT
+   Primary containers and structural elements
+   ======================================================================== */
 main {
     display: flex;
     flex-direction: column;
@@ -28,7 +41,10 @@ main {
     margin: 0 auto;
 }
 
-/* Typography */
+/* ========================================================================
+   TYPOGRAPHY
+   Text styling for headings and content
+   ======================================================================== */
 h1, h2, h3 {
     margin: 0 0 15px 0;
     color: #333;
@@ -46,11 +62,15 @@ h3 {
     font-size: 1.2em;
 }
 
-/* Forms & Inputs */
+/* ========================================================================
+   FORMS & INPUTS
+   Form groups, inputs, and related controls
+   ======================================================================== */
 .form-group {
     margin-bottom: 15px;
     text-align: left;
 
+    /* Add additional spacing between stacked form groups */
     & + .form-group {
         margin-top: 20px;
     }
@@ -113,6 +133,7 @@ input[type="password"]:not(.form-group input) {
     }
 }
 
+/* Animation for error feedback on inputs */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }
@@ -266,6 +287,11 @@ button {
     }
 }
 
+/* ========================================================================
+   INTERACTIVE ELEMENTS
+   Buttons, option selectors, and interactive components
+   ======================================================================== */
+
 /* Option Buttons */
 .option-button {
     display: block;
@@ -278,7 +304,7 @@ button {
     border-radius: 6px;
     cursor: pointer;
     text-align: left;
-    transition: all 0.2s;
+    transition: all 0.2s; /* Smooth transition for hover and selection states */
 
     &:hover {
         border-color: #007BFF;
@@ -377,10 +403,10 @@ button {
                 padding: 8px 12px;
                 min-width: auto;
                 font-size: 14px;
-                background-color: #dc3545;
+                background-color: #007BFF;
                 
                 &:hover {
-                    background-color: #c82333;
+                    background-color: #0056b3;
                 }
             }
         }
