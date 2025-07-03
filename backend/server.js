@@ -324,9 +324,9 @@ app.put('/poll/:code/toggle', (req, res) => {
 });
 
 /**
- * Debug/overview endpoint to list all polls
- * Primarily for development and administration purposes
- * Note: In production, this should be secured or disabled
+ * Public endpoint to list all available polls
+ * Used in the frontend to display polls that users can access
+ * Security consideration: Currently exposes adminPassword which should be removed in production
  */
 app.get('/polls', (req, res) => {
     const pollsOverview = polls.map(poll => ({
@@ -336,7 +336,7 @@ app.get('/polls', (req, res) => {
         createdAt: poll.createdAt,
         responseCount: poll.responses.length,
         questionCount: poll.questions.length,
-        adminPassword: poll.adminPassword,
+        adminPassword: poll.adminPassword, // TODO: Remove in production for security
     }));
     
     res.json({ polls: pollsOverview });
