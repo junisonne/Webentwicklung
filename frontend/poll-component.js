@@ -6,6 +6,8 @@ fetch('./frontend/styles.css')
     .then(response => response.text())
     .then(text => pollStyles.replaceSync(text));
 
+
+// State is kept minimal with only essential data needed for poll operation
 class Poll extends HTMLElement {
     constructor() {
         super();
@@ -14,20 +16,19 @@ class Poll extends HTMLElement {
         this.state = { currentPoll: null, userResponses: [], adminPassword: null };
     }
 
+    // Auto-join polls when URL contains code parameter, otherwise show menu
     connectedCallback() {
-        // 1. Query-Parameter auslesen
-        const params   = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(window.location.search);
         const pollCode = params.get('code');
 
         if (pollCode) {
-        // 2. Wenn ein code da ist, direkt auto-join
-        this.autoJoinPoll(pollCode);
+            this.autoJoinPoll(pollCode);
         } else {
-        // 3. Ansonsten das Main-Menu zeigen
-        this.showMainMenu();
+            this.showMainMenu();
         }
     }
 
+    // Central render method for all views - handles both template and event binding
     render(template, eventHandlers = []) {
         this.shadowRoot.innerHTML = template;
         eventHandlers.forEach(({ selector, event, handler }) => {
@@ -37,6 +38,11 @@ class Poll extends HTMLElement {
             }
         });
     }
+
+    // Display handlers below follow a consistent pattern:
+    // 1. Render appropriate template
+    // 2. Bind necessary event handlers
+    // 3. Initialize any required state
 
     showMainMenu() {
         this.render(templates.getMainMenuTemplate(), [
@@ -163,6 +169,8 @@ class Poll extends HTMLElement {
         });
     }
 
+    // Handles both single and multiple choice questions in one component
+    // Uses CSS classes for visual feedback rather than direct style manipulation
     selectOption(event) {
         // Get the button element, which could be the target or its parent
         const button = event.target.closest('.option-button');
@@ -197,6 +205,7 @@ class Poll extends HTMLElement {
         }
     }
 
+    // Ensures data integrity by validating all fields before submission
     async submitResponses() {
         const messageEl = this.shadowRoot.getElementById('message');
         const unanswered = this.state.userResponses.some((response, index) => {
@@ -378,6 +387,10 @@ class Poll extends HTMLElement {
         }
     }
 
+    // Admin panel implements progressive enhancement:
+    // 1. Basic poll management
+    // 2. IP banning functionality
+    // 3. QR code generation if library available
     async showAdminPanel(pollCode) {
         if (!this.state.adminPassword) {
             this.state.adminPassword = prompt('Enter admin password:');
@@ -477,6 +490,11 @@ class Poll extends HTMLElement {
         }
     }
 
+    // IP management functions use a common pattern for consistency:
+    // 1. Validate input
+    // 2. Show loading state
+    // 3. Make API call
+    // 4. Update UI with result
     async banIP(ip, pollCode) {
         const messageEl = this.shadowRoot.getElementById('banMessage');
         console.log('Banning IP:', ip, 'for poll:', pollCode);
@@ -520,6 +538,7 @@ class Poll extends HTMLElement {
         }
     }
 
+    // Question builder maintains a consistent structure while allowing full customization
     resetQuestion(event) {
         console.log('Reset question called', event);
         const questionBuilder = event.target.closest('.question-builder');
@@ -560,4 +579,5 @@ class Poll extends HTMLElement {
     }
 }
 
+// Register custom element for use in HTML
 customElements.define('poll-component', Poll);
