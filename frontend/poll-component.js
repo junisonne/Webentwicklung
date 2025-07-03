@@ -330,6 +330,7 @@ class Poll extends HTMLElement {
 
         const questions = [];
         let hasEmptyFields = false;
+        let hasDuplicateOptions = false;
         const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
         
         questionBuilders.forEach(builder => {
@@ -351,23 +352,47 @@ class Poll extends HTMLElement {
                 hasEmptyFields = true;
             }
             
-            // Mark all empty option inputs as errors
+            // Check for duplicate options within this question
+            const uniqueOptions = new Set();
+            const duplicateInputs = [];
+            
             optionInputs.forEach(input => {
-                if (!input.value.trim()) {
+                const value = input.value.trim();
+                if (!value) {
                     hasEmptyFields = true;
                     input.classList.add('input-error');
                 } else {
                     input.classList.remove('input-error');
+                    
+                    // Check for duplicates
+                    if (uniqueOptions.has(value.toLowerCase())) {
+                        hasDuplicateOptions = true;
+                        input.classList.add('input-error');
+                        duplicateInputs.push(input);
+                    } else {
+                        uniqueOptions.add(value.toLowerCase());
+                    }
                 }
             });
+            
+            // Add visual indicator for duplicate options
+            duplicateInputs.forEach(input => {
+                input.classList.add('duplicate-error');
+                input.title = 'Duplicate option - please provide unique options';
+            });
 
-            if (questionText && options.length >= 2) {
+            if (questionText && options.length >= 2 && duplicateInputs.length === 0) {
                 questions.push({ question: questionText, type: questionType, options });
             }
         });
 
         if (hasEmptyFields) {
             messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
+            return;
+        }
+        
+        if (hasDuplicateOptions) {
+            messageEl.innerHTML = '<div class="error">Please ensure all options within each question are unique.</div>';
             return;
         }
 
