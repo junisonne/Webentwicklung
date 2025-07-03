@@ -95,8 +95,11 @@ class Poll extends HTMLElement {
         this.render(templates.getPollListTemplate(polls.polls), [
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
         ]);
-        
-        // Add event listeners to form submissions
+
+        this.handleEnterAsAdmin(polls.polls);
+        this.handleSearchPolls(polls.polls);
+    }
+    handleEnterAsAdmin(polls) {
         this.shadowRoot.querySelectorAll('.admin-access-form').forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -113,7 +116,7 @@ class Poll extends HTMLElement {
                     return;
                 }
                 else {
-                    const poll = polls.polls.find(p => p.code === pollCode);
+                    const poll = polls.find(p => p.code === pollCode);
                     if(poll.adminPassword === adminInput) {
                         this.state.adminPassword = adminInput;
                         this.showAdminPanel(pollCode);
@@ -126,38 +129,42 @@ class Poll extends HTMLElement {
                     }
                 }
             });
-        });
-        
-        // Also add click event listeners to join poll buttons for backward compatibility
-        this.shadowRoot.querySelectorAll('.join-poll-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const pollCode = e.target.dataset.code;
-                const pollItem = e.target.closest('.poll-item');
-                const adminInput = pollItem.querySelector('.admin-code-input').value;
-                
-                if (!adminInput) {
-                    const messageEl = pollItem.querySelector('.message-container');
-                    if (messageEl) {
-                        messageEl.innerHTML = '<div class="error">Please enter admin password</div>';
-                    }
-                    return;
-                }
-                else {
-                    const poll = polls.polls.find(p => p.code === pollCode);
-                    if(poll.adminPassword === adminInput) {
-                        this.state.adminPassword = adminInput;
-                        this.showAdminPanel(pollCode);
-                    } else {
-                        console.error('Invalid admin password for poll:', pollCode);
-                        const messageEl = pollItem.querySelector('.message-container');
-                        if (messageEl) {
-                            messageEl.innerHTML = '<div class="error">Invalid admin password</div>';
-                        }
-                    }
+            form.addEventListener('reset', (e) => {
+                e.preventDefault();
+                const pollItem = form.closest('.poll-item');
+                const messageEl = pollItem.querySelector('.message-container');
+                if (messageEl) {
+                    messageEl.innerHTML = '';
                 }
             });
         });
     }
+
+    handleSearchPolls(polls) {
+        this.shadowRoot.querySelectorAll('.poll-search-form').forEach(button => {
+            button.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const searchInput = this.shadowRoot.getElementById('pollSearchInput');
+                const searchTerm = searchInput.value.trim().toLowerCase();
+
+                const newPolls = polls.filter(poll => {
+                    const titleMatch = poll.title.toLowerCase().includes(searchTerm);
+                    const codeMatch = poll.code.toLowerCase().includes(searchTerm);
+                    return titleMatch || codeMatch;
+                })
+                this.render(templates.getPollListTemplate(newPolls), [
+                    { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+                ]);
+                this.handleEnterAsAdmin(newPolls);
+                this.handleSearchPolls(polls);
+            });
+            button.addEventListener('reset', (e) => {
+                e.preventDefault();
+                this.showAllPolls(); 
+            });
+        });
+    }
+
 
 
     showPollQuestions() {
