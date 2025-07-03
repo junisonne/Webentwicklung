@@ -88,14 +88,18 @@ class Poll extends HTMLElement {
         this.render(templates.getPollListTemplate(polls.polls), [
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
         ]);
-        this.shadowRoot.querySelectorAll('#adminButton').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const pollCode = e.target.dataset.code;
-                const pollItem = e.target.closest('#pollItem');
-                const adminInput = pollItem.querySelector('#adminInput').value;
+        
+        // Add event listeners to form submissions
+        this.shadowRoot.querySelectorAll('.admin-access-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pollItem = form.closest('.poll-item');
+                const button = form.querySelector('.join-poll-btn');
+                const pollCode = button.dataset.code;
+                const adminInput = form.querySelector('.admin-code-input').value;
                 
                 if (!adminInput) {
-                    const messageEl = this.shadowRoot.getElementById('message');
+                    const messageEl = pollItem.querySelector('.message-container');
                     if (messageEl) {
                         messageEl.innerHTML = '<div class="error">Please enter admin password</div>';
                     }
@@ -108,7 +112,37 @@ class Poll extends HTMLElement {
                         this.showAdminPanel(pollCode);
                     } else {
                         console.error('Invalid admin password for poll:', pollCode);
-                        const messageEl = this.shadowRoot.getElementById('message');
+                        const messageEl = pollItem.querySelector('.message-container');
+                        if (messageEl) {
+                            messageEl.innerHTML = '<div class="error">Invalid admin password</div>';
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Also add click event listeners to join poll buttons for backward compatibility
+        this.shadowRoot.querySelectorAll('.join-poll-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pollCode = e.target.dataset.code;
+                const pollItem = e.target.closest('.poll-item');
+                const adminInput = pollItem.querySelector('.admin-code-input').value;
+                
+                if (!adminInput) {
+                    const messageEl = pollItem.querySelector('.message-container');
+                    if (messageEl) {
+                        messageEl.innerHTML = '<div class="error">Please enter admin password</div>';
+                    }
+                    return;
+                }
+                else {
+                    const poll = polls.polls.find(p => p.code === pollCode);
+                    if(poll.adminPassword === adminInput) {
+                        this.state.adminPassword = adminInput;
+                        this.showAdminPanel(pollCode);
+                    } else {
+                        console.error('Invalid admin password for poll:', pollCode);
+                        const messageEl = pollItem.querySelector('.message-container');
                         if (messageEl) {
                             messageEl.innerHTML = '<div class="error">Invalid admin password</div>';
                         }
@@ -193,9 +227,18 @@ class Poll extends HTMLElement {
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu }
         ]);
         
-        // Add event listeners for the first question
-        this.shadowRoot.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
-        this.shadowRoot.querySelector('.reset-question').addEventListener('click', (e) => this.resetQuestion(e));
+        // Add event listeners for all existing questions (including the first one)
+        this.shadowRoot.querySelectorAll('.question-builder').forEach(questionBuilder => {
+            const addOptionButton = questionBuilder.querySelector('.add-option');
+            if (addOptionButton) {
+                addOptionButton.addEventListener('click', (e) => this.addOption(e));
+            }
+            
+            const resetButton = questionBuilder.querySelector('.reset-question');
+            if (resetButton) {
+                resetButton.addEventListener('click', (e) => this.resetQuestion(e));
+            }
+        });
     }
 
     addQuestion() {
@@ -205,21 +248,25 @@ class Poll extends HTMLElement {
         questionDiv.className = 'question-builder';
         questionDiv.dataset.questionNumber = questionCount;
         questionDiv.innerHTML = `
-            <div class="question-header">
-                <input type="text" placeholder="Question ${questionCount}" class="question-input" />
-                <select class="question-type">
+            <header class="question-header">
+                <input type="text" placeholder="Question ${questionCount}" class="question-input" aria-label="Question ${questionCount}" />
+                <select class="question-type" aria-label="Question type">
                     <option value="single">Single Choice</option>
                     <option value="multiple">Multiple Choice</option>
                 </select>
-                <button type="button" class="delete-question">Delete</button>
-            </div>
+                <button type="button" class="delete-question" aria-label="Delete question">Delete</button>
+            </header>
             <div class="options-container">
-                <input type="text" placeholder="Option 1" class="option-input" />
-                <input type="text" placeholder="Option 2" class="option-input" />
+                <input type="text" placeholder="Option 1" class="option-input" aria-label="Option 1" />
+                <input type="text" placeholder="Option 2" class="option-input" aria-label="Option 2" />
             </div>
-            <button type="button" class="add-option secondary">+ Add Option</button>
+            <footer class="question-footer">
+                <button type="button" class="add-option secondary" aria-label="Add option">+ Add Option</button>
+            </footer>
         `;
         container.appendChild(questionDiv);
+        
+        // Add event listeners for this new question
         questionDiv.querySelector('.add-option').addEventListener('click', (e) => this.addOption(e));
         questionDiv.querySelector('.delete-question').addEventListener('click', () => {
             container.removeChild(questionDiv);
@@ -227,21 +274,35 @@ class Poll extends HTMLElement {
     }
 
     addOption(event) {
-        const optionsContainer = event.target.previousElementSibling;
+        // Find the closest question-builder parent
+        const questionBuilder = event.target.closest('.question-builder');
+        if (!questionBuilder) return;
+        
+        // Find the options-container within this question-builder
+        const optionsContainer = questionBuilder.querySelector('.options-container');
+        if (!optionsContainer) return;
+        
         const optionCount = optionsContainer.children.length + 1;
         const optionRow = document.createElement('div');
         optionRow.className = 'option-row';
+        optionRow.setAttribute('role', 'group');
+        optionRow.setAttribute('aria-label', `Option ${optionCount}`);
 
         const optionInput = document.createElement('input');
         optionInput.type = 'text';
         optionInput.className = 'option-input';
         optionInput.placeholder = `Option ${optionCount}`;
+        optionInput.setAttribute('aria-label', `Option ${optionCount}`);
 
         const optionRemoveButton = document.createElement('button');
         optionRemoveButton.textContent = 'Remove';
+        optionRemoveButton.type = 'button';
+        optionRemoveButton.className = 'remove-option';
+        optionRemoveButton.setAttribute('aria-label', `Remove option ${optionCount}`);
         optionRemoveButton.addEventListener('click', () => {
             optionsContainer.removeChild(optionRow);
         });
+        
         optionRow.appendChild(optionInput);
         optionRow.appendChild(optionRemoveButton);
         optionsContainer.appendChild(optionRow);
@@ -340,6 +401,14 @@ class Poll extends HTMLElement {
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
             { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
         ]);
+        
+        // Initialize the result bars based on their data-percentage attribute
+        this.shadowRoot.querySelectorAll('.result-bar').forEach(bar => {
+            const percentage = bar.getAttribute('data-percentage');
+            if (percentage) {
+                bar.querySelector('.result-fill').style.width = `${percentage}%`;
+            }
+        });
 
         this.shadowRoot.querySelectorAll('.ban-ip-btn').forEach(button => {
             button.addEventListener('click', (e) => {
