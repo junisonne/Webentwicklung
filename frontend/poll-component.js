@@ -1,5 +1,6 @@
 import * as api from './api.js';
 import * as templates from './templates.js';
+import { generatePollResultsCSV, downloadCSV } from './csv-utils.js';
 
 const pollStyles = new CSSStyleSheet();
 fetch('./frontend/styles.css')
@@ -329,6 +330,7 @@ class Poll extends HTMLElement {
 
         const questions = [];
         let hasEmptyFields = false;
+        let hasDuplicateOptions = false;
         const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
         
         questionBuilders.forEach(builder => {
@@ -350,23 +352,47 @@ class Poll extends HTMLElement {
                 hasEmptyFields = true;
             }
             
-            // Mark all empty option inputs as errors
+            // Check for duplicate options within this question
+            const uniqueOptions = new Set();
+            const duplicateInputs = [];
+            
             optionInputs.forEach(input => {
-                if (!input.value.trim()) {
+                const value = input.value.trim();
+                if (!value) {
                     hasEmptyFields = true;
                     input.classList.add('input-error');
                 } else {
                     input.classList.remove('input-error');
+                    
+                    // Check for duplicates
+                    if (uniqueOptions.has(value.toLowerCase())) {
+                        hasDuplicateOptions = true;
+                        input.classList.add('input-error');
+                        duplicateInputs.push(input);
+                    } else {
+                        uniqueOptions.add(value.toLowerCase());
+                    }
                 }
             });
+            
+            // Add visual indicator for duplicate options
+            duplicateInputs.forEach(input => {
+                input.classList.add('duplicate-error');
+                input.title = 'Duplicate option - please provide unique options';
+            });
 
-            if (questionText && options.length >= 2) {
+            if (questionText && options.length >= 2 && duplicateInputs.length === 0) {
                 questions.push({ question: questionText, type: questionType, options });
             }
         });
 
         if (hasEmptyFields) {
             messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
+            return;
+        }
+        
+        if (hasDuplicateOptions) {
+            messageEl.innerHTML = '<div class="error">Please ensure all options within each question are unique.</div>';
             return;
         }
 
@@ -412,7 +438,8 @@ class Poll extends HTMLElement {
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
-            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
+            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) },
+            { selector: 'downloadCSV', event: 'click', handler: () => this.downloadResultsCSV(data) }
         ]);
         
         // Initialize the result bars based on their data-percentage attribute
@@ -450,6 +477,27 @@ class Poll extends HTMLElement {
             });
         }
 
+    }
+
+    /**
+     * Generates and downloads a CSV file containing poll results
+     * Only accessible from the admin panel
+     * @param {Object} data - Poll data including results and metadata
+     */
+    downloadResultsCSV(data) {
+        const csvContent = generatePollResultsCSV(data);
+        const fileName = `poll-${data.poll.code}-results.csv`;
+        downloadCSV(csvContent, fileName);
+        
+        // Provide user feedback
+        const messageEl = this.shadowRoot.getElementById('banIPMessage') || 
+                         this.shadowRoot.getElementById('banMessage');
+        if (messageEl) {
+            messageEl.innerHTML = '<div class="success">CSV downloaded successfully!</div>';
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 3000);
+        }
     }
 
     async togglePoll(pollCode) {
