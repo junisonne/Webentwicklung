@@ -190,6 +190,7 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                 <nav class="admin-controls">
                     <button id="togglePoll" type="button">${poll.active ? 'Deactivate' : 'Activate'} Poll</button>
                     <button id="refreshResults" class="secondary" type="button">Refresh Results</button>
+                    <button id="downloadCSV" class="secondary" type="button">Download Results (CSV)</button>
                 </nav>
             </div>
             

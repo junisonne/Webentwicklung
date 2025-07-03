@@ -1,5 +1,6 @@
 import * as api from './api.js';
 import * as templates from './templates.js';
+import { generatePollResultsCSV, downloadCSV } from './csv-utils.js';
 
 const pollStyles = new CSSStyleSheet();
 fetch('./frontend/styles.css')
@@ -412,7 +413,8 @@ class Poll extends HTMLElement {
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
-            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
+            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) },
+            { selector: 'downloadCSV', event: 'click', handler: () => this.downloadResultsCSV(data) }
         ]);
         
         // Initialize the result bars based on their data-percentage attribute
@@ -450,6 +452,27 @@ class Poll extends HTMLElement {
             });
         }
 
+    }
+
+    /**
+     * Generates and downloads a CSV file containing poll results
+     * Only accessible from the admin panel
+     * @param {Object} data - Poll data including results and metadata
+     */
+    downloadResultsCSV(data) {
+        const csvContent = generatePollResultsCSV(data);
+        const fileName = `poll-${data.poll.code}-results.csv`;
+        downloadCSV(csvContent, fileName);
+        
+        // Provide user feedback
+        const messageEl = this.shadowRoot.getElementById('banIPMessage') || 
+                         this.shadowRoot.getElementById('banMessage');
+        if (messageEl) {
+            messageEl.innerHTML = '<div class="success">CSV downloaded successfully!</div>';
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 3000);
+        }
     }
 
     async togglePoll(pollCode) {
