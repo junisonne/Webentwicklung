@@ -41,14 +41,14 @@ describe("Test PollQuestionsTemplate", () => {
 
   it("should render poll questions with correct structure", () => {
     const template = getPollQuestionsTemplate(poll);
-
     expect(template).toContain(`<h1>${poll.title}</h1>`);
     poll.questions.forEach((q, i) => {
       const prefix = `${i + 1}. ${q.question}`;
       expect(template).toContain(prefix);
-      // Updated expectations to match the actual template text
-      const choiceType = q.type === "single" ? "one option" : "one or more options";
-      expect(template).toContain(`(Select ${choiceType})`);
+      const choiceText = q.type === "single"
+        ? "Select one option"
+        : "Select one or more options";
+      expect(template).toContain(`(${choiceText})`);
       q.options.forEach(opt => {
         expect(template).toContain(`data-question="${i}"`);
         expect(template).toContain(`data-option="${opt}"`);
