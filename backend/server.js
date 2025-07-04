@@ -397,6 +397,6 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
-    console.log(`📊 Test poll available at: http://localhost:${PORT}/poll/test123`);
-    console.log(`📝 All polls overview: http://localhost:${PORT}/polls`);
+    console.log(`📊 Test poll available at: http://141.72.13.151:${PORT}/poll/test123`);
+    console.log(`📝 All polls overview: http://141.72.13.151:${PORT}/polls`);
 });
