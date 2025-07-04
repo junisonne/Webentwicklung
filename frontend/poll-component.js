@@ -1,5 +1,6 @@
 import * as api from './api.js';
 import * as templates from './templates.js';
+import { generatePollResultsCSV, downloadCSV } from './csv-utils.js';
 
 const pollStyles = new CSSStyleSheet();
 fetch('./frontend/styles.css')
@@ -94,8 +95,11 @@ class Poll extends HTMLElement {
         this.render(templates.getPollListTemplate(polls.polls), [
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
         ]);
-        
-        // Add event listeners to form submissions
+
+        this.handleEnterAsAdmin(polls.polls);
+        this.handleSearchPolls(polls.polls);
+    }
+    handleEnterAsAdmin(polls) {
         this.shadowRoot.querySelectorAll('.admin-access-form').forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -112,7 +116,7 @@ class Poll extends HTMLElement {
                     return;
                 }
                 else {
-                    const poll = polls.polls.find(p => p.code === pollCode);
+                    const poll = polls.find(p => p.code === pollCode);
                     if(poll.adminPassword === adminInput) {
                         this.state.adminPassword = adminInput;
                         this.showAdminPanel(pollCode);
@@ -125,38 +129,42 @@ class Poll extends HTMLElement {
                     }
                 }
             });
-        });
-        
-        // Also add click event listeners to join poll buttons for backward compatibility
-        this.shadowRoot.querySelectorAll('.join-poll-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const pollCode = e.target.dataset.code;
-                const pollItem = e.target.closest('.poll-item');
-                const adminInput = pollItem.querySelector('.admin-code-input').value;
-                
-                if (!adminInput) {
-                    const messageEl = pollItem.querySelector('.message-container');
-                    if (messageEl) {
-                        messageEl.innerHTML = '<div class="error">Please enter admin password</div>';
-                    }
-                    return;
-                }
-                else {
-                    const poll = polls.polls.find(p => p.code === pollCode);
-                    if(poll.adminPassword === adminInput) {
-                        this.state.adminPassword = adminInput;
-                        this.showAdminPanel(pollCode);
-                    } else {
-                        console.error('Invalid admin password for poll:', pollCode);
-                        const messageEl = pollItem.querySelector('.message-container');
-                        if (messageEl) {
-                            messageEl.innerHTML = '<div class="error">Invalid admin password</div>';
-                        }
-                    }
+            form.addEventListener('reset', (e) => {
+                e.preventDefault();
+                const pollItem = form.closest('.poll-item');
+                const messageEl = pollItem.querySelector('.message-container');
+                if (messageEl) {
+                    messageEl.innerHTML = '';
                 }
             });
         });
     }
+
+    handleSearchPolls(polls) {
+        this.shadowRoot.querySelectorAll('.poll-search-form').forEach(button => {
+            button.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const searchInput = this.shadowRoot.getElementById('pollSearchInput');
+                const searchTerm = searchInput.value.trim().toLowerCase();
+
+                const newPolls = polls.filter(poll => {
+                    const titleMatch = poll.title.toLowerCase().includes(searchTerm);
+                    const codeMatch = poll.code.toLowerCase().includes(searchTerm);
+                    return titleMatch || codeMatch;
+                })
+                this.render(templates.getPollListTemplate(newPolls), [
+                    { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
+                ]);
+                this.handleEnterAsAdmin(newPolls);
+                this.handleSearchPolls(polls);
+            });
+            button.addEventListener('reset', (e) => {
+                e.preventDefault();
+                this.showAllPolls(); 
+            });
+        });
+    }
+
 
 
     showPollQuestions() {
@@ -329,6 +337,7 @@ class Poll extends HTMLElement {
 
         const questions = [];
         let hasEmptyFields = false;
+        let hasDuplicateOptions = false;
         const questionBuilders = this.shadowRoot.querySelectorAll('.question-builder');
         
         questionBuilders.forEach(builder => {
@@ -350,23 +359,47 @@ class Poll extends HTMLElement {
                 hasEmptyFields = true;
             }
             
-            // Mark all empty option inputs as errors
+            // Check for duplicate options within this question
+            const uniqueOptions = new Set();
+            const duplicateInputs = [];
+            
             optionInputs.forEach(input => {
-                if (!input.value.trim()) {
+                const value = input.value.trim();
+                if (!value) {
                     hasEmptyFields = true;
                     input.classList.add('input-error');
                 } else {
                     input.classList.remove('input-error');
+                    
+                    // Check for duplicates
+                    if (uniqueOptions.has(value.toLowerCase())) {
+                        hasDuplicateOptions = true;
+                        input.classList.add('input-error');
+                        duplicateInputs.push(input);
+                    } else {
+                        uniqueOptions.add(value.toLowerCase());
+                    }
                 }
             });
+            
+            // Add visual indicator for duplicate options
+            duplicateInputs.forEach(input => {
+                input.classList.add('duplicate-error');
+                input.title = 'Duplicate option - please provide unique options';
+            });
 
-            if (questionText && options.length >= 2) {
+            if (questionText && options.length >= 2 && duplicateInputs.length === 0) {
                 questions.push({ question: questionText, type: questionType, options });
             }
         });
 
         if (hasEmptyFields) {
             messageEl.innerHTML = '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
+            return;
+        }
+        
+        if (hasDuplicateOptions) {
+            messageEl.innerHTML = '<div class="error">Please ensure all options within each question are unique.</div>';
             return;
         }
 
@@ -412,7 +445,8 @@ class Poll extends HTMLElement {
             { selector: 'togglePoll', event: 'click', handler: () => this.togglePoll(data.poll.code) },
             { selector: 'refreshResults', event: 'click', handler: () => this.showAdminPanel(data.poll.code) },
             { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
-            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) }
+            { selector: 'banIPButton', event: 'click', handler: () => this.banNewIP(data.poll.code) },
+            { selector: 'downloadCSV', event: 'click', handler: () => this.downloadResultsCSV(data) }
         ]);
         
         // Initialize the result bars based on their data-percentage attribute
@@ -450,6 +484,27 @@ class Poll extends HTMLElement {
             });
         }
 
+    }
+
+    /**
+     * Generates and downloads a CSV file containing poll results
+     * Only accessible from the admin panel
+     * @param {Object} data - Poll data including results and metadata
+     */
+    downloadResultsCSV(data) {
+        const csvContent = generatePollResultsCSV(data);
+        const fileName = `poll-${data.poll.code}-results.csv`;
+        downloadCSV(csvContent, fileName);
+        
+        // Provide user feedback
+        const messageEl = this.shadowRoot.getElementById('banIPMessage') || 
+                         this.shadowRoot.getElementById('banMessage');
+        if (messageEl) {
+            messageEl.innerHTML = '<div class="success">CSV downloaded successfully!</div>';
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 3000);
+        }
     }
 
     async togglePoll(pollCode) {

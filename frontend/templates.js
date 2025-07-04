@@ -190,6 +190,7 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                 <nav class="admin-controls">
                     <button id="togglePoll" type="button">${poll.active ? 'Deactivate' : 'Activate'} Poll</button>
                     <button id="refreshResults" class="secondary" type="button">Refresh Results</button>
+                    <button id="downloadCSV" class="secondary" type="button">Download Results (CSV)</button>
                 </nav>
             </div>
             
@@ -291,6 +292,13 @@ export const getPollListTemplate = (polls) => `
                 <h1>Available Polls</h1>
             </header>
             <section class="polls-section">
+                <form class="poll-search-form">
+                    <div class="input-group">
+                        <input type="text" id="pollSearchInput" placeholder="Search polls by title or code" aria-label="Search polls" />
+                        <button type="submit" id="pollSearchButton">🔎</button>
+                        <button type="reset" id="pollSearchReset" class="secondary" value="Reset">Reset</button>
+                    </div>
+                </form>
                 <nav>
                     <ul class="poll-list" role="list">
                         ${polls.length > 0 ? polls.map(poll => `
