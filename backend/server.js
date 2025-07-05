@@ -427,6 +427,5 @@ app.listen(PORT, () => {
     console.log(`📊 Test poll available at: http://141.72.13.151:${PORT}/poll/test123`);
     console.log(`📝 All polls overview: http://141.72.13.151:${PORT}/polls`);
 });
-}
 
 export default app;

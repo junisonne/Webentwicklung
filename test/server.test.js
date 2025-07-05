@@ -68,7 +68,8 @@ describe('Poll API', () => {
     const mockIp = '123.45.67.89';
     const res = await request(app)
       .post('/poll/ban')
-      .send({ ip: mockIp, code: newCode })
+      .set('X-Forwarded-For', mockIp)
+      .send({ code: newCode })
       .set('Accept', 'application/json');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain(mockIp);
@@ -78,7 +79,8 @@ describe('Poll API', () => {
     const mockIp = '123.45.67.89';
     const res = await request(app)
       .post('/poll/unban')
-      .send({ ip: mockIp, code: newCode })
+      .set('X-Forwarded-For', mockIp)
+      .send({ code: newCode })
       .set('Accept', 'application/json');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain(mockIp);

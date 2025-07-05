@@ -93,8 +93,8 @@ describe("Test PollListTemplate", () => {
     polls.forEach(p => {
       expect(template).toContain(`data-code="${p.code}"`);
       expect(template).toContain(p.title);
-      expect(template).toContain('id="adminInput"');
-      expect(template).toContain('id="adminButton"');
+      expect(template).toContain(`id="admin-${p.code}"`);
+      expect(template).toContain(`class="join-poll-btn"`);
     });
     expect(template).toContain('id="backToMenu"');
     expect(template.trim().startsWith("<main>")).toBe(true);
@@ -102,6 +102,8 @@ describe("Test PollListTemplate", () => {
 
   it("should show fallback message when no polls are available", () => {
     const template = getPollListTemplate([]);
-    expect(template).toContain("<li>No polls available</li>");
+    expect(template).toContain('class="no-polls-message"');
+    expect(template).toContain("No polls available");
+    expect(template.trim().startsWith("<main>")).toBe(true);
   });
 });
