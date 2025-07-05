@@ -91,7 +91,7 @@ app.post('/poll/enter', (req, res) => {
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
-    else if(poll.responses.find(entry => entry.code === pollCode && entry.ip === ip)) {
+    else if(poll.responses.find(entry.ip === ip)) {
         return res.status(400).json({ message: 'You have already entered this poll.' });
     }
     else if (poll && poll.active) {
@@ -364,8 +364,13 @@ app.get('/polls', (req, res) => {
  * Used to prevent abuse or multiple submissions from the same source
  */
 app.post('/poll/ban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     
     if (!ip) {
@@ -386,8 +391,13 @@ app.post('/poll/ban', (req, res) => {
  * Provides control over ban management for poll administrators
  */
 app.post('/poll/unban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     if (!ip) {
         return res.status(400).json({ message: 'IP address is required' });
