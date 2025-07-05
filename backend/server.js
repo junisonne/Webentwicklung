@@ -61,6 +61,18 @@ function findPoll(code) {
 }
 
 /**
+ * Normalizes an IPv4 address that may be represented in IPv6-mapped format.
+ * @param {string} ip - The IP address to normalize.
+ * @returns {string} The normalized IPv4 address or the original IP address if no normalization is needed.
+ */
+function normalizeIP(ip) {
+    if (ip && ip.startsWith('::ffff:')) {
+        return ip.substring(7);
+    }
+    return ip;
+}
+
+/**
  * Endpoint for users to enter a poll
  * - Tracks participant entry with IP for analytics
  * - Enforces IP banning system to prevent abuse
@@ -70,14 +82,16 @@ app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
     // Get IP from various headers to handle proxy situations
-    const ip = req.headers['x-forwarded-for'] ||
+    const rawIp = req.headers['x-forwarded-for'] ||
         req.headers['x-real-ip'] ||
         req.socket.remoteAddress || '';
+
+    const ip = normalizeIP(rawIp);
     
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
-    else if(poll.responses.find(entry => entry.ip === ip)) { // entry.code === pollCode && 
+    else if(poll.responses.find(entry => entry.ip === ip)) {
         return res.status(400).json({ message: 'You have already entered this poll.' });
     }
     else if (poll && poll.active) {
@@ -200,13 +214,16 @@ app.post('/poll/:code/respond', (req, res) => {
         if (responses.length !== poll.questions.length) {
             return res.status(400).json({ message: 'Response count must match question count' });
         }
+
+        const rawIp = req.headers['x-forwarded-for'] ||
+            req.headers['x-real-ip'] ||
+            req.socket.remoteAddress || '';
+        const ip = normalizeIP(rawIp);
         
         const newResponse = {
             id: poll.responses.length + 1,
             responses,
-            ip: req.headers['x-forwarded-for'] ||
-                req.headers['x-real-ip'] ||
-                req.socket.remoteAddress || '',
+            ip: ip,
             timestamp: new Date()
         };
         
@@ -347,8 +364,13 @@ app.get('/polls', (req, res) => {
  * Used to prevent abuse or multiple submissions from the same source
  */
 app.post('/poll/ban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     
     if (!ip) {
@@ -369,8 +391,13 @@ app.post('/poll/ban', (req, res) => {
  * Provides control over ban management for poll administrators
  */
 app.post('/poll/unban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     if (!ip) {
         return res.status(400).json({ message: 'IP address is required' });
@@ -394,14 +421,11 @@ app.get('*', (req, res) => {
     res.sendFile('index.html', { root: '.' });
 });
 
-
-
-if (process.env.NODE_ENV !== 'test') { //For the server.test.js to work, because there was an TypeError: app.address is not a function
-  const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
+const PORT = process.env.PORT || 8500;
+app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
-    console.log(`📊 Test poll available at: http://localhost:${PORT}/poll/test123`);
-    console.log(`📝 All polls overview: http://localhost:${PORT}/polls`);
+    console.log(`📊 Test poll available at: http://141.72.13.151:${PORT}/poll/test123`);
+    console.log(`📝 All polls overview: http://141.72.13.151:${PORT}/polls`);
 });
 }
 
