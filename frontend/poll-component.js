@@ -475,7 +475,8 @@ class Poll extends HTMLElement {
             });
         });
 
-        const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`;
+        const qrTarget = `${location.origin}${location.pathname}?code=${data.poll.code}`; // dynamic V2
+        //const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`; //hardcoded V1
         const canvas   = this.shadowRoot.getElementById('qrcode');
 
         if (canvas && window.QRCode) {
