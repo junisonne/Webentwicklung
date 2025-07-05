@@ -91,7 +91,7 @@ app.post('/poll/enter', (req, res) => {
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
-    else if(poll.responses.find(entry.ip === ip)) {
+    else if(poll.responses.find(entry => entry.ip === ip)) {
         return res.status(400).json({ message: 'You have already entered this poll.' });
     }
     else if (poll && poll.active) {
