@@ -4,6 +4,7 @@
  */
 const API_URL = `http://141.72.13.151:8500`;
 
+
 /**
  * Generic request handler that standardizes:
  * - Error handling with appropriate status codes
