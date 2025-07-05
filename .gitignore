@@ -3,3 +3,6 @@ package-lock.json
 .DS_Store
 .github/*.md
 .env
+
+# Coverage Reports
+coverage/
