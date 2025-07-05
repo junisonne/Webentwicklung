@@ -61,6 +61,18 @@ function findPoll(code) {
 }
 
 /**
+ * Normalizes an IPv4 address that may be represented in IPv6-mapped format.
+ * @param {string} ip - The IP address to normalize.
+ * @returns {string} The normalized IPv4 address or the original IP address if no normalization is needed.
+ */
+function normalizeIP(ip) {
+    if (ip && ip.startsWith('::ffff:')) {
+        return ip.substring(7);
+    }
+    return ip;
+}
+
+/**
  * Endpoint for users to enter a poll
  * - Tracks participant entry with IP for analytics
  * - Enforces IP banning system to prevent abuse
@@ -70,9 +82,11 @@ app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
     // Get IP from various headers to handle proxy situations
-    const ip = req.headers['x-forwarded-for'] ||
+    const rawIp = req.headers['x-forwarded-for'] ||
         req.headers['x-real-ip'] ||
         req.socket.remoteAddress || '';
+
+    const ip = normalizeIP(rawIp);
     
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
@@ -200,13 +214,16 @@ app.post('/poll/:code/respond', (req, res) => {
         if (responses.length !== poll.questions.length) {
             return res.status(400).json({ message: 'Response count must match question count' });
         }
+
+        const rawIp = req.headers['x-forwarded-for'] ||
+            req.headers['x-real-ip'] ||
+            req.socket.remoteAddress || '';
+        const ip = normalizeIP(rawIp);
         
         const newResponse = {
             id: poll.responses.length + 1,
             responses,
-            ip: req.headers['x-forwarded-for'] ||
-                req.headers['x-real-ip'] ||
-                req.socket.remoteAddress || '',
+            ip: ip,
             timestamp: new Date()
         };
         
