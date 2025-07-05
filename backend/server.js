@@ -394,7 +394,7 @@ app.get('*', (req, res) => {
     res.sendFile('index.html', { root: '.' });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8500;
 app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
     console.log(`📊 Test poll available at: http://141.72.13.151:${PORT}/poll/test123`);
