@@ -2,7 +2,7 @@
  * API client for poll application
  * Centralizes all backend communication to ensure consistent error handling and request formatting
  */
-const API_URL = 'http://localhost:3000';
+const API_URL = `http://141.72.13.151:8500`;
 
 /**
  * Generic request handler that standardizes:
