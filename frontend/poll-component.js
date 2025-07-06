@@ -15,6 +15,9 @@ class Poll extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.adoptedStyleSheets = [pollStyles];
         this.state = { currentPoll: null, userResponses: [], adminPassword: null };
+
+        this.apiUrl = this.getAttribute('api-url') || 'http://localhost:3000';
+        api.setApiUrl(this.apiUrl);
     }
 
     // Auto-join polls when URL contains code parameter, otherwise show menu
