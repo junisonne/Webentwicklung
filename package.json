@@ -4,6 +4,7 @@
   "type": "module",
   "description": "A simple Node.js application",
   "scripts": {
+    "start": "node ./backend/server.js",
     "test": "jest --watchAll --verbose --coverage"
   },
   "dependencies": {
