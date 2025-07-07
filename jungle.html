@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll System – Dschungel-Expedition</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Merriweather", serif;
+        background: linear-gradient(to bottom, #4a7c59, #2e4a33);
+        color: #fbf8ef;
+      }
+      header {
+        background: rgba(42, 60, 42, 0.9);
+        color: #fbf8ef;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      nav {
+        margin-left: auto;
+      }
+      nav a {
+        color: #f4d35e;
+        margin: 0 0.5rem;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      main {
+        padding: 2rem;
+      }
+      :root {
+        --poll-accent: #f4d35e;
+        --poll-bg: rgba(50, 80, 50, 0.8);
+        --poll-text: #efe8c9;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🌴 Expedition Umfrage</h1>
+      <nav>
+        <a href="index.html">Index</a>
+        <a href="spaceship.html">Raumschiff</a>
+        <a href="retro.html">Retro</a>
+        <a href="jungle.html">Dschungel</a>
+      </nav>
+    </header>
+    <main>
+      <p>Welches Ausrüstungs-Upgrade ist am wichtigsten?</p>
+      <poll-component
+        api-url="http://localhost:8500"
+        initial-poll='{
+  "title": "Expedition Vorlesungs-Feedback",
+  "adminPassword": "explorer",
+  "questions": [
+    {
+      "question": "Welches Werkzeug aus der Vorlesung hat Ihnen bei der Expedition in den Code am meisten geholfen?",
+      "type": "single",
+      "options": ["Shadow DOM Kapselung", "Slots & Templates", "Custom Element API", "Lifecycle Hooks"]
+    },
+    {
+      "question": "Welche Routen-Optionen wünschen Sie sich für kommende Vorlesungen?",
+      "type": "multiple",
+      "options": ["Mehr Beispiele", "Interaktive Gruppenarbeit", "Vergleich Frameworks", "Live-Debugging"]
+    }
+  ]
+}'
+      ></poll-component>
+    </main>
+    <script src="./frontend/poll-component.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </body>
+</html>

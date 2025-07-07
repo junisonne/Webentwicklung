@@ -4,7 +4,15 @@
 
 /* BASE & RESET */
 :host {
-    font-family: Arial, sans-serif;
+    
+    font-family: inherit;
+
+    --accent-color: var(--poll-accent,   #007BFF);
+    --bg-color:     var(--poll-bg,       #f8f9fa);
+    --text-color:   var(--poll-text,     #333);
+
+    background-color: var(--bg-color);
+    color:            var(--text-color);
     
     /* Using flexbox for perfect centering */
     display: flex;
@@ -55,7 +63,7 @@ main {
 /* TYPOGRAPHY */
 h1, h2, h3 {
     margin: 0 0 15px 0;
-    color: #333;
+    color: var(--accent-color, #333);
 }
 
 h1 {
@@ -96,6 +104,7 @@ h3 {
 input[type="text"],
 input[type="password"],
 select {
+    font-family: inherit;
     padding: 12px;
     border: 2px solid #ddd;
     border-radius: 6px;
@@ -121,6 +130,7 @@ select {
 
 input[type="text"]:not(.form-group input),
 input[type="password"]:not(.form-group input) {
+    font-family: inherit;
     width: 250px;
     margin: 8px;
 }
@@ -145,9 +155,10 @@ input[type="password"]:not(.form-group input) {
 
 /* Buttons */
 button {
+    font-family: inherit;
     padding: 12px 20px;
     margin: 8px;
-    background-color: #007BFF;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 6px;
