@@ -282,6 +282,29 @@ const getResultTemplate = (result) => {
 };
 
 /**
+ * Generates only the poll list items HTML (without the surrounding structure)
+ * @param {Array} polls - Array of poll objects to display
+ */
+export const getPollListItemsTemplate = (polls) => 
+    polls.length > 0 ? polls.map(poll => `
+        <li class="poll-item" data-code="${poll.code}">
+            <article class="poll-entry">
+                <header class="poll-header">
+                    <h3 class="poll-title">${poll.title} <span class="poll-code">Code: ${poll.code}</span></h3>
+                </header>
+                <div class="poll-admin-access">
+                    <form class="admin-access-form" onsubmit="return false;">
+                        <label for="admin-${poll.code}" class="sr-only">Admin Password for ${poll.title}</label>
+                        <input id="admin-${poll.code}" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" aria-required="true" />
+                        <button type="submit" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
+                    </form>
+                    <div class="message-container" aria-live="polite"></div>
+                </div>
+            </article>
+        </li>
+    `).join('') : '<li class="no-polls-message"><p>No polls available</p></li>';
+
+/**
  * Generates the polls list interface showing available polls and admin access forms
  * @param {Array} polls - Array of poll objects to display
  */
@@ -301,23 +324,7 @@ export const getPollListTemplate = (polls) => `
                 </form>
                 <nav>
                     <ul class="poll-list" role="list">
-                        ${polls.length > 0 ? polls.map(poll => `
-                            <li class="poll-item" data-code="${poll.code}">
-                                <article class="poll-entry">
-                                    <header class="poll-header">
-                                        <h3 class="poll-title">${poll.title} <span class="poll-code">Code: ${poll.code}</span></h3>
-                                    </header>
-                                    <div class="poll-admin-access">
-                                        <form class="admin-access-form" onsubmit="return false;">
-                                            <label for="admin-${poll.code}" class="sr-only">Admin Password for ${poll.title}</label>
-                                            <input id="admin-${poll.code}" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" aria-required="true" />
-                                            <button type="submit" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
-                                        </form>
-                                        <div class="message-container" aria-live="polite"></div>
-                                    </div>
-                                </article>
-                            </li>
-                        `).join('') : '<li class="no-polls-message"><p>No polls available</p></li>'}
+                        ${getPollListItemsTemplate(polls)}
                     </ul>
                 </nav>
                 <footer class="polls-footer">

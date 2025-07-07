@@ -155,15 +155,22 @@ class Poll extends HTMLElement {
                     const codeMatch = poll.code.toLowerCase().includes(searchTerm);
                     return titleMatch || codeMatch;
                 })
-                this.render(templates.getPollListTemplate(newPolls), [
-                    { selector: 'backToMenu', event: 'click', handler: this.showMainMenu },
-                ]);
-                this.handleEnterAsAdmin(newPolls);
-                this.handleSearchPolls(polls);
+                const pollListContainer = this.shadowRoot.querySelector('.poll-list');
+                if (pollListContainer) {
+                    pollListContainer.innerHTML = templates.getPollListItemsTemplate(newPolls);
+                    this.handleEnterAsAdmin(newPolls);
+                    this.handleSearchPolls(polls);
+                }
+               
             });
             button.addEventListener('reset', (e) => {
                 e.preventDefault();
-                this.showAllPolls(); 
+                const pollListContainer = this.shadowRoot.querySelector('.poll-list');
+                if (pollListContainer) {
+                    pollListContainer.innerHTML = templates.getPollListItemsTemplate(polls);
+                    this.handleEnterAsAdmin(polls);
+                    this.handleSearchPolls(polls);
+                }
             });
         });
     }
