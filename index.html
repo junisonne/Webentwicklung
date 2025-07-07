@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poll System</title>
-</head>
-<body>
-  <poll-component api-url="http://141.72.13.151:8500">
-     //hier
-  </poll-component>
-  <script src="./frontend/poll-component.js" type="module"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll System</title>
+  </head>
+  <body>
+    <poll-component
+    api-url="http://141.72.13.151:8500"
+    poll-title="Feedback zur heutigen Vorlesung"
+      admin-password="Eichberg1234"
+      initial-poll='{
+    "title":"Feedback zur heutigen Vorlesung",
+    "adminPassword":"Eichberg1234",
+    "questions":[
+      {
+        "question":"Wie beurteilen Sie die Verständlichkeit der heutigen Vorlesung?",
+        "type":"single",
+        "options":["Sehr verständlich","Verständlich","Eher verständlich","Völlig verständlich"]
+      },
+      {
+        "question":"Welches Thema wünschen Sie sich für die nächste Vorlesung?",
+        "type":"multiple",
+        "options":["Mehr Praxisbeispiele","Tiefergehende Theorie","Interaktive Übungen","Gastvortrag"]
+      }
+    ]
+  }'
+    ></poll-component>
+    <script src="./frontend/poll-component.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </body>
 </html>
