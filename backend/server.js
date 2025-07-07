@@ -157,7 +157,7 @@ app.post('/poll/create', (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -185,7 +185,7 @@ app.get('/poll/:code', (req, res) => {
             responseCount: poll.responses.length
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -234,7 +234,7 @@ app.post('/poll/:code/respond', (req, res) => {
             responseId: newResponse.id
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+       console.error('Error creating poll:', error);
     }
 });
 
@@ -307,7 +307,7 @@ app.post('/poll/:code/admin', (req, res) => {
             participantEntries
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -336,7 +336,7 @@ app.put('/poll/:code/toggle', (req, res) => {
             active: poll.active
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
