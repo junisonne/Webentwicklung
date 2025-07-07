@@ -5,7 +5,8 @@
   "description": "A simple Node.js application",
   "scripts": {
     "start": "node ./backend/server.js",
-    "test": "jest --watchAll --verbose --coverage"
+    "test": "jest --verbose --coverage",
+    "test:watch": "jest --watchAll --verbose --coverage"
   },
   "dependencies": {
     "@types/jest": "^30.0.0",
