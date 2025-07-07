@@ -6,7 +6,7 @@
  */
 export const getMainMenuTemplate = () => `
     <main>
-        <div class="container">
+        <div class="container main-menu">
             <header>
                 <h1>📊 Poll System</h1>
             </header>

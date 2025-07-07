@@ -1,0 +1,51 @@
+/* Poll Creation Page specific styles */
+.create-poll-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create-poll-form .form-group {
+    width: 100%;
+    max-width: 500px;
+}
+
+.create-poll-form .questions-fieldset {
+    border: none;
+    width: 100%;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.poll-creator {
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* Question Builder */
+.question-builder {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.question-builder .question-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.question-builder .options-container {
+    margin: 15px 0;
+}
+
+.question-builder .question-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}

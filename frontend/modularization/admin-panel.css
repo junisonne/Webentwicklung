@@ -1,0 +1,106 @@
+/* Admin Panel specific styles */
+.admin-dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.admin-controls,
+.poll-info {
+    width: 100%;
+    margin: 10px 0;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.admin-controls {
+    background-color: #fff3cd;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.poll-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.qrcode-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Admin Sections */
+.results-section,
+.ip-management,
+.ban-ip-section,
+.banned-ip-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Results */
+.results-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* IP Management */
+.ip-list,
+.banned-ip-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.ip-entry,
+.banned-ip-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.banned-ip-entry .banned-ip {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.ban-ip-btn,
+.unban-btn {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    border: none;
+}
+
+.unban-btn {
+    background-color: #6c757d;
+}
+
+.ban-ip-form .input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}

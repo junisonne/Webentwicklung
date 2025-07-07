@@ -1,18 +1,15 @@
 import * as api from "./api.js";
 import * as templates from "./templates.js";
 import { generatePollResultsCSV, downloadCSV } from "./csv-utils.js";
-
-const pollStyles = new CSSStyleSheet();
-fetch("./frontend/styles.css")
-  .then((response) => response.text())
-  .then((text) => pollStyles.replaceSync(text));
+import { applyStylesToShadowRoot } from "./utils/style-utils.js";
 
 // State is kept minimal with only essential data needed for poll operation
 class Poll extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.adoptedStyleSheets = [pollStyles];
+    
+    // State initialisieren
     this.state = { currentPoll: null, userResponses: [], adminPassword: null };
 
     this.apiUrl = this.getAttribute("api-url") || "http://localhost:3000";
@@ -28,7 +25,10 @@ class Poll extends HTMLElement {
   }
 
   // Auto-join polls when URL contains code parameter, otherwise show menu
-  connectedCallback() {
+  async connectedCallback() {
+    // Styles auf Shadow DOM anwenden
+    await applyStylesToShadowRoot(this.shadowRoot);
+    
     const params = new URLSearchParams(window.location.search);
     const pollCode = params.get("code");
 

@@ -1,0 +1,27 @@
+/* Main Menu specific styles */
+.menu-navigation .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.menu-navigation .button-container button {
+    width: 100%;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.menu-section {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.menu-section .message-container {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 6px;
+}
