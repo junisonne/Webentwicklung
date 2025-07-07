@@ -108,7 +108,6 @@ Entwicklung eines einfachen, kollaborativen **Umfrage-Tools**, das:
 
 ## 🌟 Erweiterungsideen (optional)
 - Live-Ergebnisanzeige für Teilnehmer
-- Exportfunktion für Ergebnisse (CSV)
 - QR-Code-Generierung für Umfragelinks
 - Dark-Mode
 - Zeitgesteuerte Umfragen
