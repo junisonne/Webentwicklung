@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll System – Retro-Spielhalle</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Press Start 2P", cursive;
+        background: #000;
+        color: #0ff;
+        background-image: linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.8) 50%,
+            transparent 50%
+          ),
+          linear-gradient(135deg, #111 25%, transparent 25%) 0 3px,
+          linear-gradient(225deg, #111 25%, transparent 25%) 3px 0,
+          linear-gradient(315deg, #111 25%, transparent 25%) 3px 3px;
+        background-size: 6px 6px;
+      }
+      header {
+        background: #111;
+        color: #f0f;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      nav {
+        margin-left: auto;
+      }
+      nav a {
+        color: #f0f;
+        margin: 0 0.5rem;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      main {
+        padding: 2rem;
+      }
+      :root {
+        --poll-accent: #f0f;
+        --poll-bg: #111;
+        --poll-text: #0ff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>👾 Highscore-Abstimmung</h1>
+      <nav>
+        <a href="index.html">Index</a>
+        <a href="spaceship.html">Raumschiff</a>
+        <a href="retro.html">Retro</a>
+        <a href="jungle.html">Dschungel</a>
+      </nav>
+    </header>
+    <main>
+      <p>Welches Feature verdient den Highscore?</p>
+      <poll-component
+        api-url="http://141.72.13.151:8500"
+        initial-poll='{
+  "title": "Arcade Vorlesungs-Highscore",
+  "adminPassword": "1UP",
+  "questions": [
+    {
+      "question": "Welches Level der heutigen Vorlesung fanden Sie am spannendsten?",
+      "type": "single",
+      "options": ["Einführung Web Components", "Shadow DOM Must-Haves", "Interaktive Slots", "Lifecycle-Rätsel"]
+    },
+    {
+      "question": "Welche Bonus-Features sollen wir im nächsten Modul einbauen?",
+      "type": "multiple",
+      "options": ["Code-Beispiele", "Hands-On Übung", "Quiz am Ende", "Gastvortrag"]
+    }
+  ]
+}'
+      ></poll-component>
+    </main>
+    <script src="./frontend/poll-component.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </body>
+</html>

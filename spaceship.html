@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll System – Raumschiff-Brücke</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Orbitron", sans-serif;
+        background: radial-gradient(circle at center, #00111a, #000800);
+        color: #0ff;
+      }
+      header {
+        background: rgba(0, 20, 30, 0.9);
+        color: #0ff;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      nav {
+        margin-left: auto;
+      }
+      nav a {
+        color: #0ff;
+        margin: 0 0.5rem;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      main {
+        padding: 2rem;
+      }
+      :root {
+        --poll-accent: #0ff;
+        --poll-bg: rgba(0, 20, 30, 0.8);
+        --poll-text: #ddf;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🛰️ Kommandozentrale</h1>
+      <nav>
+        <a href="index.html">Index</a>
+        <a href="spaceship.html">Raumschiff</a>
+        <a href="retro.html">Retro</a>
+        <a href="jungle.html">Dschungel</a>
+      </nav>
+    </header>
+    <main>
+      <p>Wohin steuern wir als Nächstes?</p>
+      <poll-component
+        api-url="http://141.72.13.151:8500"
+        initial-poll='{
+  "title": "Kommandozentrale Vorlesungsecho",
+  "adminPassword": "enterprise",
+  "questions": [
+    {
+      "question": "Welches Steuermodul der Vorlesung hat Sie heute am meisten begeistert?",
+      "type": "single",
+      "options": ["Custom Elements", "Shadow DOM", "HTML Templates", "Lifecycle-API"]
+    },
+    {
+      "question": "Welche System-Updates wünschen Sie sich für die nächste Vorlesung?",
+      "type": "multiple",
+      "options": ["Mehr Live-Coding", "Interaktive Demos", "Zusammenfassung Folien", "Q&A-Session"]
+    }
+  ]
+}'
+      ></poll-component>
+    </main>
+    <script src="./frontend/poll-component.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </body>
+</html>

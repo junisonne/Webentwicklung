@@ -1,12 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poll System</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poll System – Index</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+    header { background: #333; color: #fff; padding: 1rem; display: flex; align-items: center; }
+    nav { margin-left: auto; }
+    nav a { color: #fff; margin: 0 0.5rem; text-decoration: none; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    main { padding: 2rem; }
+    :root { --poll-accent: #07c; --poll-bg: #fff; --poll-text: #000; }
+  </style>
 </head>
 <body>
-  <poll-component api-url="http://141.72.13.151:8500"></poll-component>
+  <header>
+    <h1>📊 Poll System</h1>
+    <nav>
+      <a href="index.html">Index</a>
+      <a href="spaceship.html">Raumschiff</a>
+      <a href="retro.html">Retro</a>
+      <a href="jungle.html">Dschungel</a>
+    </nav>
+  </header>
+  <main>
+    <p>Willkommen zur Umfrage. Wähle ein Theme aus der Navigationsleiste.</p>
+    <poll-component
+      api-url="http://141.72.13.151:8500"
+      initial-poll='{
+        "title":"Feedback zur heutigen Vorlesung",
+        "adminPassword":"Eichberg1234",
+        "questions":[
+          {"question":"Wie beurteilen Sie die Verständlichkeit der heutigen Vorlesung?","type":"single","options":["Sehr verständlich","Verständlich","Eher verständlich","Völlig verständlich"]},
+          {"question":"Welches Thema wünschen Sie sich für die nächste Vorlesung?","type":"multiple","options":["Mehr Praxisbeispiele","Tiefergehende Theorie","Interaktive Übungen","Gastvortrag"]}
+        ]
+      }'
+    ></poll-component>
+  </main>
   <script src="./frontend/poll-component.js" type="module"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </body>
