@@ -1,28 +1,26 @@
 /* Poll Join Page specific styles */
 .join-poll-form {
+    background-color: aqua;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
+
+    .input-group {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 20px;
+
+        input {
+            width: 100%;
+        }
+    }
 }
 
 .join-poll-form h2 {
+    background-color: blueviolet;
     color: var(--accent-color);
     margin-bottom: 20px;
 }
 
-.join-poll-form .input-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 350px;
-    margin-bottom: 20px;
-}
-
-.poll-form {
-    width: 100%;
-    margin: 20px 0;
-}
