@@ -6,6 +6,8 @@
 
 /* Lists */
 .poll-list {
+    list-style-type: none;
+    padding: 0;
     margin-bottom: var(--spacing-lg);
 
     .poll-item {
