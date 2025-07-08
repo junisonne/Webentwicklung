@@ -122,11 +122,11 @@
     &:last-child {
         border-bottom: none;
     }
-}
 
-.banned-ip-entry .banned-ip {
+    .banned-ip {
     font-weight: 500;
     color: #721c24;
+    }
 }
 
 .ban-ip-btn,

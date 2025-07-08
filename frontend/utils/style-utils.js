@@ -1,14 +1,22 @@
 /**
  * CSS Utility-Funktionen für das Poll-Component
  * Stellt Funktionen zum Laden und Anwenden von CSS bereit
+ * Mit dynamischem Laden nach Bedarf
  */
 
 // Cache für geladene Stylesheets
 let baseStylesheet = null;
 let moduleStylesheets = {};
 
-// Liste der Module
-const moduleNames = ['base', 'mainMenu', 'createPoll', 'joinPoll', 'pollQuestions', 'pollList', 'adminPanel'];
+// Mapping von Ansichten zu benötigten CSS-Modulen
+const viewModuleMap = {
+  'mainMenu': ['base', 'mainMenu'],
+  'joinPoll': ['base', 'joinPoll'],
+  'createPoll': ['base', 'createPoll'],
+  'pollQuestions': ['base', 'pollQuestions'],
+  'pollList': ['base', 'pollList'],
+  'adminPanel': ['base', 'adminPanel']
+};
 
 /**
  * Lädt eine einzelne CSS-Datei und konvertiert sie in ein CSSStyleSheet
@@ -35,62 +43,66 @@ async function loadStylesheet(cssPath) {
 }
 
 /**
- * Lädt alle CSS-Module und kombiniert sie für die Anwendung im Shadow DOM
+ * Lädt die erforderlichen CSS-Module für eine bestimmte Ansicht
+ * @param {string} view - Name der Ansicht (z.B. 'mainMenu', 'joinPoll', etc.)
  * @returns {Promise<CSSStyleSheet[]>} Array von CSSStyleSheets
  */
-export async function loadAllStyles() {
-  console.log("Lade alle CSS-Dateien...");
+export async function loadViewStyles(view) {
+  if (!viewModuleMap[view]) {
+    console.warn(`Unbekannte Ansicht: ${view}, lade nur Base CSS`);
+    view = 'mainMenu'; // Fallback auf mainMenu
+  }
+  
+  console.log(`Lade Styles für Ansicht: ${view}`);
+  const requiredModules = viewModuleMap[view];
+  const styles = [];
   
   try {
-    // Base CSS laden (wenn noch nicht im Cache)
+    // Base CSS immer zuerst laden
     if (!baseStylesheet) {
       baseStylesheet = await loadStylesheet('./frontend/modularization/base.css');
       console.log("Base CSS geladen");
     }
+    styles.push(baseStylesheet);
     
-    // Alle Module-Stylesheets laden
-    for (const moduleName of moduleNames) {
-      if (moduleName === 'base') continue; // Base CSS bereits geladen
+    // Lade nur die für diese Ansicht benötigten Module
+    for (const moduleName of requiredModules) {
+      if (moduleName === 'base') continue; // Base bereits geladen
       
       if (!moduleStylesheets[moduleName]) {
         const path = `./frontend/modularization/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
         moduleStylesheets[moduleName] = await loadStylesheet(path);
         console.log(`${moduleName} CSS geladen`);
       }
+      
+      styles.push(moduleStylesheets[moduleName]);
     }
     
-    // Alle Stylesheets zusammenführen, mit Base zuerst
-    const allStylesheets = [baseStylesheet];
-    for (const moduleName of moduleNames) {
-      if (moduleName === 'base') continue;
-      if (moduleStylesheets[moduleName]) {
-        allStylesheets.push(moduleStylesheets[moduleName]);
-      }
-    }
-    
-    console.log(`Alle CSS-Dateien geladen: ${allStylesheets.length} Stylesheets`);
-    return allStylesheets;
+    console.log(`${styles.length} Stylesheets für Ansicht ${view} geladen`);
+    return styles;
   } catch (error) {
-    console.error("Fehler beim Laden der CSS-Dateien:", error);
-    throw error;
+    console.error(`Fehler beim Laden der Styles für ${view}:`, error);
+    // Fallback: Wenn ein Fehler auftritt, mindestens Base CSS zurückgeben
+    return baseStylesheet ? [baseStylesheet] : [];
   }
 }
 
 /**
- * Wendet alle Stylesheets auf das Shadow DOM einer Komponente an
+ * Wendet die für eine bestimmte Ansicht benötigten Stylesheets auf das Shadow DOM an
  * @param {ShadowRoot} shadowRoot - Das Shadow DOM der Komponente
+ * @param {string} view - Name der aktuellen Ansicht
  * @returns {Promise<void>}
  */
-export async function applyStylesToShadowRoot(shadowRoot) {
+export async function applyStylesToShadowRoot(shadowRoot, view = 'mainMenu') {
   if (!shadowRoot) {
     console.warn("Kein Shadow Root zum Anwenden der Styles übergeben");
     return;
   }
   
   try {
-    const allStylesheets = await loadAllStyles();
-    shadowRoot.adoptedStyleSheets = allStylesheets;
-    console.log("Styles auf Shadow DOM angewendet");
+    const viewStylesheets = await loadViewStyles(view);
+    shadowRoot.adoptedStyleSheets = viewStylesheets;
+    console.log(`Styles für ${view} auf Shadow DOM angewendet`);
   } catch (error) {
     console.error("Fehler beim Anwenden der Styles:", error);
   }
