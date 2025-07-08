@@ -47,20 +47,16 @@ main {
 
 .container {
     text-align: center;
-    background-color: var(--container-bg-color);
+    background-color: #f8f9fa;
     padding: 30px;
-    border-radius: var(--container-border-radius);
-    box-shadow: var(--container-shadow);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 100%;
     margin: 0 auto;
     max-height: 90vh;
     overflow-y: auto;
     min-width: 500px;
-    background-color: var(--container-bg-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 /* TYPOGRAPHY */
@@ -71,13 +67,10 @@ h1, h2, h3 {
 
 h1 {
     margin-bottom: 20px;
-    font-size: 1.8em;
 }
 
 h2 {
     color: #555;
-    margin-bottom: 25px;
-    font-size: 1.5em;
 }
 
 h3 {
@@ -88,16 +81,23 @@ h3 {
 .form-group {
     margin-bottom: 15px;
     text-align: left;
-}
 
-.form-group + .form-group {
-    margin-top: 10px;
-}
+    & + .form-group {
+        margin-top: 20px;
+    }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        margin-top: 5px;
+    }
 }
 
 input[type="text"],
@@ -105,49 +105,44 @@ input[type="password"],
 select {
     font-family: inherit;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
     font-size: 16px;
     transition: border-color 0.2s;
-    width: 100%;
-}
 
-input[type="text"]:focus,
-input[type="password"]:focus,
-select:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
+    &:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
 
-input[type="text"]:disabled,
-input[type="password"]:disabled,
-select:disabled {
-    background-color: #f2f2f2;
-    cursor: not-allowed;
-}
+    &:disabled {
+        background-color: #f2f2f2;
+        cursor: not-allowed;
+    }
 
-input[type="text"].input-error,
-input[type="password"].input-error,
-select.input-error {
-    border-color: #dc3545;
-    animation: shake 0.5s;
+    &.input-error {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+        animation: shake 0.5s;
+    }
 }
 
 input[type="text"]:not(.form-group input),
 input[type="password"]:not(.form-group input) {
     font-family: inherit;
-    width: 100%;
-    margin: 8px 0;
+    width: 250px;
+    margin: 8px;
 }
 
 .input-group {
     display: flex;
     gap: 10px;
     align-items: center;
-}
-
-.input-group input {
-    flex: 1;
+    
+    input {
+        flex: 1;
+        margin: 0;
+    }
 }
 
 /* Error animation */
@@ -160,7 +155,7 @@ input[type="password"]:not(.form-group input) {
 /* Buttons */
 button {
     font-family: inherit;
-    padding: 10px 15px;
+    padding: 12px 20px;
     margin: 8px;
     background-color: var(--accent-color);
     color: white;
@@ -168,46 +163,37 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    min-width: 140px;
-    height: 45px;
+    min-width: 120px;
     white-space: nowrap;
-    transition: background-color 0.2s, transform 0.2s;
-}
+    transition: background-color 0.2s;
 
-button:hover {
+    &:hover {
     background-color: var(--btn-hover-color);
-}
+    }
 
-button:active {
-    transform: translateY(1px);
-}
+    &.secondary, &.back-button {
+        background-color: #6c757d; /* Gray color */
+        color: white;
 
-/* Gray buttons */
-button.secondary,
-button.back-button,
-button[class*="add"] {
-    background-color: #6c757d;
-    color: white;
-}
-
-button.secondary:hover,
-button.back-button:hover,
-button[class*="add"]:hover {
-    background-color: #5a6268; /* Darker gray for hover */
+        &:hover {
+            background-color: #5a6268; /* Darker gray for hover */
+        }
+    }
 }
 
 .action-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 15px;
     width: 100%;
     margin-top: 20px;
-    padding: 10px 0;
-}
 
-.action-buttons button {
-    flex: 1;
-    margin: 0;
+    button {
+        flex: 1;
+        max-width: 180px;
+        min-width: 120px;
+        margin: 0;
+    }
 }
 
 /* Messages & Status */

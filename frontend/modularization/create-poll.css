@@ -38,23 +38,6 @@
             margin-bottom: 15px;
         }
     }
-    
-    /* Action Buttons Container */
-    .action-buttons {
-        margin-top: 36px;
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        width: 100%;
-        
-        /* Adjust button sizing within create-poll-form */
-        button {
-            min-width: 130px;
-            padding: 8px 12px;
-            margin: 4px;
-        }
-    }
 }
 
 /* Poll Creator Container */

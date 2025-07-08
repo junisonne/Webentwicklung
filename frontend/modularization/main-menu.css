@@ -7,21 +7,10 @@
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
-}
 
-.menu-navigation .button-container button {
-    width: 100%;
-    font-size: 1.1em;
-    margin-bottom: 10px;
-}
-
-.menu-section {
-    width: 100%;
-    margin: 20px 0;
-}
-
-.menu-section .message-container {
-    margin: 15px 0;
-    padding: 15px;
-    border-radius: 6px;
+    button {
+        width: 220px;
+        text-align: center;
+        box-sizing: border-box;
+    }
 }

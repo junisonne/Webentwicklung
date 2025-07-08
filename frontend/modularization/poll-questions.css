@@ -2,12 +2,11 @@
 .poll-questions {
     width: 100%;
     margin: 20px 0;
-}
 
-.poll-questions .message-container {
-    margin: 15px 0;
-    padding: 12px;
-    border-radius: 6px;
+    .message-container {
+        margin-top: 20px;
+        min-height: 30px;
+    }
 }
 
 /* Question Container */
@@ -18,44 +17,60 @@
     border-radius: 8px;
     text-align: left;
     position: relative;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
+    border-left: 6px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-.question-container.single-choice {
-    border-top: 3px solid var(--accent-color);
-}
+    &.single-choice {
+        border-left-color: #007BFF;
 
-.question-container.multiple-choice {
-    border-top: 3px solid #28a745;
-}
+        &::before {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+    }
 
-.question-container::before {
-    content: attr(data-type);
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 3px 8px;
-    font-size: 12px;
-    border-radius: 4px;
-    background: #f8f9fa;
-    color: #666;
-}
+    &.multiple-choice {
+        border-left-color: #28a745;
 
-.question-container > * {
-    margin: 10px 0;
-}
+        &::before {
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+    }
 
-.question-container .question-title {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 15px;
-}
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0 8px 8px 0;
+        z-index: 0;
+        opacity: 0.7;
+    }
 
-.question-container .options-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    & > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .question-title {
+        margin-bottom: 12px;
+
+        h2 {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .options-group {
+        margin-top: 16px;
+    }
 }
 
 /* INTERACTIVE ELEMENTS */
@@ -63,49 +78,49 @@
     display: block;
     width: 100%;
     margin: 8px 0;
-    padding: 10px 12px;
+    padding: 12px;
     background-color: white;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     color: black;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
-}
 
-.option-button:hover {
-    background-color: #f8f9fa;
-    border-color: var(--accent-color);
-}
+    &:hover {
+        border-color: #007BFF;
+        background-color: #e6f3ff;
+    }
 
-.option-button.selected {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
-}
+    &.selected {
+        background-color: #007BFF;
+        color: white;
+        border-color: #007BFF;
 
-.option-button .option-indicator {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 1px solid #aaa;
-    border-radius: 50%;
-    margin-right: 10px;
-    vertical-align: middle;
-    position: relative;
-}
+        &.multiple {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    }
 
-.option-button.selected .option-indicator::before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border-radius: 50%;
-}
+    .option-indicator {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 18px;
+        vertical-align: middle;
+        pointer-events: none;
+        transition: all 0.2s;
 
-.option-button .option-text {
-    vertical-align: middle;
+        &::before {
+            content: attr(data-unselected);
+        }
+    }
+
+    &.selected .option-indicator::before {
+        content: attr(data-selected);
+    }
+
+    .option-text {
+        pointer-events: none;
+    }
 }
