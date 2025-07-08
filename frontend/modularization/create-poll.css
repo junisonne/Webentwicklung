@@ -3,7 +3,6 @@
 /* Main Form Container */
 .create-poll-form {
     width: 100%;
-    max-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,6 +11,7 @@
     /* Form Groups */
     .form-group {
         width: 100%;
+        max-width: 500px; 
     }
     
     /* Labels */
@@ -32,6 +32,11 @@
         margin: 20px 0;
         border-radius: 12px;
         box-sizing: border-box;
+
+        legend {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
     }
     
     /* Action Buttons Container */
@@ -55,7 +60,6 @@
 /* Poll Creator Container */
 .poll-creator {
     width: 100%;
-    max-width: 500px; /* Match form-group max-width */
     margin: 30px auto;
     display: flex;
     flex-direction: column;
