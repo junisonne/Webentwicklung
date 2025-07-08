@@ -209,11 +209,12 @@ button {
     cursor: pointer;
     font-size: 1rem;
     min-width: 7.5rem;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: break-word;
     transition: background-color 0.2s;
 
     &:hover {
-    background-color: var(--accent-dark);
+        background-color: var(--accent-dark);
     }
 
     &.secondary, &.back-button {
