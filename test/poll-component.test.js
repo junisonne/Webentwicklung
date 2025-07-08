@@ -8,7 +8,7 @@ import fetchMock from 'jest-fetch-mock';
 import '../frontend/poll-component.js';
 import * as api from '../frontend/api.js';
 import * as templates from '../frontend/templates.js';
-import { generatePollResultsCSV, downloadCSV } from '../frontend/csv-utils.js';
+import { generatePollResultsCSV, downloadCSV } from '../frontend/utils/csv-utils.js';
 
 beforeAll(() => {
   // Stub adoptedStyleSheets

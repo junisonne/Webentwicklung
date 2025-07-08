@@ -333,7 +333,11 @@ app.put('/poll/:code/toggle', (req, res) => {
         
         res.json({ 
             message: `Poll ${poll.active ? 'activated' : 'deactivated'} successfully`,
-            active: poll.active
+            poll: {
+                code: poll.code,
+                active: poll.active,
+                totalResponses: poll.responses.length
+            }
         });
     } catch (error) {
         console.error('Error creating poll:', error);
