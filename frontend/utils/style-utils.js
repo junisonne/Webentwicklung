@@ -60,7 +60,7 @@ export async function loadViewStyles(view) {
   try {
     // Base CSS immer zuerst laden
     if (!baseStylesheet) {
-      baseStylesheet = await loadStylesheet('./frontend/modularization/base.css');
+      baseStylesheet = await loadStylesheet('./frontend/styles/base.css');
       console.log("Base CSS geladen");
     }
     styles.push(baseStylesheet);
@@ -70,7 +70,7 @@ export async function loadViewStyles(view) {
       if (moduleName === 'base') continue; // Base bereits geladen
       
       if (!moduleStylesheets[moduleName]) {
-        const path = `./frontend/modularization/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
+        const path = `./frontend/styles/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
         moduleStylesheets[moduleName] = await loadStylesheet(path);
         console.log(`${moduleName} CSS geladen`);
       }
