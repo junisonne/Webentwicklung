@@ -156,7 +156,7 @@ input[type="password"]:not(.form-group input) {
 /* Buttons */
 button {
     font-family: inherit;
-    padding: 10px 20px;
+    padding: 10px 15px;
     margin: 8px;
     background-color: var(--accent-color);
     color: white;
@@ -164,22 +164,32 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    min-width: 120px;
+    min-width: 140px;
+    height: 45px;
     white-space: nowrap;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 button:hover {
     background-color: var(--btn-hover-color);
 }
 
-button.secondary {
-    background-color: #6c757d;
+button:active {
+    transform: translateY(1px);
 }
 
-button.back-button {
+/* Gray buttons */
+button.secondary,
+button.back-button,
+button[class*="add"] {
     background-color: #6c757d;
     color: white;
+}
+
+button.secondary:hover,
+button.back-button:hover,
+button[class*="add"]:hover {
+    background-color: #5a6268; /* Darker gray for hover */
 }
 
 .action-buttons {

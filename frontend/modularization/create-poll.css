@@ -6,8 +6,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--container-bg-color);
-    padding: 30px 20px;
+    background-color: blue;
+    padding: 30px 15px;
     border-radius: var(--container-border-radius);
     
     /* Form Groups */
@@ -33,7 +33,7 @@
         width: 100%;
         padding: 20px;
         margin: 25px 0;
-        background-color: var(--container-bg-color);
+        background-color: green;
         border-radius: 12px;
     }
     
@@ -41,25 +41,18 @@
     .action-buttons {
         margin-top: 36px;
         display: flex;
-        justify-content: space-between;
-        gap: 24px;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
         width: 100%;
-        max-width: 600px;
+        max-width: 500px;
+        background-color: aqua;
         
-        /* Individual Buttons */
+        /* Adjust button sizing within create-poll-form */
         button {
-            min-width: 160px;
-            padding: 12px 24px;
-            font-weight: 500;
-            transition: transform 0.2s, background-color 0.2s;
-            
-            &:hover {
-                transform: translateY(-2px);
-            }
-            
-            &:active {
-                transform: translateY(1px);
-            }
+            min-width: 130px;
+            padding: 8px 12px;
+            margin: 4px;
         }
     }
 }
@@ -133,9 +126,12 @@
     
     /* Reset Button */
     button.reset {
-        background-color: #0d6efd;
+        background-color: var(--accent-color);
         margin-left: 12px;
         border-radius: 6px;
+        min-width: 120px; /* Custom size for reset button */
+        height: 40px;
+        padding: 8px 16px;
         
         &:hover {
             background-color: var(--btn-hover-color);
@@ -153,15 +149,8 @@
 
 /* Add Buttons Styling */
 button[class*="add"] {
-    background-color: #6c757d;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 16px;
     border-radius: 6px;
-    transition: background-color 0.2s, transform 0.2s;
-    
-    &:active {
-        transform: translateY(1px);
-    }
 }
