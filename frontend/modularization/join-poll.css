@@ -1,0 +1,19 @@
+/* Poll Join Page specific styles */
+.join-poll-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .input-group {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 20px;
+
+        input {
+            width: 100%;
+        }
+    }
+}
+

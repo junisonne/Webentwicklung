@@ -1,0 +1,80 @@
+/* Poll List Page specific styles */
+.polls-section {
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* Lists */
+.poll-list {
+    margin-bottom: 20px;
+
+    .poll-item {
+        margin-bottom: 15px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        .poll-entry {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+
+            .poll-header {
+                background-color: #f8f9fa;
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                text-align: left;
+                margin-bottom: 0;
+
+                h3 {
+                    margin: 0;
+                    font-size: 1.2em;
+                    color: #333;
+
+                    .poll-code {
+                        font-size: 0.85em;
+                        font-weight: normal;
+                        color: #666;
+                        margin-left: 10px;
+                    }
+                }
+            }
+
+            .poll-admin-access {
+                padding: 15px;
+
+                .admin-access-form {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    align-items: center;
+
+                    .admin-code-input {
+                        flex: 1;
+                        min-width: 200px;
+                        margin: 0;
+                    }
+
+                    .join-poll-btn {
+                        margin: 0;
+                    }
+                }
+
+                .message-container {
+                    margin-top: 10px;
+                    min-height: 20px;
+                }
+            }
+        }
+    }
+
+    .no-polls-message {
+        padding: 15px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        color: #666;
+    }
+}

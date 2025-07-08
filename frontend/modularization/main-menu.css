@@ -1,0 +1,16 @@
+/* Main Menu specific styles */
+.menu-navigation .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+
+    button {
+        width: 220px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}

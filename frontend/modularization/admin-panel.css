@@ -1,0 +1,206 @@
+.admin-controls,
+.poll-info {
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.admin-controls {
+    background-color: #fff3cd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.poll-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    text-align: center;
+
+    .poll-metadata {
+        margin-top: 10px;
+    }
+}
+
+.qrcode-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Admin Sections */
+.results-section,
+.ip-management,
+.ban-ip-section,
+.banned-ip-section {
+    max-width: 800px;
+    margin: 30px auto;
+    width: 100%;
+
+    header {
+        text-align: left;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+}
+
+/* Results */
+.results-container {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    header {
+        margin-bottom: 15px;
+        text-align: left;
+
+        h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin: 0;
+            color: #666;
+        }
+    }
+
+    .result-bars {
+        width: 100%;
+
+        .result-bar {
+            margin: 8px 0;
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            position: relative;
+
+            .result-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background-color: #007BFF;
+                border-radius: 4px;
+                transition: width 0.5s ease;
+                width: 0;
+            }
+
+            .result-text {
+                position: relative;
+                z-index: 1;
+                color: #333;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+/* Lists */
+.poll-list,
+.ip-list,
+.banned-ip-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* IP Management */
+.ip-entry,
+.banned-ip-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .banned-ip {
+    font-weight: 500;
+    color: #721c24;
+    }
+}
+
+.ban-ip-btn,
+.unban-btn {
+    background-color: #6c757d;
+
+    &:hover {
+        background-color: #5a6268;
+    }
+}
+
+/* Messages & Status */
+.loading {
+    color: #666;
+    font-style: italic;
+}
+
+.error,
+.success {
+    padding: 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+
+    & + form {
+        margin-top: 20px;
+    }
+
+    & > * {
+        color: inherit;
+    }
+}
+
+.error {
+    color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.success {
+    color: #155724;
+    background-color: #d4edda;
+}
+
+.banned-error {
+    background-color: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+
+    h4 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #dc3545;
+    }
+
+    p {
+        margin: 8px 0;
+        line-height: 1.4;
+    }
+}
+
+/* Footer */
+.admin-footer,
+.polls-footer {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.admin-footer {
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

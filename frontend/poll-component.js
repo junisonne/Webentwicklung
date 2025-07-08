@@ -1,18 +1,15 @@
 import * as api from "./api.js";
 import * as templates from "./templates.js";
 import { generatePollResultsCSV, downloadCSV } from "./csv-utils.js";
-
-const pollStyles = new CSSStyleSheet();
-fetch("./frontend/styles.css")
-  .then((response) => response.text())
-  .then((text) => pollStyles.replaceSync(text));
+import { applyStylesToShadowRoot } from "./utils/style-utils.js";
 
 // State is kept minimal with only essential data needed for poll operation
 class Poll extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.adoptedStyleSheets = [pollStyles];
+    
+    // State initialisieren
     this.state = { currentPoll: null, userResponses: [], adminPassword: null };
 
     this.apiUrl = this.getAttribute("api-url") || "http://localhost:3000";
@@ -28,7 +25,7 @@ class Poll extends HTMLElement {
   }
 
   // Auto-join polls when URL contains code parameter, otherwise show menu
-  connectedCallback() {
+  async connectedCallback() {
     const params = new URLSearchParams(window.location.search);
     const pollCode = params.get("code");
 
@@ -54,8 +51,10 @@ class Poll extends HTMLElement {
   // 1. Render appropriate template
   // 2. Bind necessary event handlers
   // 3. Initialize any required state
+  // 4. Apply view-specific styles
 
-  showMainMenu() {
+  async showMainMenu() {
+    await applyStylesToShadowRoot(this.shadowRoot, 'mainMenu');
     this.render(templates.getMainMenuTemplate(), [
       { selector: "joinPoll", event: "click", handler: this.showJoinPoll },
       { selector: "createPoll", event: "click", handler: this.showCreatePoll },
@@ -63,7 +62,8 @@ class Poll extends HTMLElement {
     ]);
   }
 
-  showJoinPoll() {
+  async showJoinPoll() {
+    await applyStylesToShadowRoot(this.shadowRoot, 'joinPoll');
     this.render(templates.getJoinPollTemplate(), [
       { selector: "enterPoll", event: "click", handler: this.joinPoll },
       { selector: "backToMenu", event: "click", handler: this.showMainMenu },
@@ -105,6 +105,7 @@ class Poll extends HTMLElement {
 
   async showAllPolls() {
     const polls = await api.getAllPolls();
+    await applyStylesToShadowRoot(this.shadowRoot, 'pollList');
     this.render(templates.getPollListTemplate(polls.polls), [
       { selector: "backToMenu", event: "click", handler: this.showMainMenu },
     ]);
@@ -183,7 +184,8 @@ class Poll extends HTMLElement {
     });
   }
 
-  showPollQuestions() {
+  async showPollQuestions() {
+    await applyStylesToShadowRoot(this.shadowRoot, 'pollQuestions');
     this.render(templates.getPollQuestionsTemplate(this.state.currentPoll), [
       {
         selector: "submitResponses",
@@ -266,7 +268,8 @@ class Poll extends HTMLElement {
     }
   }
 
-  showCreatePoll() {
+  async showCreatePoll() {
+    await applyStylesToShadowRoot(this.shadowRoot, 'createPoll');
     this.render(
         templates.getCreatePollTemplate(this.initialPoll !== null),
     [
@@ -546,7 +549,8 @@ class Poll extends HTMLElement {
     }
   }
 
-  showAdminResults(data) {
+  async showAdminResults(data) {
+    await applyStylesToShadowRoot(this.shadowRoot, 'adminPanel');
     console.log("Admin Data:", data);
     this.render(templates.getAdminPanelTemplate(data), [
       {
