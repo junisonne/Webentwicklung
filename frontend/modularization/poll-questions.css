@@ -1,27 +1,27 @@
 /* Poll Questions/Answer Page specific styles */
 .poll-questions {
     width: 100%;
-    margin: 20px 0;
+    margin: var(--spacing-lg) 0;
 
     .message-container {
-        margin-top: 20px;
+        margin-top: var(--spacing-lg);
         min-height: 30px;
     }
 }
 
 /* Question Container */
 .question-container {
-    margin: 20px 0;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-lg);
+    background-color: var(--element-bg);
+    border-radius: var(--element-border-radius);
     text-align: left;
     position: relative;
-    border-left: 6px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-left: 6px solid var(--border-color);
+    box-shadow: var(--element-shadow);
 
     &.single-choice {
-        border-left-color: #007BFF;
+        border-left-color: var(--accent-color);
 
         &::before {
             background-color: rgba(0, 123, 255, 0.05);
@@ -29,7 +29,7 @@
     }
 
     &.multiple-choice {
-        border-left-color: #28a745;
+        border-left-color: var(--success-accent);
 
         &::before {
             background-color: rgba(40, 167, 69, 0.05);
@@ -77,29 +77,29 @@
 .option-button {
     display: block;
     width: 100%;
-    margin: 8px 0;
+    margin: var(--spacing-sm) 0;
     padding: 12px;
-    background-color: white;
-    border: 2px solid #ddd;
-    color: black;
-    border-radius: 6px;
+    background-color: var(--element-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--input-border-radius);
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
 
     &:hover {
-        border-color: #007BFF;
-        background-color: #e6f3ff;
+        border-color: var(--accent-color);
+        background-color: var(--accent-light);
     }
 
     &.selected {
-        background-color: #007BFF;
+        background-color: var(--accent-color);
         color: white;
-        border-color: #007BFF;
+        border-color: var(--accent-color);
 
         &.multiple {
-            background-color: #28a745;
-            border-color: #28a745;
+            background-color: var(--success-accent);
+            border-color: var(--success-accent);
         }
     }
 

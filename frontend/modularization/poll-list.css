@@ -1,54 +1,54 @@
 /* Poll List Page specific styles */
 .polls-section {
     width: 100%;
-    margin: 20px 0;
+    margin: var(--spacing-lg) 0;
 }
 
 /* Lists */
 .poll-list {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
 
     .poll-item {
-        margin-bottom: 15px;
+        margin-bottom: var(--spacing-md);
 
         &:last-child {
             margin-bottom: 0;
         }
 
         .poll-entry {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: var(--element-bg);
+            border-radius: var(--element-border-radius);
+            box-shadow: var(--element-shadow);
             overflow: hidden;
 
             .poll-header {
-                background-color: #f8f9fa;
-                padding: 12px 15px;
-                border-bottom: 1px solid #eee;
+                background-color: var(--light-bg);
+                padding: var(--spacing-sm) var(--spacing-md);
+                border-bottom: 1px solid var(--border-color);
                 text-align: left;
                 margin-bottom: 0;
 
                 h3 {
                     margin: 0;
                     font-size: 1.2em;
-                    color: #333;
+                    color: var(--text-color);
 
                     .poll-code {
                         font-size: 0.85em;
                         font-weight: normal;
-                        color: #666;
+                        color: var(--text-muted);
                         margin-left: 10px;
                     }
                 }
             }
 
             .poll-admin-access {
-                padding: 15px;
+                padding: var(--spacing-md);
 
                 .admin-access-form {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 10px;
+                    gap: var(--spacing-sm);
                     align-items: center;
 
                     .admin-code-input {
@@ -71,10 +71,10 @@
     }
 
     .no-polls-message {
-        padding: 15px;
+        padding: var(--spacing-md);
         text-align: center;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        color: #666;
+        background-color: var(--light-bg);
+        border-radius: var(--element-border-radius);
+        color: var(--text-muted);
     }
 }
