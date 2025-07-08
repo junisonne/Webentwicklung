@@ -202,14 +202,10 @@ export const getAdminPanelTemplate = ({
                         <h2>${poll.title}</h2>
                     </header>
                     <div class="poll-metadata">
-                        <p>Code: <span class="highlight">${
-                          poll.code
-                        }</span> | Status: ${
-  poll.active ? "🟢 Active" : "🔴 Inactive"
-}</p>
-                        <p>Total Responses: <span class="highlight">${
-                          poll.totalResponses
-                        }</span></p>
+                        <p>Code: <span class="highlight">${poll.code}</span> | Status: 
+                        ${poll.active ? "🟢 Active" : "🔴 Inactive"}</p>
+                        <p>Total Responses: <span class="highlight">
+                        ${poll.totalResponses}</span></p>
                     </div>
                 </article>
                 
@@ -234,6 +230,7 @@ export const getAdminPanelTemplate = ({
                 <div class="results-container-wrapper">
                     ${results.map(getResultTemplate).join("")}
                 </div>
+                <div id="results-message" class="message-container" aria-live="polite"></div>
             </section>
             
             <section class="ip-management">
@@ -281,20 +278,7 @@ export const getAdminPanelTemplate = ({
                     <h2>Banned IP Addresses</h2>
                 </header>
                 <ul id="bannedIPsList" class="banned-ip-list" role="list">
-                    ${
-                      poll.bannedIPs.length > 0
-                        ? poll.bannedIPs
-                            .map(
-                              (ip) => `
-                        <li class="banned-ip-entry">
-                            <span class="banned-ip">${ip}</span>
-                            <button class="unban-btn" data-ip="${ip}" type="button">Unban</button>
-                        </li>
-                    `
-                            )
-                            .join("")
-                        : "<li><p>No IP addresses are currently banned.</p></li>"
-                    }
+                    ${getBannedIPsListTemplate(poll.bannedIPs)}
                 </ul>
             </section>
             
@@ -309,7 +293,7 @@ export const getAdminPanelTemplate = ({
  * Helper function that generates the HTML for displaying individual question results
  * @param {Object} result - Result data for a single question with options and vote counts
  */
-const getResultTemplate = (result) => {
+export const getResultTemplate = (result) => {
   // Calculate total responses for percentage calculations
   const total = result.totalResponses;
   return `
@@ -392,3 +376,17 @@ export const getPollListTemplate = (polls) => `
         </div>
     </main>
 `;
+
+/**
+ * Generates only the banned IPs list items HTML (without the surrounding ul element)
+ * @param {Array} bannedIPs - Array of banned IP addresses
+ */
+export const getBannedIPsListTemplate = (bannedIPs) => 
+    bannedIPs.length > 0 
+        ? bannedIPs.map(ip => `
+            <li class="banned-ip-entry">
+                <span class="banned-ip">${ip}</span>
+                <button class="unban-btn" data-ip="${ip}" type="button">Unban</button>
+            </li>
+        `).join('')
+        : '<li><p>No IP addresses are currently banned.</p></li>';

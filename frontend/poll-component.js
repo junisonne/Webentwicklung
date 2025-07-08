@@ -1,6 +1,10 @@
 import * as api from "./api.js";
 import * as templates from "./templates.js";
-import { generatePollResultsCSV, downloadCSV } from "./csv-utils.js";
+import { generatePollResultsCSV, downloadCSV } from "./utils/csv-utils.js";
+import { handleEnterAsAdmin, handleSearchPolls } from "./utils/pollOverviewHandler.js";
+import { loadInitialPoll, addQuestion, addOption, resetQuestion, handleAnsweredQuestions } from "./utils/pollCreateHandler.js";
+import { handleBanNewIP, setupIPEventListeners } from "./utils/ipHandler.js";
+import { handleRefreshResults, updateResultBars, generateQRCode, updatePollStatus } from "./utils/adminHandler.js";
 
 const pollStyles = new CSSStyleSheet();
 fetch("./frontend/styles.css")
@@ -108,85 +112,9 @@ class Poll extends HTMLElement {
     this.render(templates.getPollListTemplate(polls.polls), [
       { selector: "backToMenu", event: "click", handler: this.showMainMenu },
     ]);
-
-    this.handleEnterAsAdmin(polls.polls);
-    this.handleSearchPolls(polls.polls);
+    handleEnterAsAdmin(this.shadowRoot, polls.polls, this.state, this.showAdminPanel.bind(this));
+    handleSearchPolls(this.shadowRoot, polls.polls, this.state, this.showAdminPanel.bind(this));
   }
-  handleEnterAsAdmin(polls) {
-    this.shadowRoot.querySelectorAll(".admin-access-form").forEach((form) => {
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const pollItem = form.closest(".poll-item");
-        const button = form.querySelector(".join-poll-btn");
-        const pollCode = button.dataset.code;
-        const adminInput = form.querySelector(".admin-code-input").value;
-
-        if (!adminInput) {
-          const messageEl = pollItem.querySelector(".message-container");
-          if (messageEl) {
-            messageEl.innerHTML =
-              '<div class="error">Please enter admin password</div>';
-          }
-          return;
-        } else {
-          const poll = polls.find((p) => p.code === pollCode);
-          if (poll.adminPassword === adminInput) {
-            this.state.adminPassword = adminInput;
-            this.showAdminPanel(pollCode);
-          } else {
-            console.error("Invalid admin password for poll:", pollCode);
-            const messageEl = pollItem.querySelector(".message-container");
-            if (messageEl) {
-              messageEl.innerHTML =
-                '<div class="error">Invalid admin password</div>';
-            }
-          }
-        }
-      });
-      form.addEventListener("reset", (e) => {
-        e.preventDefault();
-        const pollItem = form.closest(".poll-item");
-        const messageEl = pollItem.querySelector(".message-container");
-        if (messageEl) {
-          messageEl.innerHTML = "";
-        }
-      });
-    });
-  }
-
-  handleSearchPolls(polls) {
-    this.shadowRoot.querySelectorAll(".poll-search-form").forEach((button) => {
-      button.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const searchInput = this.shadowRoot.getElementById("pollSearchInput");
-        const searchTerm = searchInput.value.trim().toLowerCase();
-
-                const newPolls = polls.filter(poll => {
-                    const titleMatch = poll.title.toLowerCase().includes(searchTerm);
-                    const codeMatch = poll.code.toLowerCase().includes(searchTerm);
-                    return titleMatch || codeMatch;
-                })
-                const pollListContainer = this.shadowRoot.querySelector('.poll-list');
-                if (pollListContainer) {
-                    pollListContainer.innerHTML = templates.getPollListItemsTemplate(newPolls);
-                    this.handleEnterAsAdmin(newPolls);
-                    this.handleSearchPolls(polls);
-                }
-               
-            });
-            button.addEventListener('reset', (e) => {
-                e.preventDefault();
-                const pollListContainer = this.shadowRoot.querySelector('.poll-list');
-                if (pollListContainer) {
-                    pollListContainer.innerHTML = templates.getPollListItemsTemplate(polls);
-                    this.handleEnterAsAdmin(polls);
-                    this.handleSearchPolls(polls);
-                }
-            });
-        });
-    }
-
-
 
   showPollQuestions() {
     this.render(templates.getPollQuestionsTemplate(this.state.currentPoll), [
@@ -275,151 +203,31 @@ class Poll extends HTMLElement {
     this.render(
         templates.getCreatePollTemplate(this.initialPoll !== null),
     [
-      { selector: "addQuestion", event: "click", handler: this.addQuestion },
+      { selector: "addQuestion", event: "click", handler: () => addQuestion(this.shadowRoot) },
       { selector: "createPollBtn", event: "click", handler: this.createPoll },
       { selector: "backToMenu", event: "click", handler: this.showMainMenu },
     ]);
 
     if (this.initialPoll) {
-    const btn = this.shadowRoot.getElementById('loadTemplate');
-    btn.addEventListener('click', () => this.loadInitialPoll());
-  }
+        const btn = this.shadowRoot.getElementById('loadTemplate');
+        btn.addEventListener('click', () => loadInitialPoll(this.shadowRoot, this.initialPoll));
+    }
 
-    // Add event listeners for all existing questions (including the first one)
     this.shadowRoot
       .querySelectorAll(".question-builder")
       .forEach((questionBuilder) => {
         const addOptionButton = questionBuilder.querySelector(".add-option");
         if (addOptionButton) {
-          addOptionButton.addEventListener("click", (e) => this.addOption(e));
+          addOptionButton.addEventListener("click", (e) => addOption(e));
         }
 
         const resetButton = questionBuilder.querySelector(".reset-question");
         if (resetButton) {
-          resetButton.addEventListener("click", (e) => this.resetQuestion(e));
+          resetButton.addEventListener("click", (e) => resetQuestion(e, this.shadowRoot));
         }
       });
   }
 
-  loadInitialPoll() {
-  const data = this.initialPoll;
-  
-  this.shadowRoot.getElementById('pollTitle').value = data.title;
-  this.shadowRoot.getElementById('adminPassword').value = data.adminPassword;
-  
-  const container = this.shadowRoot.getElementById('questionsContainer');
-  container.innerHTML = '';
-  
-  data.questions.forEach((q, i) => {
-    const div = document.createElement('div');
-    div.className = 'question-builder';
-    div.dataset.questionNumber = i + 1;
-    div.innerHTML = `
-      <header class="question-header">
-        <input type="text" placeholder="Question ${i+1}" 
-               class="question-input" aria-label="Question ${i+1}" 
-               value="${q.question}" />
-        <select class="question-type" aria-label="Question type">
-          <option value="single" ${q.type==='single'? 'selected':''}>Single Choice</option>
-          <option value="multiple" ${q.type==='multiple'? 'selected':''}>Multiple Choice</option>
-        </select>
-        <button type="button" class="reset-question">Reset</button>
-      </header>
-      <div class="options-container">
-        ${q.options.map((opt, idx) => `
-          <input type="text" placeholder="Option ${idx+1}" 
-                 class="option-input" aria-label="Option ${idx+1}" 
-                 value="${opt}" />
-        `).join('')}
-      </div>
-      <footer class="question-footer">
-        <button type="button" class="add-option secondary">+ Add Option</button>
-      </footer>
-    `;
-    container.appendChild(div);
-
-    div.querySelector('.add-option')
-       .addEventListener('click', e => this.addOption(e));
-    div.querySelector('.reset-question')
-       .addEventListener('click', e => this.resetQuestion(e));
-  });
-}
-
-
-  addQuestion() {
-    const container = this.shadowRoot.getElementById("questionsContainer");
-    const questionCount = container.children.length + 1;
-    const questionDiv = document.createElement("div");
-    questionDiv.className = "question-builder";
-    questionDiv.dataset.questionNumber = questionCount;
-    questionDiv.innerHTML = `
-            <header class="question-header">
-                <input type="text" placeholder="Question ${questionCount}" class="question-input" aria-label="Question ${questionCount}" />
-                <select class="question-type" aria-label="Question type">
-                    <option value="single">Single Choice</option>
-                    <option value="multiple">Multiple Choice</option>
-                </select>
-                <button type="button" class="delete-question" aria-label="Delete question">Delete</button>
-            </header>
-            <div class="options-container">
-                <input type="text" placeholder="Option 1" class="option-input" aria-label="Option 1" />
-                <input type="text" placeholder="Option 2" class="option-input" aria-label="Option 2" />
-            </div>
-            <footer class="question-footer">
-                <button type="button" class="add-option secondary" aria-label="Add option">+ Add Option</button>
-            </footer>
-        `;
-    container.appendChild(questionDiv);
-
-    // Add event listeners for this new question
-    questionDiv
-      .querySelector(".add-option")
-      .addEventListener("click", (e) => this.addOption(e));
-    questionDiv
-      .querySelector(".delete-question")
-      .addEventListener("click", () => {
-        container.removeChild(questionDiv);
-      });
-  }
-
-  addOption(event) {
-    // Find the closest question-builder parent
-    const questionBuilder = event.target.closest(".question-builder");
-    if (!questionBuilder) return;
-
-    // Find the options-container within this question-builder
-    const optionsContainer =
-      questionBuilder.querySelector(".options-container");
-    if (!optionsContainer) return;
-
-    const optionCount = optionsContainer.children.length + 1;
-    const optionRow = document.createElement("div");
-    optionRow.className = "option-row";
-    optionRow.setAttribute("role", "group");
-    optionRow.setAttribute("aria-label", `Option ${optionCount}`);
-
-    const optionInput = document.createElement("input");
-    optionInput.type = "text";
-    optionInput.className = "option-input";
-    optionInput.placeholder = `Option ${optionCount}`;
-    optionInput.setAttribute("aria-label", `Option ${optionCount}`);
-
-    const optionRemoveButton = document.createElement("button");
-    optionRemoveButton.textContent = "Remove";
-    optionRemoveButton.type = "button";
-    optionRemoveButton.className = "remove-option";
-    optionRemoveButton.setAttribute(
-      "aria-label",
-      `Remove option ${optionCount}`
-    );
-    optionRemoveButton.addEventListener("click", () => {
-      optionsContainer.removeChild(optionRow);
-    });
-
-    optionRow.appendChild(optionInput);
-    optionRow.appendChild(optionRemoveButton);
-    optionsContainer.appendChild(optionRow);
-  }
 
   async createPoll() {
     const messageEl = this.shadowRoot.getElementById("message");
@@ -434,87 +242,20 @@ class Poll extends HTMLElement {
       return;
     }
 
-    const questions = [];
-    let hasEmptyFields = false;
-    let hasDuplicateOptions = false;
-    const questionBuilders =
-      this.shadowRoot.querySelectorAll(".question-builder");
+    const questionBuilders = this.shadowRoot.querySelectorAll(".question-builder");
 
-    questionBuilders.forEach((builder) => {
-      const questionText = builder
-        .querySelector(".question-input")
-        .value.trim();
-      const questionType = builder.querySelector(".question-type").value;
-      const optionInputs = Array.from(
-        builder.querySelectorAll(".option-input")
-      );
-      const options = optionInputs
-        .map((input) => input.value.trim())
-        .filter((value) => value);
-
-      // Check for empty question text
-      if (!questionText) {
-        hasEmptyFields = true;
-        builder.querySelector(".question-input").classList.add("input-error");
-      } else {
-        builder
-          .querySelector(".question-input")
-          .classList.remove("input-error");
-      }
-
-      // Check for empty options
-      if (optionInputs.length < 2 || options.length < 2) {
-        hasEmptyFields = true;
-      }
-
-      // Check for duplicate options within this question
-      const uniqueOptions = new Set();
-      const duplicateInputs = [];
-
-      optionInputs.forEach((input) => {
-        const value = input.value.trim();
-        if (!value) {
-          hasEmptyFields = true;
-          input.classList.add("input-error");
-        } else {
-          input.classList.remove("input-error");
-
-          // Check for duplicates
-          if (uniqueOptions.has(value.toLowerCase())) {
-            hasDuplicateOptions = true;
-            input.classList.add("input-error");
-            duplicateInputs.push(input);
-          } else {
-            uniqueOptions.add(value.toLowerCase());
-          }
-        }
-      });
-
-      // Add visual indicator for duplicate options
-      duplicateInputs.forEach((input) => {
-        input.classList.add("duplicate-error");
-        input.title = "Duplicate option - please provide unique options";
-      });
-
-      if (questionText && options.length >= 2 && duplicateInputs.length === 0) {
-        questions.push({ question: questionText, type: questionType, options });
-      }
-    });
-
+    const { questions, hasEmptyFields, hasDuplicateOptions } = handleAnsweredQuestions(questionBuilders);
     if (hasEmptyFields) {
       messageEl.innerHTML =
         '<div class="error">Please fill in all questions and provide at least two options for each question.</div>';
       return;
     }
-
     if (hasDuplicateOptions) {
       messageEl.innerHTML =
         '<div class="error">Please ensure all options within each question are unique.</div>';
       return;
     }
-
     messageEl.innerHTML = '<div class="loading">Creating poll...</div>';
-
     try {
       const data = await api.createPoll({ title, questions, adminPassword });
       this.state.adminPassword = adminPassword;
@@ -531,6 +272,7 @@ class Poll extends HTMLElement {
       messageEl.innerHTML = `<div class="error">${error.message}</div>`;
     }
   }
+  
 
   // Admin panel implements progressive enhancement:
   // 1. Basic poll management
@@ -552,7 +294,6 @@ class Poll extends HTMLElement {
   }
 
   showAdminResults(data) {
-    console.log("Admin Data:", data);
     this.render(templates.getAdminPanelTemplate(data), [
       {
         selector: "togglePoll",
@@ -562,13 +303,16 @@ class Poll extends HTMLElement {
       {
         selector: "refreshResults",
         event: "click",
-        handler: () => this.showAdminPanel(data.poll.code),
+        handler: () => handleRefreshResults(this.shadowRoot, data.poll.code, this.state.adminPassword),
       },
-      { selector: "backToMenu", event: "click", handler: this.showMainMenu },
+      { selector: "backToMenu", 
+        event: "click", 
+        handler: this.showMainMenu 
+    },
       {
         selector: "banIPButton",
         event: "click",
-        handler: () => this.banNewIP(data.poll.code),
+        handler: () => handleBanNewIP(this.shadowRoot, data.poll.code, this.state.adminPassword),
       },
       {
         selector: "downloadCSV",
@@ -577,44 +321,9 @@ class Poll extends HTMLElement {
       },
     ]);
 
-    // Initialize the result bars based on their data-percentage attribute
-    this.shadowRoot.querySelectorAll(".result-bar").forEach((bar) => {
-      const percentage = bar.getAttribute("data-percentage");
-      if (percentage) {
-        bar.querySelector(".result-fill").style.width = `${percentage}%`;
-      }
-    });
-
-    this.shadowRoot.querySelectorAll(".ban-ip-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const ip = e.target.dataset.ip;
-        if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
-          this.banIP(ip, data.poll.code);
-        }
-      });
-    });
-
-    this.shadowRoot.querySelectorAll(".unban-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const ip = e.target.dataset.ip;
-        if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
-          this.unbanIP(ip, data.poll.code);
-        }
-      });
-    });
-
-    const url = new URL(window.location.href);
-    url.searchParams.append("code", data.poll.code);
-    const qrTarget = url.toString(); // fully dynamic V3
-    //const qrTarget = `${location.origin}${location.pathname}?code=${data.poll.code}`; // dynamic V2
-    //const qrTarget = `${location.origin}/index.html?code=${data.poll.code}`; //hardcoded V1
-    const canvas = this.shadowRoot.getElementById("qrcode");
-
-    if (canvas && window.QRCode) {
-      QRCode.toCanvas(canvas, qrTarget, { width: 200 }, (error) => {
-        if (error) console.error("QR-Code Fehler:", error);
-      });
-    }
+    updateResultBars(this.shadowRoot);
+    setupIPEventListeners(this.shadowRoot, data, this.state.adminPassword);
+    generateQRCode(this.shadowRoot, data.poll.code);
   }
 
   /**
@@ -641,87 +350,16 @@ class Poll extends HTMLElement {
   }
 
   async togglePoll(pollCode) {
+    const messageEl = this.shadowRoot.getElementById("message");
     try {
       const data = await api.togglePollStatus(
         pollCode,
         this.state.adminPassword
       );
-      alert(data.message);
-      this.showAdminPanel(pollCode);
+      console.log("Poll status updated:", data);
+      updatePollStatus(this.shadowRoot, data.poll);
     } catch (error) {
-      alert(error.message);
-    }
-  }
-
-  async banNewIP(pollCode) {
-    const ipInput = this.shadowRoot.getElementById("ipToBan");
-    const messageEl = this.shadowRoot.getElementById("banIPMessage");
-    const ip = ipInput.value.trim();
-
-    if (!ip) {
-      messageEl.innerHTML =
-        '<div class="error">Please enter an IP address</div>';
-      return;
-    }
-
-    const ipRegex =
-      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if (!ipRegex.test(ip)) {
-      messageEl.innerHTML =
-        '<div class="error">Please enter a valid IP address</div>';
-      return;
-    }
-
-    try {
-      messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
-      const data = await api.banIP(ip, pollCode);
-      messageEl.innerHTML = `<div class="success">${data.message}</div>`;
-      ipInput.value = "";
-
-      this.showAdminPanel(pollCode);
-    } catch (error) {
-      messageEl.innerHTML = `<div class="error">${error.message}</div>`;
-    }
-  }
-
-  // IP management functions use a common pattern for consistency:
-  // 1. Validate input
-  // 2. Show loading state
-  // 3. Make API call
-  // 4. Update UI with result
-  async banIP(ip, pollCode) {
-    const messageEl = this.shadowRoot.getElementById("banMessage");
-    console.log("Banning IP:", ip, "for poll:", pollCode);
-    try {
-      messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
-      const data = await api.banIP(ip, pollCode);
-      messageEl.innerHTML = `<div class="success">${data.message}</div>`;
-
-      this.showAdminPanel(pollCode);
-    } catch (error) {
-      messageEl.innerHTML = `<div class="error">${error.message}</div>`;
-    }
-  }
-
-  async unbanIP(ip, pollCode) {
-    try {
-      const data = await api.unbanIP(ip, pollCode);
-
-      const messageEl =
-        this.shadowRoot.getElementById("banIPMessage") ||
-        this.shadowRoot.getElementById("banMessage");
-      if (messageEl) {
-        messageEl.innerHTML = `<div class="success">${data.message}</div>`;
-      }
-
-      this.showAdminPanel(pollCode);
-    } catch (error) {
-      const messageEl =
-        this.shadowRoot.getElementById("banIPMessage") ||
-        this.shadowRoot.getElementById("banMessage");
-      if (messageEl) {
-        messageEl.innerHTML = `<div class="error">${error.message}</div>`;
-      }
+        if(messageEl) messageEl.innerHTML = `<div class="error">${error.message}</div>`;
     }
   }
 
@@ -737,52 +375,6 @@ class Poll extends HTMLElement {
       this.showMainMenu();
     }
   }
-
-  // Question builder maintains a consistent structure while allowing full customization
-  resetQuestion(event) {
-    console.log("Reset question called", event);
-    const questionBuilder = event.target.closest(".question-builder");
-
-    if (!questionBuilder) {
-      console.error("Question builder not found");
-      return;
-    }
-
-    const questionInput = questionBuilder.querySelector(".question-input");
-    const questionType = questionBuilder.querySelector(".question-type");
-    const optionsContainer =
-      questionBuilder.querySelector(".options-container");
-    const questionNumber = questionBuilder.dataset.questionNumber || "1";
-
-    console.log("Found elements:", {
-      questionInput,
-      questionType,
-      optionsContainer,
-    });
-
-    // Reset question text and placeholder
-    if (questionInput) {
-      questionInput.value = "";
-      questionInput.placeholder = `Question ${questionNumber}`;
-      questionInput.classList.remove("input-error");
-    }
-
-    // Reset question type to single choice
-    if (questionType) {
-      questionType.value = "single";
-    }
-
-    // Reset options to just 2 default options
-    if (optionsContainer) {
-      optionsContainer.innerHTML = `
-                <input type="text" placeholder="Option 1" class="option-input" />
-                <input type="text" placeholder="Option 2" class="option-input" />
-            `;
-    }
-
-    console.log("Question reset completed");
-  }
 }
 
-// Register custom element for use in HTML
 customElements.define("poll-component", Poll);
