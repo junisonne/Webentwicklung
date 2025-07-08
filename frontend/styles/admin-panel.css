@@ -1,0 +1,206 @@
+.admin-controls,
+.poll-info {
+    padding: var(--spacing-lg);
+    border-radius: var(--element-border-radius);
+    margin: var(--spacing-md) 0;
+    width: 100%;
+}
+
+.admin-controls {
+    background-color: var(--warning-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.poll-info {
+    background-color: var(--info-bg);
+    color: var(--info-color);
+    text-align: center;
+
+    .poll-metadata {
+        margin-top: var(--spacing-sm);
+    }
+}
+
+.qrcode-section {
+    margin: 1.25rem 0;
+    text-align: center;
+}
+
+/* Admin Sections */
+.results-section,
+.ip-management,
+.ban-ip-section,
+.banned-ip-section {
+    max-width: 50rem;
+    margin: var(--spacing-xl) auto;
+    width: 100%;
+
+    header {
+        text-align: left;
+        margin-bottom: var(--spacing-md);
+        width: 100%;
+    }
+}
+
+/* Results */
+.results-container {
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    background-color: var(--element-bg);
+    border-radius: var(--element-border-radius);
+    box-shadow: var(--element-shadow);
+
+    header {
+        margin-bottom: 0.9375rem;
+        text-align: left;
+
+        h3 {
+            margin: 0 0 var(--spacing-xs) 0;
+            color: var(--text-color);
+            font-size: 1.2em;
+        }
+
+        p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+    }
+
+    .result-bars {
+        width: 100%;
+
+        .result-bar {
+            margin: var(--spacing-sm) 0;
+            padding: var(--spacing-sm);
+            background-color: var(--light-bg);
+            border-radius: var(--input-border-radius);
+            position: relative;
+
+            .result-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background-color: var(--accent-color);
+                border-radius: var(--input-border-radius);
+                transition: width 0.5s ease;
+                width: 0;
+            }
+
+            .result-text {
+                position: relative;
+                z-index: 1;
+                color: var(--text-color);
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+/* Lists */
+.poll-list,
+.ip-list,
+.banned-ip-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* IP Management */
+.ip-entry,
+.banned-ip-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.625rem;
+    border-bottom: 0.0625rem solid var(--border-color);
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .banned-ip {
+    font-weight: 500;
+    color: var(--danger-color);
+    }
+}
+
+.ban-ip-btn,
+.unban-btn {
+    background-color: var(--secondary-color);
+
+    &:hover {
+        background-color: var(--secondary-hover);
+    }
+}
+
+/* Messages & Status */
+.loading {
+    color: #666;
+    font-style: italic;
+}
+
+.error,
+.success {
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin: 0.625rem 0;
+
+    & + form {
+        margin-top: 1.25rem;
+    }
+
+    & > * {
+        color: inherit;
+    }
+}
+
+.error {
+    color: var(--danger-color);
+    background-color: var(--danger-bg);
+}
+
+.success {
+    color: var(--success-color);
+    background-color: var(--success-bg);
+}
+
+.banned-error {
+    background-color: var(--danger-bg);
+    border: 0.125rem solid var(--danger-accent);
+    color: var(--danger-color);
+    padding: var(--spacing-lg);
+    border-radius: var(--element-border-radius);
+    margin: var(--spacing-md) 0;
+    text-align: center;
+
+    h4 {
+        margin: 0 0 var(--spacing-sm) 0;
+        font-size: 1.125rem;
+        color: var(--danger-accent);
+    }
+
+    p {
+        margin: var(--spacing-sm) 0;
+        line-height: 1.4;
+    }
+}
+
+/* Footer */
+.admin-footer,
+.polls-footer {
+    margin-top: var(--spacing-xl);
+    text-align: center;
+}
+
+.admin-footer {
+    padding-top: var(--spacing-lg);
+    border-top: 0.0625rem solid var(--border-color);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

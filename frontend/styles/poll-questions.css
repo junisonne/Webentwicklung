@@ -1,0 +1,126 @@
+/* Poll Questions/Answer Page specific styles */
+.poll-questions {
+    width: 100%;
+    margin: var(--spacing-lg) 0;
+
+    .message-container {
+        margin-top: var(--spacing-lg);
+        min-height: 1.875rem;
+    }
+}
+
+/* Question Container */
+.question-container {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-lg);
+    background-color: var(--element-bg);
+    border-radius: var(--element-border-radius);
+    text-align: left;
+    position: relative;
+    border-left: 0.375rem solid var(--border-color);
+    box-shadow: var(--element-shadow);
+
+    &.single-choice {
+        border-left-color: var(--accent-color);
+
+        &::before {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+    }
+
+    &.multiple-choice {
+        border-left-color: var(--success-accent);
+
+        &::before {
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0 0.5rem 0.5rem 0;
+        z-index: 0;
+        opacity: 0.7;
+    }
+
+    & > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .question-title {
+        margin-bottom: 0.75rem;
+
+        h2 {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0 0 0.3125rem 0;
+            color: #333;
+        }
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .options-group {
+        margin-top: 1rem;
+    }
+}
+
+/* INTERACTIVE ELEMENTS */
+.option-button {
+    display: block;
+    width: 100%;
+    margin: var(--spacing-sm) 0;
+    padding: 0.75rem;
+    background-color: var(--element-bg);
+    border: 0.125rem solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--input-border-radius);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: var(--accent-color);
+        background-color: var(--accent-light);
+    }
+
+    &.selected {
+        background-color: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+
+        &.multiple {
+            background-color: var(--success-accent);
+            border-color: var(--success-accent);
+        }
+    }
+
+    .option-indicator {
+        display: inline-block;
+        margin-right: 0.5rem;
+        font-size: 1.125rem;
+        vertical-align: middle;
+        pointer-events: none;
+        transition: all 0.2s;
+
+        &::before {
+            content: attr(data-unselected);
+        }
+    }
+
+    &.selected .option-indicator::before {
+        content: attr(data-selected);
+    }
+
+    .option-text {
+        pointer-events: none;
+    }
+}
