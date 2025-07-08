@@ -3,14 +3,38 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-sm);
     width: 100%;
-    max-width: 300px;
+    max-width: 18.75rem;
     margin: 0 auto;
 
     button {
-        width: 220px;
+        width: 13.75rem;
         text-align: center;
         box-sizing: border-box;
+        margin: var(--spacing-xs) 0;
+        padding: var(--spacing-md) var(--spacing-lg);
+        
+        /* Enhanced button styling using variables */
+        background-color: var(--accent-color);
+        color: white;
+        border-radius: var(--button-border-radius);
+        transition: background-color 0.2s, transform 0.1s;
+        
+        &:hover {
+            background-color: var(--accent-dark);
+        }
+        
+        &:active {
+            transform: translateY(0.0625rem);
+        }
+        
+        &.secondary {
+            background-color: var(--secondary-color);
+            
+            &:hover {
+                background-color: var(--secondary-hover);
+            }
+        }
     }
 }

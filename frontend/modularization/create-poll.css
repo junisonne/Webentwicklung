@@ -11,13 +11,13 @@
     /* Form Groups */
     .form-group {
         width: 100%;
-        max-width: 500px; 
+        max-width: 31.25rem; 
     }
     
     /* Labels */
     label {
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: var(--spacing-sm);
         font-weight: 500;
         text-align: left;
         color: var(--text-color);
@@ -29,13 +29,13 @@
         border: none;
         width: 100%;
         padding: 0;
-        margin: 20px 0;
-        border-radius: 12px;
+        margin: var(--spacing-lg) 0;
+        border-radius: var(--container-border-radius);
         box-sizing: border-box;
 
         legend {
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: var(--spacing-md);
         }
     }
 }
@@ -43,7 +43,7 @@
 /* Poll Creator Container */
 .poll-creator {
     width: 100%;
-    margin: 30px auto;
+    margin: var(--spacing-xl) auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,53 +51,53 @@
 
 /* Question Builder Section */
 .question-builder {
-    margin: 20px 0;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-lg);
+    background-color: var(--element-bg);
+    border-radius: var(--element-border-radius);
+    border: 0.0625rem solid var(--border-color);
     text-align: left;
     
     /* Question Header */
     .question-header {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
 
         .question-type {
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            height: 40px;
-            width: 140px; /* Set a narrower fixed width */
+            padding: var(--spacing-sm);
+            border: 0.125rem solid var(--border-color);
+            border-radius: var(--input-border-radius);
+            font-size: 0.875rem;
+            height: 2.5rem;
+            width: 8.75rem; /* Set a narrower fixed width */
             flex-shrink: 0; /* Prevent the select from shrinking */
         }
         
         .reset-question,
         .delete-question {
-            padding: 8px 16px;
+            padding: var(--spacing-sm) var(--spacing-md);
             min-width: auto;
-            height: 40px;
+            height: 2.5rem;
         }
     }
     
     /* Options Container */
     .options-container {
-        margin-bottom: 15px;
+        margin-bottom: var(--spacing-md);
 
         .option-input {
             display: block;
             width: 100%;
-            margin: 5px 0;
+            margin: var(--spacing-xs) 0;
         }
 
         .option-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 8px 0;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-sm) 0;
 
             .option-input {
                 flex: 1;
@@ -105,9 +105,9 @@
             }
 
             .remove-option {
-                padding: 8px 12px;
+                padding: var(--spacing-sm) var(--spacing-sm);
                 min-width: auto;
-                height: 40px;
+                height: 2.5rem;
             }
         }
     }
@@ -116,6 +116,6 @@
     .question-footer {
         display: flex;
         justify-content: flex-start;
-        margin-top: 15px;
+        margin-top: var(--spacing-md);
     }
 }

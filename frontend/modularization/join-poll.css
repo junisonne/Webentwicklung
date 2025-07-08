@@ -4,12 +4,12 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
 
     .input-group {
         width: 100%;
-        max-width: 300px;
-        margin-bottom: 20px;
+        max-width: 18.75rem;
+        margin-bottom: var(--spacing-lg);
 
         input {
             width: 100%;
