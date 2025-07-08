@@ -72,85 +72,67 @@
     padding: 20px;
     background-color: white;
     border-radius: 8px;
-    border: 1px solid #eaeaea;
+    border: 1px solid #ddd;
     text-align: left;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-    width: 100%;
-    box-sizing: border-box;
     
     /* Question Header */
     .question-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        padding-bottom: 12px;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        .question-type {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            height: 40px;
+            width: 140px; /* Set a narrower fixed width */
+            flex-shrink: 0; /* Prevent the select from shrinking */
+        }
+        
+        .reset-question,
+        .delete-question {
+            padding: 8px 16px;
+            min-width: auto;
+            height: 40px;
+        }
     }
     
     /* Options Container */
     .options-container {
-        margin: 20px 0;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        
-        /* Option inputs animation */
-        input[type="text"] {
-            transition: border-color 0.3s, transform 0.2s;
-            
-            &:focus {
-                border-color: var(--accent-color);
-                transform: translateX(2px);
-            }
+        margin-bottom: 15px;
+
+        .option-input {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
         }
-    }
-    
-    /* Form Controls */
-    input[type="text"] {
-        width: 100%;
-        padding: 12px 14px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 1em;
-    }
-    
-    select {
-        padding: 12px 14px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background-color: white;
-        font-size: 1em;
-        cursor: pointer;
-    }
-    
-    /* Reset Button */
-    button.reset {
-        background-color: var(--accent-color);
-        margin-left: 12px;
-        border-radius: 6px;
-        min-width: 120px; /* Custom size for reset button */
-        height: 40px;
-        padding: 8px 16px;
-        
-        &:hover {
-            background-color: var(--btn-hover-color);
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+
+            .option-input {
+                flex: 1;
+                margin: 0;
+            }
+
+            .remove-option {
+                padding: 8px 12px;
+                min-width: auto;
+                height: 40px;
+            }
         }
     }
     
     /* Question Footer */
     .question-footer {
         display: flex;
-        justify-content: space-between;
-        margin-top: 24px;
-        padding-top: 14px;
+        justify-content: flex-start;
+        margin-top: 15px;
     }
-}
-
-/* Add Buttons Styling */
-button[class*="add"] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
 }
