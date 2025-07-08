@@ -11,7 +11,7 @@
     /* Form Groups */
     .form-group {
         width: 100%;
-        max-width: 500px; 
+        max-width: 31.25rem; 
     }
     
     /* Labels */
@@ -55,7 +55,7 @@
     padding: var(--spacing-lg);
     background-color: var(--element-bg);
     border-radius: var(--element-border-radius);
-    border: 1px solid var(--border-color);
+    border: 0.0625rem solid var(--border-color);
     text-align: left;
     
     /* Question Header */
@@ -67,11 +67,11 @@
 
         .question-type {
             padding: var(--spacing-sm);
-            border: 2px solid var(--border-color);
+            border: 0.125rem solid var(--border-color);
             border-radius: var(--input-border-radius);
-            font-size: 14px;
-            height: 40px;
-            width: 140px; /* Set a narrower fixed width */
+            font-size: 0.875rem;
+            height: 2.5rem;
+            width: 8.75rem; /* Set a narrower fixed width */
             flex-shrink: 0; /* Prevent the select from shrinking */
         }
         
@@ -79,7 +79,7 @@
         .delete-question {
             padding: var(--spacing-sm) var(--spacing-md);
             min-width: auto;
-            height: 40px;
+            height: 2.5rem;
         }
     }
     
@@ -107,7 +107,7 @@
             .remove-option {
                 padding: var(--spacing-sm) var(--spacing-sm);
                 min-width: auto;
-                height: 40px;
+                height: 2.5rem;
             }
         }
     }

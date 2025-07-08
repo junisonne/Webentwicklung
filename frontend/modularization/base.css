@@ -41,19 +41,19 @@
     --element-bg: white;
     
     /* Layout */
-    --container-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --element-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    --container-border-radius: 12px;
-    --element-border-radius: 8px;
-    --input-border-radius: 6px;
-    --button-border-radius: 4px;
+    --container-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    --element-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
+    --container-border-radius: 0.75rem;
+    --element-border-radius: 0.5rem;
+    --input-border-radius: 0.375rem;
+    --button-border-radius: 0.25rem;
     
     /* Spacing */
-    --spacing-xs: 5px;
-    --spacing-sm: 8px;
-    --spacing-md: 15px;
-    --spacing-lg: 20px;
-    --spacing-xl: 30px;
+    --spacing-xs: 0.3125rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 0.9375rem;
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.875rem;
 
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -82,7 +82,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 1.25rem;
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -96,12 +96,12 @@ main {
     padding: var(--spacing-xl);
     border-radius: var(--container-border-radius);
     box-shadow: var(--container-shadow);
-    max-width: 600px;
+    max-width: 37.5rem;
     width: 100%;
     margin: 0 auto;
     max-height: 90vh;
     overflow-y: auto;
-    min-width: 500px;
+    min-width: 31.25rem;
 }
 
 /* TYPOGRAPHY */
@@ -124,16 +124,16 @@ h3 {
 
 /* FORMS & INPUTS */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 0.9375rem;
     text-align: left;
 
     & + .form-group {
-        margin-top: 20px;
+        margin-top: 1.25rem;
     }
 
     label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.3125rem;
         font-weight: 500;
         color: #333;
     }
@@ -141,7 +141,7 @@ h3 {
     input[type="text"],
     input[type="password"] {
         width: 100%;
-        margin-top: 5px;
+        margin-top: 0.3125rem;
     }
 }
 
@@ -150,9 +150,9 @@ input[type="password"],
 select {
     font-family: inherit;
     padding: var(--spacing-sm);
-    border: 2px solid var(--border-color);
+    border: 0.125rem solid var(--border-color);
     border-radius: var(--input-border-radius);
-    font-size: 16px;
+    font-size: 1rem;
     transition: border-color 0.2s;
 
     &:focus {
@@ -167,7 +167,7 @@ select {
 
     &.input-error {
         border-color: var(--danger-accent);
-        box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+        box-shadow: 0 0 0 0.125rem rgba(220, 53, 69, 0.25);
         animation: shake 0.5s;
     }
 }
@@ -175,13 +175,13 @@ select {
 input[type="text"]:not(.form-group input),
 input[type="password"]:not(.form-group input) {
     font-family: inherit;
-    width: 250px;
-    margin: 8px;
+    width: 15.625rem;
+    margin: 0.5rem;
 }
 
 .input-group {
     display: flex;
-    gap: 10px;
+    gap: 0.625rem;
     align-items: center;
     
     input {
@@ -193,22 +193,22 @@ input[type="password"]:not(.form-group input) {
 /* Error animation */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
+    20%, 60% { transform: translateX(-0.3125rem); }
+    40%, 80% { transform: translateX(0.3125rem); }
 }
 
 /* Buttons */
 button {
     font-family: inherit;
-    padding: 12px 20px;
-    margin: 8px;
+    padding: 0.75rem 1.25rem;
+    margin: 0.5rem;
     background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: var(--button-border-radius);
     cursor: pointer;
-    font-size: 16px;
-    min-width: 120px;
+    font-size: 1rem;
+    min-width: 7.5rem;
     white-space: nowrap;
     transition: background-color 0.2s;
 
@@ -229,14 +229,14 @@ button {
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 0.9375rem;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 1.25rem;
 
     button {
         flex: 1;
-        max-width: 180px;
-        min-width: 120px;
+        max-width: 11.25rem;
+        min-width: 7.5rem;
         margin: 0;
     }
 }
@@ -244,9 +244,9 @@ button {
 /* Messages & Status */
 .loading {
     display: inline-block;
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(0, 123, 255, 0.3);
+    width: 3.125rem;
+    height: 3.125rem;
+    border: 0.1875rem solid rgba(0, 123, 255, 0.3);
     border-radius: 50%;
     border-top-color: #007bff;
     animation: spin 1s ease-in-out infinite;
@@ -254,21 +254,21 @@ button {
 
 .error,
 .success {
-    padding: 12px;
-    border-radius: 6px;
-    margin: 15px 0;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin: 0.9375rem 0;
 }
 
 .error {
     background-color: var(--danger-bg);
     color: var(--danger-color);
-    border: 1px solid var(--danger-border);
+    border: 0.0625rem solid var(--danger-border);
 }
 
 .success {
     background-color: var(--success-bg);
     color: var(--success-color);
-    border: 1px solid var(--success-border);
+    border: 0.0625rem solid var(--success-border);
 }
 
 .banned-error {
@@ -282,10 +282,10 @@ button {
 /* Utility Classes */
 .sr-only {
     position: absolute;
-    width: 1px;
-    height: 1px;
+    width: 0.0625rem;
+    height: 0.0625rem;
     padding: 0;
-    margin: -1px;
+    margin: -0.0625rem;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;

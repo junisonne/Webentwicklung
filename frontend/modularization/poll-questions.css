@@ -5,7 +5,7 @@
 
     .message-container {
         margin-top: var(--spacing-lg);
-        min-height: 30px;
+        min-height: 1.875rem;
     }
 }
 
@@ -17,7 +17,7 @@
     border-radius: var(--element-border-radius);
     text-align: left;
     position: relative;
-    border-left: 6px solid var(--border-color);
+    border-left: 0.375rem solid var(--border-color);
     box-shadow: var(--element-shadow);
 
     &.single-choice {
@@ -43,7 +43,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        border-radius: 0 8px 8px 0;
+        border-radius: 0 0.5rem 0.5rem 0;
         z-index: 0;
         opacity: 0.7;
     }
@@ -54,12 +54,12 @@
     }
 
     .question-title {
-        margin-bottom: 12px;
+        margin-bottom: 0.75rem;
 
         h2 {
             font-size: 1.2em;
             font-weight: bold;
-            margin: 0 0 5px 0;
+            margin: 0 0 0.3125rem 0;
             color: #333;
         }
 
@@ -69,7 +69,7 @@
     }
 
     .options-group {
-        margin-top: 16px;
+        margin-top: 1rem;
     }
 }
 
@@ -78,9 +78,9 @@
     display: block;
     width: 100%;
     margin: var(--spacing-sm) 0;
-    padding: 12px;
+    padding: 0.75rem;
     background-color: var(--element-bg);
-    border: 2px solid var(--border-color);
+    border: 0.125rem solid var(--border-color);
     color: var(--text-color);
     border-radius: var(--input-border-radius);
     cursor: pointer;
@@ -105,8 +105,8 @@
 
     .option-indicator {
         display: inline-block;
-        margin-right: 8px;
-        font-size: 18px;
+        margin-right: 0.5rem;
+        font-size: 1.125rem;
         vertical-align: middle;
         pointer-events: none;
         transition: all 0.2s;
