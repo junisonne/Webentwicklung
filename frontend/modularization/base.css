@@ -2,12 +2,16 @@
 :host {
     font-family: inherit;
 
-    --accent-color: var(--poll-accent,   #007BFF);
-    --bg-color:     var(--poll-bg,       #f8f9fa);
-    --text-color:   var(--poll-text,     #333);
+    --accent-color: var(--poll-accent, #007BFF);
+    --bg-color: var(--poll-bg, #fff);
+    --container-bg-color: var(--poll-container-bg, #f8f9fa);
+    --text-color: var(--poll-text, #333);
+    --btn-hover-color: var(--poll-btn-hover, #0056b3);
+    --container-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --container-border-radius: 12px;
 
     background-color: var(--bg-color);
-    color:            var(--text-color);
+    color: var(--text-color);
     
     /* Using flexbox for perfect centering */
     display: flex;
@@ -43,10 +47,10 @@ main {
 
 .container {
     text-align: center;
-    background-color: #f8f9fa;
+    background-color: var(--container-bg-color);
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: var(--container-border-radius);
+    box-shadow: var(--container-shadow);
     max-width: 600px;
     width: 100%;
     margin: 0 auto;
@@ -58,15 +62,18 @@ main {
 /* TYPOGRAPHY */
 h1, h2, h3 {
     margin: 0 0 15px 0;
-    color: var(--accent-color, #333);
+    color: var(--text-color);
 }
 
 h1 {
     margin-bottom: 20px;
+    font-size: 1.8em;
 }
 
 h2 {
     color: #555;
+    margin-bottom: 25px;
+    font-size: 1.5em;
 }
 
 h3 {
@@ -94,10 +101,11 @@ input[type="password"],
 select {
     font-family: inherit;
     padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 16px;
     transition: border-color 0.2s;
+    width: 100%;
 }
 
 input[type="text"]:focus,
@@ -124,8 +132,8 @@ select.input-error {
 input[type="text"]:not(.form-group input),
 input[type="password"]:not(.form-group input) {
     font-family: inherit;
-    width: 250px;
-    margin: 8px;
+    width: 100%;
+    margin: 8px 0;
 }
 
 .input-group {
@@ -148,12 +156,12 @@ input[type="password"]:not(.form-group input) {
 /* Buttons */
 button {
     font-family: inherit;
-    padding: 12px 20px;
+    padding: 10px 20px;
     margin: 8px;
     background-color: var(--accent-color);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
     min-width: 120px;
@@ -162,7 +170,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--btn-hover-color);
 }
 
 button.secondary {
@@ -170,22 +178,22 @@ button.secondary {
 }
 
 button.back-button {
-    background-color: transparent;
-    color: #555;
-    border: 1px solid #ddd;
+    background-color: #6c757d;
+    color: white;
 }
 
 .action-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     gap: 15px;
     width: 100%;
     margin-top: 20px;
+    padding: 10px 0;
 }
 
 .action-buttons button {
     flex: 1;
-    max-width: 180px;
+    margin: 0;
 }
 
 /* Messages & Status */
