@@ -5,4 +5,4 @@ package-lock.json
 .env
 
 coverage/
-cypress/screenshots/happy-path.cy.js/*.png
+cypress/screenshots/
