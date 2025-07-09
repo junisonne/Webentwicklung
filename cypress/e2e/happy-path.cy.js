@@ -4,9 +4,9 @@ describe('Poll System - Happy Path', () => {
   const adminPassword = 'admin123';
   
   beforeEach(() => {
-    // Server neu starten, falls nötig
-    cy.visit('http://localhost:5500');
-    cy.wait(500); // Kurze Pause für DOM-Rendering
+    // Visit the app using baseUrl from cypress.config.js
+    cy.visit('/');
+    cy.wait(1000); // Längere Pause für DOM-Rendering und Netzwerkanfragen
   });
 
   describe('Umfrageersteller (Admin)', () => {
