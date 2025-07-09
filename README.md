@@ -8,7 +8,7 @@
   Zugriff auf Verwaltungsfunktionen per Passwort (im initial-poll-JSON).
 - **Teilnahme ohne Registrierung**  
   Nutzer können direkt per Link oder Code teilnehmen, ohne Anmeldung.
-- **Live-Auswertung**  
+- **Auswertung**  
   Ergebnisse werden direkt nach der Abstimmung angezeigt.
 - **Flexible Einbindung**  
   Die Komponente kann einfach per `<script>`-Tag und Custom Element auf beliebigen Webseiten genutzt werden.
