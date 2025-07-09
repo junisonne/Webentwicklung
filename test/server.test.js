@@ -70,11 +70,9 @@ describe('Poll API', () => {
 
   it('POST /poll/ban and /poll/unban should work', async () => {
     const ip = '123.45.67.89'
-    // ban
     let res = await request(app)
       .post('/poll/ban')
-      .set('X-Forwarded-For', ip)
-      .send({ code: newCode })
+      .send({ ip: ip, code: newCode })
       .set('Accept', 'application/json')
     expect(res.statusCode).toBe(200)
     expect(res.body.message).toMatch(ip)
