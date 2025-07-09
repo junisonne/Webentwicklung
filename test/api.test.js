@@ -1,5 +1,5 @@
 import * as api from '../frontend/api';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://localhost:8500';
 
 beforeEach(() => {
   // Mock global.fetch vor jedem Test
