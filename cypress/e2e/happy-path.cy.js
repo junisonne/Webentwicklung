@@ -1,23 +1,23 @@
 describe('Poll System - Happy Path', () => {
-  // Testdaten für die Umfrageerstellung
+  // Test data for poll creation
   const pollTitle = 'Test Vorlesungsfeedback';
   const adminPassword = 'admin123';
   
   beforeEach(() => {
     // Visit the app using baseUrl from cypress.config.js
     cy.visit('/', { failOnStatusCode: false });
-    cy.wait(1000); // Längere Pause für DOM-Rendering und Netzwerkanfragen
+    cy.wait(1000); // Longer pause for DOM rendering and network requests
   });
 
-  describe('Umfrageersteller (Admin)', () => {
-    it('kann eine Umfrage erstellen und zum Hauptmenü zurückkehren', () => {
-      // Klick auf den Button "Create Poll as Admin"
+  describe('Poll Creator (Admin)', () => {
+    it('can create a poll and return to the main menu', () => {
+      // Click on the "Create Poll as Admin" button
       cy.get('poll-component')
         .shadow()
         .find('#createPoll')
         .click();
 
-      // Formular ausfüllen
+      // Fill out the form
       cy.get('poll-component')
         .shadow()
         .find('#pollTitle')
@@ -28,118 +28,118 @@ describe('Poll System - Happy Path', () => {
         .find('#adminPassword')
         .type(adminPassword);
 
-      // Erste Frage hinzufügen
+      // Add first question
       cy.get('poll-component')
         .shadow()
         .find('.question-input')
         .first()
         .type('Wie bewerten Sie die heutige Vorlesung?');
 
-      // Frage-Typ auf "single" setzen (sollte bereits Standard sein)
+      // Set question type to "single" (should be default)
       cy.get('poll-component')
         .shadow()
         .find('.question-type')
         .first()
         .select('single');
 
-      // Optionen hinzufügen
+      // Add options
       cy.get('poll-component')
         .shadow()
         .find('.option-input')
         .first()
         .type('Sehr gut');
 
-      // Zweite Option hinzufügen
+      // Add second option
       cy.get('poll-component')
         .shadow()
         .find('.option-input')
         .eq(1)
         .type('Gut');
 
-      // "Add Option" klicken
+      // Click "Add Option"
       cy.get('poll-component')
         .shadow()
         .find('.add-option')
         .click();
 
-      // Dritte Option hinzufügen
+      // Add third option
       cy.get('poll-component')
         .shadow()
         .find('.option-input')
         .eq(2)
         .type('Befriedigend');
 
-      // "Add Question" klicken
+      // Click "Add Question"
       cy.get('poll-component')
         .shadow()
         .find('#addQuestion')
         .click();
 
-      // Zweite Frage hinzufügen
+      // Add second question
       cy.get('poll-component')
         .shadow()
         .find('.question-input')
         .eq(1)
         .type('Welche Themen wünschen Sie sich für zukünftige Vorlesungen?');
 
-      // Frage-Typ auf "multiple" setzen
+      // Set question type to "multiple"
       cy.get('poll-component')
         .shadow()
         .find('.question-type')
         .eq(1)
         .select('multiple');
 
-      // Optionen für zweite Frage hinzufügen
+      // Add options for second question
       cy.get('poll-component')
         .shadow()
         .find('.option-input')
         .eq(3)
         .type('Mehr Praxisbeispiele');
 
-      // Zweite Option für zweite Frage hinzufügen
+      // Add second option for second question
       cy.get('poll-component')
         .shadow()
         .find('.option-input')
         .eq(4)
         .type('Tiefergehende Theorie');
 
-      // Umfrage erstellen
+      // Create poll
       cy.get('poll-component')
         .shadow()
         .find('#createPollBtn')
         .click();
 
-      // Längere Wartezeit für die Erstellung der Umfrage
+      // Longer wait time for poll creation
       cy.wait(2000);
 
-      // Prüfen, ob die Poll erfolgreich erstellt wurde
+      // Check if the poll was successfully created
       cy.get('poll-component')
         .shadow()
         .contains(/Poll created! Code:|Your Poll Code is|Code:|success/i, { timeout: 30000 })
         .should('exist');
       
-      // Umfragecode extrahieren und speichern
+      // Extract and save poll code
       cy.get('poll-component')
         .shadow()
         .then($el => {
-          // Sucht nach jedem Element, das Text enthält und dann nach einem Code-Muster (alphanumerisch) darin
+          // Searches for any element containing text and then for a code pattern (alphanumeric) within it
           const fullText = $el.text();
           const codeMatch = fullText.match(/[A-Z0-9]{4,8}/);
           if (codeMatch) {
             const pollCode = codeMatch[0];
-            // Speichere den Code in der Cypress-Umgebung für andere Tests
+            // Save the code in the Cypress environment for other tests
             Cypress.env('pollCode', pollCode);
             cy.log(`Extracted Poll Code: ${pollCode}`);
           }
         });
 
-      // Zurück zur Hauptseite klicken
+      // Click back to main page
       cy.get('poll-component')
         .shadow()
         .find('#backToMenu, button:contains("Back"), .back-button')
         .click();
         
-      // Überprüfen, ob wir zurück zum Hauptmenü gelangt sind
+      // Check if we returned to the main menu
       cy.get('poll-component')
         .shadow()
         .find('#createPoll, #joinPoll, #viewPolls')
@@ -149,50 +149,50 @@ describe('Poll System - Happy Path', () => {
     });
   });
 
-  describe('Umfrageteilnehmer', () => {
-    it('kann an einer Umfrage teilnehmen und Antworten absenden', function() {
-      // Pollcode aus der Cypress-Umgebung abrufen
+  describe('Poll Participant', () => {
+    it('can participate in a poll and submit responses', function() {
+      // Get poll code from Cypress environment
       const pollCode = Cypress.env('pollCode');
 
-      // Wenn wir keinen Umfragecode haben, können wir nicht fortfahren
+      // If we don't have a poll code, we can't proceed
       if (!pollCode) {
-        cy.log('Kein Umfragecode verfügbar - Test wird übersprungen');
+        cy.log('No poll code available - skipping test');
         this.skip();
         return;
       }
 
-      // "Join Poll" klicken
+      // Click "Join Poll"
       cy.get('poll-component')
         .shadow()
         .find('#joinPoll')
         .click();
         
-      // Pollcode eingeben
+      // Enter poll code
       cy.get('poll-component')
         .shadow()
         .find('#pollCode')
         .type(pollCode);
         
-      // Join Poll Button klicken
+      // Click Join Poll button
       cy.get('poll-component')
         .shadow()
         .find('#enterPoll')
         .click();
         
-      // Warten bis die Fragen angezeigt werden
+      // Wait until questions are displayed
       cy.get('poll-component')
         .shadow()
         .contains('1.')
         .should('exist');
         
-      // Erste Frage beantworten (single choice)
+      // Answer first question (single choice)
       cy.get('poll-component')
         .shadow()
         .find('.option-button')
         .first()
         .click();
         
-      // Zweite Frage beantworten (multiple choice)
+      // Answer second question (multiple choice)
       cy.get('poll-component')
         .shadow()
         .find('.question-container')
@@ -209,29 +209,29 @@ describe('Poll System - Happy Path', () => {
         .eq(1)
         .click();
         
-      // Submit Responses klicken
+      // Click Submit Responses
       cy.get('poll-component')
         .shadow()
         .find('#submitResponses')
         .click();
         
-      // Warten auf die Bestätigungsmeldung
+      // Wait for confirmation message
       cy.get('poll-component')
         .shadow()
         .contains(/thank you|success|danke/i, { timeout: 10000 })
         .should('exist');
         
-      // Prüfen, ob wir automatisch zum Hauptmenü zurückgeleitet werden
-      // oder ob wir über einen Back-Button zurückkehren müssen
+      // Check if we are automatically redirected to the main menu
+      // or if we need to return via a Back button
       cy.get('poll-component')
         .shadow()
         .then($el => {
-          // Prüfen ob wir bereits im Hauptmenü sind
+          // Check if we are already in the main menu
           const hasMainMenu = $el.find('#createPoll, #joinPoll, #viewPolls').length > 0;
           
           if (!hasMainMenu) {
-            // Falls wir nicht automatisch zum Hauptmenü weitergeleitet wurden,
-            // klicken wir den Back-Button
+            // If we weren't automatically redirected to the main menu,
+            // click the Back button
             cy.get('poll-component')
               .shadow()
               .find('#backToMenu, button:contains("Back"), .back-button')
@@ -240,7 +240,7 @@ describe('Poll System - Happy Path', () => {
           }
         });
         
-      // Sicherstellen, dass wir zurück im Hauptmenü sind
+      // Make sure we are back in the main menu
       cy.get('poll-component')
         .shadow()
         .find('#createPoll, #joinPoll, #viewPolls', { timeout: 5000 })
@@ -248,51 +248,51 @@ describe('Poll System - Happy Path', () => {
     });
   });
 
-  describe('Admin kann die Ergebnisse überprüfen', () => {
-    it('zeigt die Umfrageergebnisse nach der Teilnahme an', function() {
+  describe('Admin can check the results', () => {
+    it('shows the poll results after participation', function() {
       const pollCode = Cypress.env('pollCode');
       
-      // Wenn wir keinen Umfragecode haben, können wir nicht fortfahren
+      // If we don't have a poll code, we can't proceed
       if (!pollCode) {
-        cy.log('Kein Umfragecode verfügbar - Test wird übersprungen');
+        cy.log('No poll code available - skipping test');
         this.skip();
         return;
       }
       
-      // Zu den Polls navigieren
+      // Navigate to the polls
       cy.get('poll-component')
         .shadow()
         .find('#viewPolls')
         .click();
       
-      // Nach unserem Poll suchen mit dem Titel
+      // Search for our poll by title
       cy.get('poll-component')
         .shadow()
         .find('#pollSearchInput')
         .first()
         .type(pollTitle);
       
-      // Admin-Passwort eingeben
+      // Enter admin password
       cy.get('poll-component')
         .shadow()
         .find('.admin-code-input')
         .first()
         .type(adminPassword);
       
-      // Admin-Panel öffnen
+      // Open admin panel
       cy.get('poll-component')
         .shadow()
         .find('.join-poll-btn')
         .first()
         .click();
       
-      // Prüfen, ob die Ergebnisse angezeigt werden
+      // Check if results are displayed
       cy.get('poll-component')
         .shadow()
         .contains('Admin Panel', { timeout: 10000 })
         .should('exist');
       
-      // Prüfen, ob die Teilnahmedaten angezeigt werden
+      // Check if participation data is displayed
       cy.get('poll-component')
         .shadow()
         .contains(/responses|results|ergebnisse/i, { timeout: 10000 })

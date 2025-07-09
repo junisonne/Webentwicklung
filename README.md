@@ -1,119 +1,141 @@
-# 📊 Projektzusammenfassung: Umfrage-Tool als Webkomponente
+# Projektzusammenfassung: Umfrage-Tool als Webkomponente
 
-http://141.72.13.151:8500
+## Funktionsumfang
 
-## 🎯 Projektziel
-Entwicklung eines einfachen, kollaborativen **Umfrage-Tools**, das:
-- Ohne Benutzerkonten funktioniert
-- Über einen **Beitrittslink oder Code** zugänglich ist
-- Admins Umfragen erstellen und verwalten lässt
-- Teilnehmer Umfragen ausfüllen können
-- Wiederverwendbare **Webkomponenten** nutzt
-
----
-
-## 🧩 Geplante Funktionen
-
-### 🛠️ Admin-Funktionen
-- Umfragen erstellen und verwalten
-- Admin-Zugang über Button + Passwort
-- Übersicht über Teilnehmer (z. B. Anzahl)
-- Umfragen manuell beenden (kein Timeout nötig)
-- IP-Adressen temporär sperren (z. B. über einfache Liste)
-
-### ✅ Teilnehmer-Funktionen
-- Beitritt per Link oder Code
-- Teilnahme an einer oder mehreren Umfragen
-- Keine Registrierung oder Anmeldung
-- Einfache UI mit zB:
-  - **Runde Buttons** für Einfachauswahl
-  - **Eckige Buttons** für Mehrfachauswahl
-
-### 📋 Umfrage-Funktionen
-- Unterstützung für:
-  - Einfach- und Mehrfachauswahl etc.
-  - "Anonyme" Abstimmungen (Pseudonym optional)
-- **Jeder Umfrage gehört ein eigener Admin**
+- **Umfragen erstellen und verwalten**  
+  Über die Webkomponente können Umfragen mit Einzel- und Mehrfachauswahl-Fragen erstellt werden.
+- **Admin-Bereich**  
+  Zugriff auf Verwaltungsfunktionen per Passwort (im initial-poll-JSON).
+- **Teilnahme ohne Registrierung**  
+  Nutzer können direkt per Link oder Code teilnehmen, ohne Anmeldung.
+- **Auswertung**  
+  Ergebnisse werden direkt nach der Abstimmung angezeigt.
+- **Flexible Einbindung**  
+  Die Komponente kann einfach per `<script>`-Tag und Custom Element auf beliebigen Webseiten genutzt werden.
+- **Anonyme Teilnahme**  
+  Es werden keine personenbezogenen Daten gespeichert, Pseudonyme sind optional.
+- **QR-Code-Unterstützung**  
+  Optional kann ein QR-Code zur Umfrage eingebunden werden.
+- **Responsives Design**  
+  Die Oberfläche ist für Desktop und mobile Geräte optimiert.
 
 ---
 
-## 🧱 Technischer Rahmen
+## Technischer Rahmen
 
-### 🧰 Architektur und Technologien
-- **Frontend**: HTML, CSS
-- **Backend**: js
-- **Datenbank**: Optional
-- **Webkomponenten**: Wiederverwendbar und eigenständig
+### Architektur und Technologien
+- Frontend: HTML, CSS
+- Backend: JavaScript (Node.js)
+- Datenbank: Optional
+- Webkomponenten: Wiederverwendbar und eigenständig
 
-### 🔐 Zugang & Sicherheit
+### Zugang & Sicherheit
 - Kein Login-System nötig
-- Adminzugang per Button & Passwort
-- Umfragen über eindeutige URLs (z. B. `domain.com/s/abc123`)
-
-### 🚀 Deployment / CI/CD
-- **CI mit GitHub Actions**:
-  - Linting
-  - Tests
-  - Docker Build
-- **CD manuell via Pull auf Server**:
-  - Server zieht neue Versionen selbst (Watchtower, GitHub Pull über Jobrunner)
-- **Docker auf Server vorhanden** - könnten wir also nutzen wenn wir wollen
+- Adminzugang per Passwort
+- Umfragen über eindeutige URLs (z. B. `domain.com/htmlseite?code=abc123`)
 
 ---
 
-## ✅ Bewertungskriterien (max. 100 Punkte)
+# Umfrage-Webkomponente – Einbindung & Nutzung
 
-| Kategorie                            | Punkte |
-|-------------------------------------|--------|
-| Code Reviews                        | 10     |
-| Abschlusspräsentation               | 5      |
-| Vorführung                          | 10     |
-| Funktionsumfang                     | 15     |
-| Dokumentation (Dev + Benutzer)      | 5      |
-| Code- und Testqualität (HTML/CSS/JS)| 40     |
-| Build-Prozess                       | 5      |
-| **Gesamt**                          | **90 + 10 (Code Review)** |
+## Schnellstart: So bindest du die Umfrage-Komponente ein
 
-### ➕ Weitere Anforderungen
-- **Kurzes Einführungsvideo (10–15 min)** zur Code-Struktur
-- Dokument mit:
-  - Eingesetzten **KI-Tools** (auch „Fehlanzeige“ möglich)
-  - **Mitwirkenden** pro Projektteil
+### 1. Backend-Server starten
 
----
+1. **Backend-Code herunterladen oder klonen**  
+   Stelle sicher, dass du den Backend-Server (z. B. Node.js) lokal oder auf einem Server verfügbar hast.
 
-## 🧠 Nächste Schritte für die Gruppe
+2. **Abhängigkeiten installieren**  
+   Wechsle ins Backend-Verzeichnis und installiere die benötigten Pakete:
+   ```bash
+   npm install
+   ```
 
-### 1. 📌 Rollenverteilung
-- Wer übernimmt: Frontend, Backend, Admin-UI, CI, Doku, Präsentation?
-
-### 2. 📐 Planung & Architektur
-- Welche Komponenten sind notwendig?
-  - Umfrage-Komponente (Teilnehmer)
-  - Admin-Komponente
-  - Ergebnisanzeige
-
-### 3. 🧑‍💻 Technologiewahl
-- Datenbank: ja/nein?
-
-### 4. 🧪 CI / Buildprozess
-- GitHub Actions:
-  - Linting
-  - Unit Tests
-  - Docker Build
-- Erstellung von Dockerfile und docker-compose.yml
-
-### 5. 🚀 Deployment-Konzept
-- Docker-Container → GitHub → Pull durch Server (z. B. Watchtower)
+3. **Server starten**  
+   Starte den Server, z. B.:
+   ```bash
+   npm start
+   ```
+   oder (je nach Setup)
+   ```bash
+   node server.js
+   ```
+   Der Server sollte nun unter einer URL wie `http://localhost:8500` oder deiner Server-IP erreichbar sein.
 
 ---
 
-## 🌟 Erweiterungsideen (optional)
-- Live-Ergebnisanzeige für Teilnehmer
-- QR-Code-Generierung für Umfragelinks
-- Dark-Mode
-- Zeitgesteuerte Umfragen
+### 2. Frontend/Komponente einbinden
 
+1. **Dateien einbinden**
 
+   Füge folgende Zeile in den `<head>`-Bereich deiner HTML-Datei ein, um die Komponente zu laden:
+   ```html
+   <script src="PFAD_ZUR/poll-component.js" type="module"></script>
+   ```
 
- 
+2. **Komponente verwenden**
+
+   Füge das Custom Element `<poll-component>` an der gewünschten Stelle im `<body>` deiner Seite ein. Beispiel:
+   ```html
+   <poll-component
+     api-url="http://localhost:8500"
+     initial-poll='{
+       "title":"Feedback zur heutigen Vorlesung",
+       "adminPassword":"DEIN_ADMIN_PASSWORT",
+       "questions":[
+         {"question":"Wie beurteilen Sie die Verständlichkeit?","type":"single","options":["Sehr verständlich","Verständlich","Eher verständlich"]},
+         {"question":"Welches Thema wünschen Sie sich?","type":"multiple","options":["Praxis","Theorie","Übungen"]}
+       ]
+     }'
+   ></poll-component>
+   ```
+
+   **Parameter:**
+   - `api-url`: URL zu deinem gestarteten Backend-Server
+   - `initial-poll`: JSON-String mit Titel, Admin-Passwort und Fragen
+
+3. **Optional: QR-Code-Unterstützung**
+
+   Für QR-Code-Generierung kannst du zusätzlich diese Zeile einbinden:
+   ```html
+   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+   ```
+
+---
+
+## Komplettes Beispiel
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Umfrage Beispiel</title>
+    <script src="PFAD_ZUR/poll-component.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </head>
+  <body>
+    <h1>Umfrage</h1>
+    <poll-component
+      api-url="http://localhost:8500"
+      initial-poll='{
+        "title":"Beispielumfrage",
+        "adminPassword":"geheim",
+        "questions":[
+          {"question":"Gefällt dir das Projekt?","type":"single","options":["Ja","Nein"]}
+        ]
+      }'
+    ></poll-component>
+  </body>
+</html>
+```
+
+---
+
+## Hinweise
+
+- Ersetze `PFAD_ZUR/poll-component.js` durch den tatsächlichen Pfad zur Komponente.
+- Passe `api-url`, `title`, `adminPassword` und die Fragen nach deinen Anforderungen an.
+- Die Einbindung des QR-Code-Skripts ist optional und nur nötig, wenn du QR-Codes nutzen möchtest.
+- Die Komponente funktioniert ohne Benutzerkonten.
+- Für die Admin-Funktionen ist das im JSON angegebene Passwort nötig.
