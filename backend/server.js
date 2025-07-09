@@ -329,17 +329,17 @@ app.get('/polls', (req, res) => {
 
 app.post('/poll/ban', (req, res) => {
     const { code } = req.body;
+    let ip = req.body.ip;
     const poll = findPoll(code);
 
-    const rawIp = req.headers['x-forwarded-for'] ||
-        req.headers['x-real-ip'] ||
-        req.socket.remoteAddress || '';
-    const ip = normalizeIP(rawIp);
+    if (!poll) {
+        return res.status(404).json({ message: 'Poll not found' });
+    }
 
-    
     if (!ip) {
         return res.status(400).json({ message: 'IP address is required' });
     }
+    ip = normalizeIP(ip);
     
     if (!poll.bannedIPs.includes(ip)) {
         poll.bannedIPs.push(ip);
