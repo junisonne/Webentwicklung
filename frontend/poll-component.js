@@ -13,7 +13,7 @@ class Poll extends HTMLElement {
     
     this.state = { currentPoll: null, userResponses: [], adminPassword: null };
 
-    this.apiUrl = this.getAttribute("api-url") || "http://localhost:3000";
+    this.apiUrl = this.getAttribute("api-url") || "http://localhost:8500";
     api.setApiUrl(this.apiUrl);
 
     const initial = this.getAttribute("initial-poll") || null;

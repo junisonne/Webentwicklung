@@ -252,25 +252,8 @@ export const getAdminPanelTemplate = ({
                 <header>
                     <h2>IP Addresses</h2>
                 </header>
-                <ul class="ip-list" role="list">
-                    ${
-                      participantEntries.length > 0
-                        ? participantEntries
-                            .map(
-                              (ip) => `
-                        <li class="ip-entry">
-                            <span class="ip-details">${ip.ip} <small>${new Date(
-                                ip.timestamp
-                              ).toLocaleString()}</small></span>
-                            <button class="ban-ip-btn" data-ip="${
-                              ip.ip
-                            }" type="button">Ban</button>
-                        </li>
-                    `
-                            )
-                            .join("")
-                        : "<li><p>No IP addresses recorded.</p></li>"
-                    }
+                <ul id="participantIPsList" class="ip-list" role="list">
+                    ${getParticipantIPsListTemplate(participantEntries)}
                 </ul>
                 <div id="banMessage" class="message-container" aria-live="polite"></div>
             </section>
@@ -419,3 +402,28 @@ export const getBannedIPsListTemplate = (bannedIPs) =>
             </li>
         `).join('')
         : '<li><p>No IP addresses are currently banned.</p></li>';
+
+/**
+ * Generates only the participant IP addresses list items HTML (without the surrounding ul element)
+ * @param {Array<Object>} participantEntries - Array of participant IP entry objects
+ * @param {string} participantEntries[].ip - The IP address of the participant
+ * @param {string} participantEntries[].timestamp - The timestamp when the participant joined
+ * @returns {string} HTML template string for participant IP list items
+ */
+export const getParticipantIPsListTemplate = (participantEntries) => 
+    participantEntries.length > 0
+        ? participantEntries
+            .map(
+                (ip) => `
+            <li class="ip-entry">
+                <span class="ip-details">${ip.ip} <small>${new Date(
+                    ip.timestamp
+                ).toLocaleString()}</small></span>
+                <button class="ban-ip-btn" data-ip="${
+                    ip.ip
+                }" type="button">Ban</button>
+            </li>
+        `
+            )
+            .join("")
+        : "<li><p>No IP addresses recorded.</p></li>";

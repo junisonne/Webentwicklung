@@ -1,4 +1,4 @@
-let API_URL = `http://localhost:3000`;
+let API_URL = `http://localhost:8500`;
 
 /**
  * @param {string} url - Sets the base URL for API requests

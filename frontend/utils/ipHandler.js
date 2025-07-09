@@ -1,5 +1,6 @@
 import * as api from "../api.js";
 import * as templates from "../templates.js";
+import { handleRefreshResults } from "./adminHandler.js";
 
 /**
  * Validates IP address format
@@ -39,6 +40,34 @@ export function updateBannedIPsList(shadowRoot, bannedIPs, currentPollCode, admi
 }
 
 /**
+ * Updates only the participant IPs list without refreshing the entire admin panel
+ * @param {HTMLElement} shadowRoot - The shadow root of the poll component
+ * @param {Array<Object>} participantEntries - Updated array of participant IP entries
+ * @param {string} currentPollCode - Current poll code for event binding
+ * @param {string} adminPassword - Admin password for authentication
+ */
+export function updateParticipantIPsList(shadowRoot, participantEntries, currentPollCode, adminPassword) {
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+    }
+    const participantIPsList = shadowRoot.getElementById("participantIPsList");
+    if (participantIPsList) {
+        participantIPsList.innerHTML = templates.getParticipantIPsListTemplate(participantEntries);
+        
+        // Re-bind event listeners for ban buttons
+        shadowRoot.querySelectorAll(".ban-ip-btn").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
+                    handleBanIP(shadowRoot, ip, currentPollCode, adminPassword);
+                }
+            });
+        });
+    }
+}
+
+/**
  * Handles banning a new IP address from the admin input form
  * @param {HTMLElement} shadowRoot - The shadow root of the poll component
  * @param {string} pollCode - Poll code to ban IP from
@@ -70,6 +99,8 @@ export async function handleBanNewIP(shadowRoot, pollCode, adminPassword) {
         ipInput.value = "";
         const updatedData = await api.getAdminData(pollCode, adminPassword);
         updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
+        updateParticipantIPsList(shadowRoot, updatedData.participantEntries, pollCode, adminPassword);
+        handleRefreshResults(shadowRoot, pollCode, adminPassword);
     } catch (error) {
         messageEl.innerHTML = `<div class="error">${error.message}</div>`;
     }
@@ -96,6 +127,8 @@ async function handleBanIP(shadowRoot, ip, pollCode, adminPassword) {
 
         const updatedData = await api.getAdminData(pollCode, adminPassword);
         updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
+        updateParticipantIPsList(shadowRoot, updatedData.participantEntries, pollCode, adminPassword);
+        handleRefreshResults(shadowRoot, pollCode, adminPassword);
     } catch (error) {
         messageEl.innerHTML = `<div class="error">${error.message}</div>`;
     }
