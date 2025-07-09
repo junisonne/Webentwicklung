@@ -360,7 +360,6 @@ class Poll extends HTMLElement {
         pollCode,
         this.state.adminPassword
       );
-      console.log("Poll status updated:", data);
       updatePollStatus(this.shadowRoot, data.poll);
     } catch (error) {
         if(messageEl) messageEl.innerHTML = `<div class="error">${error.message}</div>`;

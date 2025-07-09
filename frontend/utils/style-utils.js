@@ -53,7 +53,6 @@ export async function loadViewStyles(view) {
     view = 'mainMenu'; // Fallback auf mainMenu
   }
   
-  console.log(`Lade Styles für Ansicht: ${view}`);
   const requiredModules = viewModuleMap[view];
   const styles = [];
   
@@ -61,7 +60,6 @@ export async function loadViewStyles(view) {
     // Base CSS immer zuerst laden
     if (!baseStylesheet) {
       baseStylesheet = await loadStylesheet('./frontend/styles/base.css');
-      console.log("Base CSS geladen");
     }
     styles.push(baseStylesheet);
     
@@ -72,13 +70,11 @@ export async function loadViewStyles(view) {
       if (!moduleStylesheets[moduleName]) {
         const path = `./frontend/styles/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
         moduleStylesheets[moduleName] = await loadStylesheet(path);
-        console.log(`${moduleName} CSS geladen`);
       }
       
       styles.push(moduleStylesheets[moduleName]);
     }
     
-    console.log(`${styles.length} Stylesheets für Ansicht ${view} geladen`);
     return styles;
   } catch (error) {
     console.error(`Fehler beim Laden der Styles für ${view}:`, error);
@@ -102,7 +98,6 @@ export async function applyStylesToShadowRoot(shadowRoot, view = 'mainMenu') {
   try {
     const viewStylesheets = await loadViewStyles(view);
     shadowRoot.adoptedStyleSheets = viewStylesheets;
-    console.log(`Styles für ${view} auf Shadow DOM angewendet`);
   } catch (error) {
     console.error("Fehler beim Anwenden der Styles:", error);
   }

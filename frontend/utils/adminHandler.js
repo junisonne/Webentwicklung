@@ -69,7 +69,6 @@ export function generateQRCode(shadowRoot, pollCode) {
  * @param {Object} poll - Updated poll data with new status
  */
 export function updatePollStatus(shadowRoot, poll) {
-    console.log("Updating poll status:", poll);
     updatePollMetadata(shadowRoot, poll);
 
     const toggleButton = shadowRoot.getElementById("togglePoll");
