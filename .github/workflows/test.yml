@@ -38,19 +38,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create cypress.config.js
-        run: |
-          echo "const { defineConfig } = require('cypress')
-          
-          module.exports = defineConfig({
-            e2e: {
-              baseUrl: 'http://localhost:8500',
-              setupNodeEvents(on, config) {
-                // implement node event listeners here
-              },
-            },
-          })" > cypress.config.js
-
       - name: Start server in background
         run: npm start &
         
