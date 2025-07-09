@@ -4,6 +4,12 @@
 
 ## Leon
 
+HTML Refactoring
+
+CSS Refactoring und Modularisierung
+
+E2E Test mit Cypress
+
 ## Sergio
 
 Initialen Aufbau mit einigen Basisfunktionen bereitgestellt wie auch modularisiert. 

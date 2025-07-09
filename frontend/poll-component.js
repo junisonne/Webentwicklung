@@ -13,7 +13,7 @@ class Poll extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     
-    // State initialisieren
+    // Initialize state
     this.state = { currentPoll: null, userResponses: [], adminPassword: null };
 
     this.apiUrl = this.getAttribute("api-url") || "http://localhost:3000";
@@ -23,7 +23,7 @@ class Poll extends HTMLElement {
     try {
       this.initialPoll = initial ? JSON.parse(initial) : null;
     } catch {
-      console.error("Ungültiges JSON in initial-poll");
+      console.error("Unvalid JSON in initial-poll");
       this.initialPoll = null;
     }
   }
