@@ -5,7 +5,7 @@ describe('Poll System - Happy Path', () => {
   
   beforeEach(() => {
     // Visit the app using baseUrl from cypress.config.js
-    cy.visit('/');
+    cy.visit('http://141.72.13.151:8500/');
     cy.wait(1000); // Längere Pause für DOM-Rendering und Netzwerkanfragen
   });
 
