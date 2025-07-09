@@ -4,7 +4,7 @@
 
 ## Code Dokumentation:
 
-Das abzugebene Video, das den Code ausführlich erläutert, ist auf [YouTube](https://youtu.be/p72SKDk-LdM) zu finden.
+Das abzugebene Video, das den Code ausführlich erläutert, ist auf [YouTube](https://youtu.be/sju3JVed8Q0?si=An0OQWU8BDmgsLFA) zu finden.
 
 ## KI-Unterstützung in der Entwicklung
 
