@@ -5,7 +5,7 @@
   "description": "A simple Node.js application",
   "scripts": {
     "start": "node ./backend/server.js",
-    "test": "jest --verbose --coverage && cy:run",
+    "test": "jest --verbose --coverage && start-server-and-test start http://localhost:8500 test:e2e",
     "test:watch": "jest --watchAll --verbose --coverage",
     "test:e2e": "cypress run",
     "cypress:open": "cypress open",
