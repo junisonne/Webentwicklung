@@ -24,5 +24,21 @@ jobs:
       - name: Run Jest tests
         run: npm run test:unit
 
+      - name: Install Cypress dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
       - name: Run E2E tests with server
-        run: npm run test:cy
+        run: |
+          # Start server in background
+          npm run start &
+          sleep 5
+          # Wait for server to be fully available
+          npx wait-on http://localhost:8500 -t 30000
+          # Run Cypress tests
+          npm run test:e2e
+        env:
+          CYPRESS_BASE_URL: http://localhost:8500
+          CYPRESS_responseTimeout: 60000
+          CYPRESS_defaultCommandTimeout: 20000

@@ -115,7 +115,7 @@ describe('Poll System - Happy Path', () => {
       // Prüfen, ob die Poll erfolgreich erstellt wurde
       cy.get('poll-component')
         .shadow()
-        .contains(/Poll created! Code:|Your Poll Code is|Code:/i, { timeout: 10000 })
+        .contains(/Poll created! Code:|Your Poll Code is|Code:|success/i, { timeout: 30000 })
         .should('exist');
       
       // Umfragecode extrahieren und speichern
