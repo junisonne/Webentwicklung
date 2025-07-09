@@ -1,55 +1,105 @@
-# Dokumentation für die Gruppenarbeit
+# Dokumentation für die Gruppenarbeit von Gruppe 5  
 
-## Jonathan
+**Projektmitglieder: Mika Jun, Jonathan Wieder, Sergio Meli, Leon Priemer**
 
-QR Code generieren im Admin Bereich für den Beitritt zum Umfrage durch Queryparameter.
+## Code Dokumentation:
 
-UI Verbesserungen.
+Das abzugebene Video, das den Code ausführlich erläutert, ist auf [YouTube](https://youtu.be/p72SKDk-LdM) zu finden.
 
-Bugfixing.
+## KI-Unterstützung in der Entwicklung
 
-Unit Tests: api.test.js, csv-utils.js, poll-component.test.js, server.test.js, templates.test.js.
+**Code-Generierung und -Optimierung:**
+- Automatische Generierung von Template-Strukturen und Boilerplate-Code
+- Refactoring bestehender Codebasis für bessere Wartbarkeit und Modularität
+- Optimierung von Funktionen und Algorithmen für Performance und Lesbarkeit
 
-Parameter-basierte Konfiguration: Durch hinzufügen einer initial-poll im öffnenden Start Tag des Elements können Umfragen vorkonfiguriert werden, die dann mit dem Button „Load Template“ ausgewählt werden können.
+**Dokumentation und Kommentierung:**
+- Erstellung von JSDoc-Kommentaren nach ES6+ Standards
+- Generierung von README-Dateien und technischer Dokumentation
+- Übersetzung und Vereinheitlichung von Code-Kommentaren
 
-UI der Komponente passt sich an das Farbschema und die Textart der Website an.
+**Fehlerbehandlung und Debugging:**
+- Identifikation und Lösung von Syntax- und Logikfehlern
+- Verbesserung der Fehlerbehandlung in asynchronen Operationen
+- Code-Review und Qualitätssicherung
 
-Themes: Index, Raumschiff, Retro, Dschungel.
+**Testing und Validierung:**
+- Erstellung von Unit-Tests und Testfällen
+- Validierung von API-Endpoints und Datenstrukturen
+- Überprüfung der Code-Konsistenz und Best Practices
 
-## Leon
+**Spezifische Verbesserungen in diesem Projekt:**
+- Auslagerung von Geschäftslogik in Handler-Module
+- Implementierung partieller DOM-Updates für bessere Performance
+- Konsistente Naming-Conventions und Dateistruktur
 
-HTML Refactoring
+Sämtliche KI-Inhalte wurden händisch überprüft und auf den eigenen Use-Case angepasst. Viele der genannten Aufgaben wurden auch nicht ausschließlich von KI ausgeführt, sondern nur teilweise. Viele Aufgaben wurden auch komplett händisch ausgeführt. 
 
-CSS Refactoring und Modularisierung
+## Aufgabenverteilung
 
-E2E Test mit Cypress
 
-Dokumentation + Kommentare
+### Jonathan Wieder
 
-## Sergio
+- QR Code generieren im Admin Bereich für den Beitritt zum Umfrage durch Queryparameter.
 
-Initialen Aufbau mit einigen Basisfunktionen bereitgestellt wie auch modularisiert. 
+- UI Verbesserungen.
 
-CSS-Refactoring, Responsive-Design und CSS-Variablen umgesetzt. 
+- Bugfixing.
 
-Neugestaltung der UI-Elemente durchgeführt. 
+- Unit Tests: api.test.js, csv-utils.js, poll-component.test.js, server.test.js, templates.test.js.
 
-Bugfixing vorgenommen. 
+- Parameter-basierte Konfiguration: Durch hinzufügen einer initial-poll im öffnenden Start Tag des Elements können Umfragen vorkonfiguriert werden, die dann mit dem Button „Load Template“ ausgewählt werden können.
 
-Codekommentare bereinigt. 
+- UI der Komponente passt sich an das Farbschema und die Textart der Website an.
 
-CSV-Download-Funktion implementiert.
+- Themes: Index, Raumschiff, Retro, Dschungel.
 
-## Mika
+- Benutze KI-Modelle:  
+**ChatGPT o4-mini-high**
 
-IP-Banning Funktionalität implementiert.
+### Leon Priemer
 
-Build-Prozess implementiert.
+- HTML Refactoring
 
-Einige kleinere Features implementiert.
+- CSS Refactoring und Modularisierung
 
-Großes Javascript Refactoring vorgenommen.
+- E2E Test mit Cypress
 
-Bugfixing vorgenommen. 
+- Dokumentation + Kommentare
 
-Codekommentare sowie konsistentes Naming sichergestellt. 
+- Benutze KI-Modelle:  
+**GitHub Copilot (Claude Sonnet 3.7)**
+
+### Sergio Meli
+
+- Initialen Aufbau mit einigen Basisfunktionen bereitgestellt wie auch modularisiert. 
+
+- CSS-Refactoring, Responsive-Design und CSS-Variablen umgesetzt. 
+
+- Neugestaltung der UI-Elemente durchgeführt. 
+
+- Bugfixing vorgenommen. 
+
+- Codekommentare bereinigt. 
+
+- CSV-Download-Funktion implementiert.
+
+- Benutze KI-Modelle:  
+**GitHub Copilot (Claude Sonnet 3.7, 3.7 Thinking, 4.0; Gemini Pro 2.5)**
+
+### Mika Jun
+
+- IP-Banning Funktionalität implementiert.
+
+- Build-Prozess implementiert.
+
+- Einige kleinere Features implementiert.
+
+- Großes Javascript Refactoring vorgenommen.
+
+- Bugfixing vorgenommen. 
+
+- Codekommentare sowie konsistentes Naming sichergestellt. 
+
+- Benutze KI-Modelle:  
+**(Claude Sonnet 4)**
