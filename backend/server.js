@@ -427,10 +427,13 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 8500;
 const HOST = process.env.HOST || 'http://localhost';
-app.listen(PORT, () => {
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
     console.log(`📊 Test poll available at: ${HOST}:${PORT}/poll/test123`);
     console.log(`📝 All polls overview: ${HOST}:${PORT}/polls`);
-});
+  });
+}
 
 export default app;
