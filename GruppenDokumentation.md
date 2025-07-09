@@ -19,3 +19,15 @@ Codekommentare bereinigt.
 CSV-Download-Funktion implementiert.
 
 ## Mika
+
+IP-Banning Funktionalität implementiert.
+
+Build-Prozess implementiert.
+
+Einige kleinere Features implementiert.
+
+Großes Javascript Refactoring vorgenommen.
+
+Bugfixing vorgenommen. 
+
+Codekommentare sowie konsistentes Naming sichergestellt. 

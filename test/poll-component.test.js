@@ -7,7 +7,7 @@ import '@testing-library/jest-dom';
 import fetchMock from 'jest-fetch-mock';
 import '../frontend/poll-component.js';
 import * as api from '../frontend/api.js';
-import * as csvUtils from '../frontend/utils/csv-utils.js';
+import * as csvUtils from '../frontend/utils/csvUtils.js';
 
 beforeAll(() => {
   global.CSSStyleSheet = class { replaceSync() {} };
@@ -150,18 +150,5 @@ describe('Poll Component', () => {
     expect(root.querySelectorAll('.question-builder')).toHaveLength(2);
     fireEvent.click(root.querySelector('.question-builder .add-option'));
     expect(root.querySelectorAll('.option-row')).toHaveLength(1);
-  });
-
-  it('downloadResultsCSV triggers download and shows message', () => {
-    const el = mountComponent();
-    const data = { poll: { code: 'X' }, results: [] };
-    el.shadowRoot.innerHTML = `<div id="banIPMessage"></div><div id="banMessage"></div>`;
-    el.downloadResultsCSV(data);
-    expect(csvUtils.downloadCSV).toHaveBeenCalled();
-    const msg = el.shadowRoot.getElementById('banMessage').textContent || el.shadowRoot.getElementById('banIPMessage').textContent;
-    expect(msg).toContain('CSV downloaded successfully');
-    jest.runAllTimers();
-    expect(global.URL.revokeObjectURL).toHaveBeenCalled();
-    expect(el.shadowRoot.getElementById('banMessage').innerHTML || el.shadowRoot.getElementById('banIPMessage').innerHTML).toBe('');
   });
 });

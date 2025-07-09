@@ -1,5 +1,5 @@
 // test/csv-utils.test.js
-import { generatePollResultsCSV, downloadCSV } from '../frontend/utils/csv-utils';
+import { generatePollResultsCSV, downloadCSV } from '../frontend/utils/csvUtils';
 
 describe('CSV Utils', () => {
   describe('generatePollResultsCSV()', () => {

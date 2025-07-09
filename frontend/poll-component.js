@@ -1,34 +1,30 @@
 import * as api from "./api.js";
 import * as templates from "./templates.js";
-import { generatePollResultsCSV, downloadCSV } from "./utils/csv-utils.js";
 import { handleEnterAsAdmin, handleSearchPolls } from "./utils/pollOverviewHandler.js";
-import { loadInitialPoll, addQuestion, addOption, resetQuestion, handleAnsweredQuestions } from "./utils/pollCreateHandler.js";
+import { loadPollTemplate, addQuestion, addOption, resetQuestion, handleAnsweredQuestions } from "./utils/pollCreateHandler.js";
 import { handleBanNewIP, setupIPEventListeners } from "./utils/ipHandler.js";
-import { handleRefreshResults, updateResultBars, generateQRCode, updatePollStatus } from "./utils/adminHandler.js";
-import { applyStylesToShadowRoot } from "./utils/style-utils.js";
+import { handleRefreshResults, updateResultBars, generateQRCode, updatePollStatus, handleDownloadResultsCSV } from "./utils/adminHandler.js";
+import { applyStylesToShadowRoot } from "./utils/styleUtils.js";
 
-// State is kept minimal with only essential data needed for poll operation
 class Poll extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     
-    // State initialisieren
     this.state = { currentPoll: null, userResponses: [], adminPassword: null };
 
-    this.apiUrl = this.getAttribute("api-url") || "http://localhost:3000";
+    this.apiUrl = this.getAttribute("api-url") || "http://localhost:8500";
     api.setApiUrl(this.apiUrl);
 
     const initial = this.getAttribute("initial-poll") || null;
     try {
       this.initialPoll = initial ? JSON.parse(initial) : null;
     } catch {
-      console.error("Ungültiges JSON in initial-poll");
+      console.error("Invalid JSON in initial-poll attribute");
       this.initialPoll = null;
     }
   }
 
-  // Auto-join polls when URL contains code parameter, otherwise show menu
   async connectedCallback() {
     const params = new URLSearchParams(window.location.search);
     const pollCode = params.get("code");
@@ -40,7 +36,16 @@ class Poll extends HTMLElement {
     }
   }
 
-  // Central render method for all views - handles both template and event binding
+  /**
+   * Central rendering method for all component views
+   * Handles template injection and event handler binding with proper context
+   * 
+   * @param {string} template - HTML template string to render
+   * @param {Array<Object>} eventHandlers - Array of event handler configurations
+   * @param {string} eventHandlers[].selector - Element ID to attach event to
+   * @param {string} eventHandlers[].event - Event type (click, submit, etc.)
+   * @param {Function} eventHandlers[].handler - Event handler function
+   */
   render(template, eventHandlers = []) {
     this.shadowRoot.innerHTML = template;
     eventHandlers.forEach(({ selector, event, handler }) => {
@@ -50,13 +55,10 @@ class Poll extends HTMLElement {
       }
     });
   }
-
-  // Display handlers below follow a consistent pattern:
-  // 1. Render appropriate template
-  // 2. Bind necessary event handlers
-  // 3. Initialize any required state
-  // 4. Apply view-specific styles
-
+  /**
+   * Displays the main navigation menu with poll options
+   * Applies view-specific styles and sets up navigation event handlers
+   */
   async showMainMenu() {
     await applyStylesToShadowRoot(this.shadowRoot, 'mainMenu');
     this.render(templates.getMainMenuTemplate(), [
@@ -65,7 +67,10 @@ class Poll extends HTMLElement {
       { selector: "viewPolls", event: "click", handler: this.showAllPolls },
     ]);
   }
-
+  /**
+   * Displays the poll joining interface
+   * Provides input field for poll code entry and navigation
+   */
   async showJoinPoll() {
     await applyStylesToShadowRoot(this.shadowRoot, 'joinPoll');
     this.render(templates.getJoinPollTemplate(), [
@@ -73,7 +78,11 @@ class Poll extends HTMLElement {
       { selector: "backToMenu", event: "click", handler: this.showMainMenu },
     ]);
   }
-
+  /**
+   * Handles poll joining process with validation and error handling
+   * Validates poll code, fetches poll data, and transitions to questions view
+   * Provides specific error handling for banned IPs and general errors
+   */
   async joinPoll() {
     const pollCode = this.shadowRoot.getElementById("pollCode").value;
     const messageEl = this.shadowRoot.getElementById("message");
@@ -107,6 +116,10 @@ class Poll extends HTMLElement {
     }
   }
 
+  /**
+   * Displays all available polls with admin access functionality
+   * Fetches poll list and sets up admin authentication and search handlers
+   */
   async showAllPolls() {
     const polls = await api.getAllPolls();
     await applyStylesToShadowRoot(this.shadowRoot, 'pollList');
@@ -117,6 +130,10 @@ class Poll extends HTMLElement {
     handleSearchPolls(this.shadowRoot, polls.polls, this.state, this.showAdminPanel.bind(this));
   }
 
+  /**
+   * Displays poll questions interface for user participation
+   * Renders questions with interactive options and sets up selection handlers
+   */
   async showPollQuestions() {
     await applyStylesToShadowRoot(this.shadowRoot, 'pollQuestions');
     this.render(templates.getPollQuestionsTemplate(this.state.currentPoll), [
@@ -132,10 +149,14 @@ class Poll extends HTMLElement {
     });
   }
 
-  // Handles both single and multiple choice questions in one component
-  // Uses CSS classes for visual feedback rather than direct style manipulation
+  /**
+   * Handles option selection for both single and multiple choice questions
+   * Manages UI state changes and updates user response data
+   * Uses CSS classes for visual feedback instead of direct style manipulation
+   * 
+   * @param {Event} event - Click event from option button
+   */
   selectOption(event) {
-    // Get the button element, which could be the target or its parent
     const button = event.target.closest(".option-button");
     if (!button) return;
 
@@ -170,7 +191,11 @@ class Poll extends HTMLElement {
     }
   }
 
-  // Ensures data integrity by validating all fields before submission
+  /**
+   * Validates and submits user responses to the poll
+   * Ensures data integrity by validating all fields before submission
+   * Provides user feedback and handles submission errors gracefully
+   */
   async submitResponses() {
     const messageEl = this.shadowRoot.getElementById("message");
     const unanswered = this.state.userResponses.some((response, index) => {
@@ -201,6 +226,11 @@ class Poll extends HTMLElement {
     }
   }
 
+  /**
+   * Displays the poll creation interface with dynamic question building
+   * Sets up form handlers for adding questions, options, and template loading
+   * Implements progressive enhancement for initial poll templates
+   */
   async showCreatePoll() {
     await applyStylesToShadowRoot(this.shadowRoot, 'createPoll');
     this.render(
@@ -213,7 +243,7 @@ class Poll extends HTMLElement {
 
     if (this.initialPoll) {
         const btn = this.shadowRoot.getElementById('loadTemplate');
-        btn.addEventListener('click', () => loadInitialPoll(this.shadowRoot, this.initialPoll));
+        btn.addEventListener('click', () => loadPollTemplate(this.shadowRoot, this.initialPoll));
     }
 
     this.shadowRoot
@@ -232,6 +262,11 @@ class Poll extends HTMLElement {
   }
 
 
+  /**
+   * Processes poll creation with comprehensive validation
+   * Validates form data, creates poll via API, and provides admin panel access
+   * Handles creation errors and provides user feedback throughout the process
+   */
   async createPoll() {
     const messageEl = this.shadowRoot.getElementById("message");
     const title = this.shadowRoot.getElementById("pollTitle").value.trim();
@@ -277,10 +312,12 @@ class Poll extends HTMLElement {
   }
   
 
-  // Admin panel implements progressive enhancement:
-  // 1. Basic poll management
-  // 2. IP banning functionality
-  // 3. QR code generation if library available
+  /**
+   * Initiates admin panel access with authentication
+   * Prompts for admin password if not cached and validates access
+   * Implements progressive enhancement for admin functionality
+   * @param {string} pollCode - Unique identifier for the poll
+   */
   async showAdminPanel(pollCode) {
     if (!this.state.adminPassword) {
       this.state.adminPassword = prompt("Enter admin password:");
@@ -296,6 +333,12 @@ class Poll extends HTMLElement {
     }
   }
 
+  /**
+   * Renders the complete admin panel with poll management capabilities
+   * Implements progressive enhancement: basic management, IP banning, QR codes
+   * Sets up all admin event handlers and initializes enhanced features
+   * @param {Object} data - Complete poll data including results and participants
+   */
   async showAdminResults(data) {
     await applyStylesToShadowRoot(this.shadowRoot, 'adminPanel');
     this.render(templates.getAdminPanelTemplate(data), [
@@ -321,7 +364,7 @@ class Poll extends HTMLElement {
       {
         selector: "downloadCSV",
         event: "click",
-        handler: () => this.downloadResultsCSV(data),
+        handler: () => handleDownloadResultsCSV(this.shadowRoot, data),
       },
     ]);
 
@@ -331,28 +374,15 @@ class Poll extends HTMLElement {
   }
 
   /**
-   * Generates and downloads a CSV file containing poll results
-   * Only accessible from the admin panel
-   * @param {Object} data - Poll data including results and metadata
+   * Toggles poll active state with optimized DOM updates
+   * Updates only the poll status section instead of reloading entire admin panel
+   * Provides error handling with appropriate user feedback
+   * 
+   * @async
+   * @param {string} pollCode - Unique identifier for the poll
+   * @memberof Poll
+   * @returns {Promise<void>}
    */
-  downloadResultsCSV(data) {
-    const csvContent = generatePollResultsCSV(data);
-    const fileName = `poll-${data.poll.code}-results.csv`;
-    downloadCSV(csvContent, fileName);
-
-    // Provide user feedback
-    const messageEl =
-      this.shadowRoot.getElementById("banIPMessage") ||
-      this.shadowRoot.getElementById("banMessage");
-    if (messageEl) {
-      messageEl.innerHTML =
-        '<div class="success">CSV downloaded successfully!</div>';
-      setTimeout(() => {
-        messageEl.innerHTML = "";
-      }, 3000);
-    }
-  }
-
   async togglePoll(pollCode) {
     const messageEl = this.shadowRoot.getElementById("message");
     try {
@@ -366,6 +396,16 @@ class Poll extends HTMLElement {
     }
   }
 
+  /**
+   * Automatically joins a poll when accessed via direct URL with poll code
+   * Handles automatic poll entry from URL parameters for seamless user experience
+   * Falls back to main menu on any errors during auto-join process
+   * 
+   * @async
+   * @param {string} pollCode - Poll code from URL parameter
+   * @memberof Poll
+   * @returns {Promise<void>}
+   */
   async autoJoinPoll(pollCode) {
     try {
       const data = await api.joinPoll(pollCode);
@@ -379,5 +419,4 @@ class Poll extends HTMLElement {
     }
   }
 }
-
 customElements.define("poll-component", Poll);

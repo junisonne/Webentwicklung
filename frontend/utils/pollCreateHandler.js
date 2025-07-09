@@ -1,9 +1,11 @@
+
 /**
- * Loads initial poll data into the creation form
+ * Loads initial poll data into the creation form from a predefined template
+ * Populates form fields and recreates the question structure with event listeners
  * @param {HTMLElement} shadowRoot - The shadow root of the poll component
- * @param {Object} initialPoll - Initial poll data to load
+ * @param {Object} initialPoll - Initial poll data containing title, password, and questions
  */
-export function loadInitialPoll(shadowRoot, initialPoll) {
+export function loadPollTemplate(shadowRoot, initialPoll) {
   const data = initialPoll;
   
   shadowRoot.getElementById('pollTitle').value = data.title;
@@ -48,7 +50,8 @@ export function loadInitialPoll(shadowRoot, initialPoll) {
 }
 
 /**
- * Adds a new question to the poll creation form
+ * Dynamically adds a new question builder to the poll creation form
+ * Creates a complete question structure with options, type selector, and event handlers
  * @param {HTMLElement} shadowRoot - The shadow root of the poll component
  */
 export function addQuestion(shadowRoot) {
@@ -57,6 +60,7 @@ export function addQuestion(shadowRoot) {
   const questionDiv = document.createElement("div");
   questionDiv.className = "question-builder";
   questionDiv.dataset.questionNumber = questionCount;
+  
   questionDiv.innerHTML = `
     <header class="question-header">
       <input type="text" placeholder="Question ${questionCount}" class="question-input" aria-label="Question ${questionCount}" />
@@ -76,7 +80,6 @@ export function addQuestion(shadowRoot) {
   `;
   container.appendChild(questionDiv);
 
-  // Add event listeners for this new question
   questionDiv
     .querySelector(".add-option")
     .addEventListener("click", (e) => addOption(e));
@@ -88,15 +91,14 @@ export function addQuestion(shadowRoot) {
 }
 
 /**
- * Adds a new option to a question
+ * Adds a new option input field to an existing question with remove functionality
+ * Creates option input with proper labeling and removal capability
  * @param {Event} event - The click event from the add option button
  */
 export function addOption(event) {
-    // Find the closest question-builder parent
     const questionBuilder = event.target.closest(".question-builder");
     if (!questionBuilder) return;
 
-    // Find the options-container within this question-builder
     const optionsContainer = questionBuilder.querySelector(".options-container");
     if (!optionsContainer) return;
 
@@ -127,9 +129,10 @@ export function addOption(event) {
 }
 
 /**
- * Resets a question to its default state
+ * Resets a question to its default state and converts reset button to delete button
+ * Clears all inputs, resets question type, and provides delete functionality
  * @param {Event} event - The click event from the reset button
- * @param {HTMLElement} shadowRoot - The shadow root of the poll component
+ * @param {HTMLElement} shadowRoot - The shadow root of the poll component for container access
  */
 export function resetQuestion(event, shadowRoot) {
   const questionBuilder = event.target.closest(".question-builder");
@@ -145,19 +148,16 @@ export function resetQuestion(event, shadowRoot) {
   const optionsContainer = questionBuilder.querySelector(".options-container");
   const questionNumber = questionBuilder.dataset.questionNumber || "1";
 
-  // Reset question text and placeholder
   if (questionInput) {
     questionInput.value = "";
     questionInput.placeholder = `Question ${questionNumber}`;
     questionInput.classList.remove("input-error");
   }
 
-  // Reset question type to single choice
   if (questionType) {
     questionType.value = "single";
   }
   
-  // Change reset button to delete question
   if(resetButton) {
     resetButton.type = "button";
     resetButton.className = "delete-question";
@@ -170,7 +170,6 @@ export function resetQuestion(event, shadowRoot) {
     });
   }
 
-  // Reset options to just 2 default options
   if (optionsContainer) {
     optionsContainer.innerHTML = `
       <input type="text" placeholder="Option 1" class="option-input" />
@@ -179,6 +178,16 @@ export function resetQuestion(event, shadowRoot) {
   }
   
 }
+
+/**
+ * Validates and processes all question builders to extract poll data
+ * Performs comprehensive validation including empty fields and duplicate option detection
+ * Adds visual error indicators to invalid inputs for user feedback
+ * @param {NodeList} questionBuilders - Collection of question builder DOM elements
+ * @returns {Array} returns.questions - Array of valid question objects
+ * @returns {boolean} returns.hasEmptyFields - True if any required fields are empty
+ * @returns {boolean} returns.hasDuplicateOptions - True if duplicate options found within questions
+ */
 export function handleAnsweredQuestions(questionBuilders) {
     const questions = [];
     let hasEmptyFields = false;
@@ -196,7 +205,6 @@ export function handleAnsweredQuestions(questionBuilders) {
         .map((input) => input.value.trim())
         .filter((value) => value);
 
-      // Check for empty question text
       if (!questionText) {
         hasEmptyFields = true;
         builder.querySelector(".question-input").classList.add("input-error");
@@ -206,12 +214,10 @@ export function handleAnsweredQuestions(questionBuilders) {
           .classList.remove("input-error");
       }
 
-      // Check for empty options
       if (optionInputs.length < 2 || options.length < 2) {
         hasEmptyFields = true;
       }
 
-      // Check for duplicate options within this question
       const uniqueOptions = new Set();
       const duplicateInputs = [];
 
@@ -223,7 +229,6 @@ export function handleAnsweredQuestions(questionBuilders) {
         } else {
           input.classList.remove("input-error");
 
-          // Check for duplicates
           if (uniqueOptions.has(value.toLowerCase())) {
             hasDuplicateOptions = true;
             input.classList.add("input-error");
@@ -234,7 +239,6 @@ export function handleAnsweredQuestions(questionBuilders) {
         }
       });
 
-      // Add visual indicator for duplicate options
       duplicateInputs.forEach((input) => {
         input.classList.add("duplicate-error");
         input.title = "Duplicate option - please provide unique options";
