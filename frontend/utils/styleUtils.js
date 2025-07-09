@@ -1,14 +1,6 @@
-/**
- * CSS Utility-Funktionen für das Poll-Component
- * Stellt Funktionen zum Laden und Anwenden von CSS bereit
- * Mit dynamischem Laden nach Bedarf
- */
-
-// Cache für geladene Stylesheets
 let baseStylesheet = null;
 let moduleStylesheets = {};
 
-// Mapping von Ansichten zu benötigten CSS-Modulen
 const viewModuleMap = {
   'mainMenu': ['base', 'mainMenu'],
   'joinPoll': ['base', 'joinPoll'],
@@ -19,15 +11,15 @@ const viewModuleMap = {
 };
 
 /**
- * Lädt eine einzelne CSS-Datei und konvertiert sie in ein CSSStyleSheet
- * @param {string} cssPath - Pfad zur CSS-Datei
- * @returns {Promise<CSSStyleSheet>} Promise mit dem StyleSheet
+ * Loads a single CSS file and converts it to a CSSStyleSheet
+ * @param {string} cssPath - Path to the CSS file
+ * @returns {Promise<CSSStyleSheet>} Promise with the StyleSheet
  */
 async function loadStylesheet(cssPath) {
   try {
     const response = await fetch(cssPath);
     if (!response.ok) {
-      throw new Error(`Fehler beim Laden von ${cssPath}: ${response.status} ${response.statusText}`);
+      throw new Error(`Error loading ${cssPath}: ${response.status} ${response.statusText}`);
     }
     
     const cssText = await response.text();
@@ -36,36 +28,33 @@ async function loadStylesheet(cssPath) {
     
     return sheet;
   } catch (error) {
-    console.error(`Konnte ${cssPath} nicht laden:`, error);
-    // Leeres Stylesheet zurückgeben, damit die Anwendung nicht abstürzt
+    console.error(`Could not load ${cssPath}:`, error);
     return new CSSStyleSheet();
   }
 }
 
 /**
- * Lädt die erforderlichen CSS-Module für eine bestimmte Ansicht
- * @param {string} view - Name der Ansicht (z.B. 'mainMenu', 'joinPoll', etc.)
- * @returns {Promise<CSSStyleSheet[]>} Array von CSSStyleSheets
+ * Loads the required CSS modules for a specific view
+ * @param {string} view - Name of the view (e.g. 'mainMenu', 'joinPoll', etc.)
+ * @returns {Promise<CSSStyleSheet[]>} Array of CSSStyleSheets
  */
 export async function loadViewStyles(view) {
   if (!viewModuleMap[view]) {
-    console.warn(`Unbekannte Ansicht: ${view}, lade nur Base CSS`);
-    view = 'mainMenu'; // Fallback auf mainMenu
+    console.warn(`Unknown view: ${view}, loading only base CSS`);
+    view = 'mainMenu';
   }
   
   const requiredModules = viewModuleMap[view];
   const styles = [];
   
   try {
-    // Base CSS immer zuerst laden
     if (!baseStylesheet) {
       baseStylesheet = await loadStylesheet('./frontend/styles/base.css');
     }
     styles.push(baseStylesheet);
     
-    // Lade nur die für diese Ansicht benötigten Module
     for (const moduleName of requiredModules) {
-      if (moduleName === 'base') continue; // Base bereits geladen
+      if (moduleName === 'base') continue;
       
       if (!moduleStylesheets[moduleName]) {
         const path = `./frontend/styles/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
@@ -78,7 +67,6 @@ export async function loadViewStyles(view) {
     return styles;
   } catch (error) {
     console.error(`Fehler beim Laden der Styles für ${view}:`, error);
-    // Fallback: Wenn ein Fehler auftritt, mindestens Base CSS zurückgeben
     return baseStylesheet ? [baseStylesheet] : [];
   }
 }

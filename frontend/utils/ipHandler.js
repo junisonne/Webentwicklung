@@ -19,20 +19,23 @@ function validateIPAddress(ip) {
  * @param {string} adminPassword - Admin password for authentication
  */
 export function updateBannedIPsList(shadowRoot, bannedIPs, currentPollCode, adminPassword) {
-  const bannedIPsList = shadowRoot.getElementById("bannedIPsList");
-  if (bannedIPsList) {
-    bannedIPsList.innerHTML = templates.getBannedIPsListTemplate(bannedIPs);
-    
-    // Re-bind unban button event listeners
-    shadowRoot.querySelectorAll(".unban-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const ip = e.target.dataset.ip;
-        if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
-          handleUnbanIP(shadowRoot, ip, currentPollCode, adminPassword);
-        }
-      });
-    });
-  }
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+    }
+    const bannedIPsList = shadowRoot.getElementById("bannedIPsList");
+    if (bannedIPsList) {
+        bannedIPsList.innerHTML = templates.getBannedIPsListTemplate(bannedIPs);
+        
+        shadowRoot.querySelectorAll(".unban-btn").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                const ip = e.target.dataset.ip;
+                if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
+                handleUnbanIP(shadowRoot, ip, currentPollCode, adminPassword);
+                }
+            });
+        });
+    }
 }
 
 /**
@@ -42,30 +45,34 @@ export function updateBannedIPsList(shadowRoot, bannedIPs, currentPollCode, admi
  * @param {string} adminPassword - Admin password for authentication
  */
 export async function handleBanNewIP(shadowRoot, pollCode, adminPassword) {
-  const ipInput = shadowRoot.getElementById("ipToBan");
-  const messageEl = shadowRoot.getElementById("banIPMessage");
-  const ip = ipInput.value.trim();
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+    }
+    const ipInput = shadowRoot.getElementById("ipToBan");
+    const messageEl = shadowRoot.getElementById("banIPMessage");
+    const ip = ipInput.value.trim();
 
-  if (!ip) {
-    messageEl.innerHTML = '<div class="error">Please enter an IP address</div>';
-    return;
-  }
+    if (!ip) {
+        messageEl.innerHTML = '<div class="error">Please enter an IP address</div>';
+        return;
+    }
 
-  if (!validateIPAddress(ip)) {
-    messageEl.innerHTML = '<div class="error">Please enter a valid IP address</div>';
-    return;
-  }
+    if (!validateIPAddress(ip)) {
+        messageEl.innerHTML = '<div class="error">Please enter a valid IP address</div>';
+        return;
+    }
 
-  try {
-    messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
-    const data = await api.banIP(ip, pollCode);
-    messageEl.innerHTML = `<div class="success">${data.message}</div>`;
-    ipInput.value = "";
-    const updatedData = await api.getAdminData(pollCode, adminPassword);
-    updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
-  } catch (error) {
-    messageEl.innerHTML = `<div class="error">${error.message}</div>`;
-  }
+    try {
+        messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+        const data = await api.banIP(ip, pollCode);
+        messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+        ipInput.value = "";
+        const updatedData = await api.getAdminData(pollCode, adminPassword);
+        updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
+    } catch (error) {
+        messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+    }
 }
 
 /**
@@ -76,19 +83,22 @@ export async function handleBanNewIP(shadowRoot, pollCode, adminPassword) {
  * @param {string} adminPassword - Admin password for authentication
  */
 async function handleBanIP(shadowRoot, ip, pollCode, adminPassword) {
-  const messageEl = shadowRoot.getElementById("banMessage");
-  
-  try {
-    messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
-    const data = await api.banIP(ip, pollCode);
-    messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+    }
+    const messageEl = shadowRoot.getElementById("banMessage");
+    
+    try {
+        messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
+        const data = await api.banIP(ip, pollCode);
+        messageEl.innerHTML = `<div class="success">${data.message}</div>`;
 
-    // Get updated poll data and update only the banned IPs list
-    const updatedData = await api.getAdminData(pollCode, adminPassword);
-    updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
-  } catch (error) {
-    messageEl.innerHTML = `<div class="error">${error.message}</div>`;
-  }
+        const updatedData = await api.getAdminData(pollCode, adminPassword);
+        updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
+    } catch (error) {
+        messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+    }
 }
 
 /**
@@ -99,27 +109,30 @@ async function handleBanIP(shadowRoot, ip, pollCode, adminPassword) {
  * @param {string} adminPassword - Admin password for authentication
  */
 async function handleUnbanIP(shadowRoot, ip, pollCode, adminPassword) {
-  try {
-    const data = await api.unbanIP(ip, pollCode);
-
-    const messageEl =
-      shadowRoot.getElementById("banIPMessage") ||
-      shadowRoot.getElementById("banMessage");
-    if (messageEl) {
-      messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
     }
+    try {
+        const data = await api.unbanIP(ip, pollCode);
 
-    // Get updated poll data and update only the banned IPs list
-    const updatedData = await api.getAdminData(pollCode, adminPassword);
-    updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
-  } catch (error) {
-    const messageEl =
-      shadowRoot.getElementById("banIPMessage") ||
-      shadowRoot.getElementById("banMessage");
-    if (messageEl) {
-      messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        const messageEl =
+        shadowRoot.getElementById("banIPMessage") ||
+        shadowRoot.getElementById("banMessage");
+        if (messageEl) {
+        messageEl.innerHTML = `<div class="success">${data.message}</div>`;
+        }
+
+        const updatedData = await api.getAdminData(pollCode, adminPassword);
+        updateBannedIPsList(shadowRoot, updatedData.poll.bannedIPs, pollCode, adminPassword);
+    } catch (error) {
+        const messageEl =
+        shadowRoot.getElementById("banIPMessage") ||
+        shadowRoot.getElementById("banMessage");
+        if (messageEl) {
+        messageEl.innerHTML = `<div class="error">${error.message}</div>`;
+        }
     }
-  }
 }
 
 /**
@@ -129,23 +142,25 @@ async function handleUnbanIP(shadowRoot, ip, pollCode, adminPassword) {
  * @param {string} adminPassword - Admin password for authentication
  */
 export function setupIPEventListeners(shadowRoot, data, adminPassword) {
-  // Set up ban buttons for participant IPs
-  shadowRoot.querySelectorAll(".ban-ip-btn").forEach((button) => {
-    button.addEventListener("click", (e) => {
-      const ip = e.target.dataset.ip;
-      if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
-        handleBanIP(shadowRoot, ip, data.poll.code, adminPassword);
-      }
+    if (!adminPassword) {
+        adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+    }
+    shadowRoot.querySelectorAll(".ban-ip-btn").forEach((button) => {
+        button.addEventListener("click", (e) => {
+        const ip = e.target.dataset.ip;
+        if (confirm(`Are you sure you want to ban IP: ${ip}?`)) {
+            handleBanIP(shadowRoot, ip, data.poll.code, adminPassword);
+        }
+        });
     });
-  });
 
-  // Set up unban buttons for banned IPs
-  shadowRoot.querySelectorAll(".unban-btn").forEach((button) => {
-    button.addEventListener("click", (e) => {
-      const ip = e.target.dataset.ip;
-      if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
-        handleUnbanIP(shadowRoot, ip, data.poll.code, adminPassword);
-      }
+    shadowRoot.querySelectorAll(".unban-btn").forEach((button) => {
+        button.addEventListener("click", (e) => {
+        const ip = e.target.dataset.ip;
+        if (confirm(`Are you sure you want to unban IP: ${ip}?`)) {
+            handleUnbanIP(shadowRoot, ip, data.poll.code, adminPassword);
+        }
+        });
     });
-  });
 }

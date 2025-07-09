@@ -3,6 +3,7 @@
 
 /**
  * Generates the main menu interface with options to create, join, or view polls
+ * @returns {string} HTML template string for the main menu interface
  */
 export const getMainMenuTemplate = () => `
     <main>
@@ -25,6 +26,7 @@ export const getMainMenuTemplate = () => `
 
 /**
  * Generates the join poll interface where users can enter a poll code
+ * @returns {string} HTML template string for the join poll form interface
  */
 export const getJoinPollTemplate = () => `
     <main>
@@ -51,6 +53,9 @@ export const getJoinPollTemplate = () => `
 /**
  * Generates the poll questions interface for participants to answer questions
  * @param {Object} poll - The poll object containing title and questions
+ * @param {string} poll.title - The title of the poll
+ * @param {Array<Object>} poll.questions - Array of question objects
+ * @returns {string} HTML template string for the poll questions interface
  */
 export const getPollQuestionsTemplate = (poll) => `
     <main>
@@ -82,7 +87,11 @@ export const getPollQuestionsTemplate = (poll) => `
  * Renders question text with numbering and creates interactive option buttons
  * that display differently based on question type (single/multiple choice)
  * @param {Object} question - Question object with type, text and options
- * @param {Number} index - Question index for numbering and data attributes
+ * @param {string} question.question - The question text
+ * @param {string} question.type - The question type ('single' or 'multiple')
+ * @param {Array<string>} question.options - Array of option strings
+ * @param {number} index - Question index for numbering and data attributes
+ * @returns {string} HTML template string for a single question
  */
 const getQuestionTemplate = (question, index) => `
     <article class="question-container ${
@@ -123,6 +132,8 @@ const getQuestionTemplate = (question, index) => `
 /**
  * Generates the poll creation interface for administrators
  * Includes form fields for poll title, password, and dynamic question creation
+ * @param {boolean} hasInitial - Whether the component has an initial poll template to load
+ * @returns {string} HTML template string for the poll creation interface
  */
 export const getCreatePollTemplate = (hasInitial) => `
     <main>
@@ -184,6 +195,10 @@ export const getCreatePollTemplate = (hasInitial) => `
 /**
  * Generates the admin panel interface with poll management capabilities
  * @param {Object} params - Object containing poll data, results, and participant information
+ * @param {Object} params.poll - Poll object with metadata and configuration
+ * @param {Array<Object>} params.results - Array of result objects for each question
+ * @param {Array<Object>} params.participantEntries - Array of participant IP entries
+ * @returns {string} HTML template string for the admin panel interface
  */
 export const getAdminPanelTemplate = ({
   poll,
@@ -292,6 +307,11 @@ export const getAdminPanelTemplate = ({
 /**
  * Helper function that generates the HTML for displaying individual question results
  * @param {Object} result - Result data for a single question with options and vote counts
+ * @param {string} result.question - The question text
+ * @param {string} result.type - The question type ('single' or 'multiple')
+ * @param {number} result.totalResponses - Total number of responses for this question
+ * @param {Object} result.results - Object mapping option names to vote counts
+ * @returns {string} HTML template string for displaying question results with progress bars
  */
 export const getResultTemplate = (result) => {
   // Calculate total responses for percentage calculations
@@ -325,7 +345,11 @@ export const getResultTemplate = (result) => {
 
 /**
  * Generates only the poll list items HTML (without the surrounding structure)
- * @param {Array} polls - Array of poll objects to display
+ * @param {Array<Object>} polls - Array of poll objects to display
+ * @param {string} polls[].code - The poll code
+ * @param {string} polls[].title - The poll title
+ * @param {string} polls[].adminPassword - The admin password for the poll
+ * @returns {string} HTML template string for poll list items
  */
 export const getPollListItemsTemplate = (polls) => 
     polls.length > 0 ? polls.map(poll => `
@@ -348,7 +372,11 @@ export const getPollListItemsTemplate = (polls) =>
 
 /**
  * Generates the polls list interface showing available polls and admin access forms
- * @param {Array} polls - Array of poll objects to display
+ * @param {Array<Object>} polls - Array of poll objects to display
+ * @param {string} polls[].code - The poll code
+ * @param {string} polls[].title - The poll title
+ * @param {string} polls[].adminPassword - The admin password for the poll
+ * @returns {string} HTML template string for the complete polls list interface
  */
 export const getPollListTemplate = (polls) => `
     <main>
@@ -379,7 +407,8 @@ export const getPollListTemplate = (polls) => `
 
 /**
  * Generates only the banned IPs list items HTML (without the surrounding ul element)
- * @param {Array} bannedIPs - Array of banned IP addresses
+ * @param {Array<string>} bannedIPs - Array of banned IP addresses
+ * @returns {string} HTML template string for banned IP list items
  */
 export const getBannedIPsListTemplate = (bannedIPs) => 
     bannedIPs.length > 0 
