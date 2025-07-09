@@ -1,5 +1,5 @@
-// test/api.test.js
 import * as api from '../frontend/api';
+const BASE_URL = 'http://localhost:3000';
 
 beforeEach(() => {
   // Mock global.fetch vor jedem Test
@@ -28,7 +28,7 @@ describe('API client', () => {
 
       const result = await api.joinPoll('X1');
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/enter',
+        `${BASE_URL}/poll/enter`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -54,7 +54,7 @@ describe('API client', () => {
       await api.submitResponses('C1', responses);
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/C1/respond',
+        `${BASE_URL}/poll/C1/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -71,7 +71,7 @@ describe('API client', () => {
 
       const res = await api.createPoll(pollData);
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/create',
+        `${BASE_URL}/poll/create`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -87,7 +87,7 @@ describe('API client', () => {
       fetch.mockReturnValueOnce(mockFetch(200, { results: [] }));
       const res = await api.getAdminData('C1', 'pw');
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/C1/admin',
+        `${BASE_URL}/poll/C1/admin`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -103,7 +103,7 @@ describe('API client', () => {
       fetch.mockReturnValueOnce(mockFetch(200, { active: false }));
       const res = await api.togglePollStatus('C1', 'pw');
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/C1/toggle',
+        `${BASE_URL}/poll/C1/toggle`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -119,7 +119,7 @@ describe('API client', () => {
       fetch.mockReturnValueOnce(mockFetch(200, { banned: true }));
       await api.banIP('1.2.3.4', 'C1');
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/ban',
+        `${BASE_URL}/poll/ban`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -132,7 +132,7 @@ describe('API client', () => {
       fetch.mockReturnValueOnce(mockFetch(200, { unbanned: true }));
       await api.unbanIP('1.2.3.4', 'C1');
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/poll/unban',
+        `${BASE_URL}/poll/unban`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -149,7 +149,7 @@ describe('API client', () => {
 
       const res = await api.getAllPolls();
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8500/polls',
+        `${BASE_URL}/polls`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
