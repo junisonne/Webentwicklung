@@ -10,6 +10,8 @@ CSS Refactoring und Modularisierung
 
 E2E Test mit Cypress
 
+Dokumentation + Kommentare
+
 ## Sergio
 
 Initialen Aufbau mit einigen Basisfunktionen bereitgestellt wie auch modularisiert. 
