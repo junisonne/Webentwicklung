@@ -23,14 +23,11 @@ export function setApiUrl(url) { API_URL = url; }
  * @throws {Error} Enhanced error with status code for better UI feedback
  */
 async function request(endpoint, options = {}) {
-    console.log(`API Request: ${API_URL}${endpoint}`, options);
     try {
         const response = await fetch(`${API_URL}${endpoint}`, {
             headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options,
         });
-        console.log(`API Response: ${response.status} ${response.statusText}`);
-        console.log(response);
         const data = await response.json();
         if (!response.ok) {
             const error = new Error(data.message || 'An error occurred');

@@ -92,6 +92,6 @@ describe('Poll API', () => {
       .send({ adminPassword: password })
       .set('Accept', 'application/json');
     expect(res.statusCode).toBe(200);
-    expect(res.body.active).toBe(false);
+    expect(res.body.poll.active).toBe(false);
   });
 });
