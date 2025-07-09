@@ -1,14 +1,6 @@
-/**
- * CSS utility functions for the Poll Component
- * Provides functions for loading and applying CSS
- * With dynamic loading as needed
- */
-
-// Cache for loaded stylesheets
 let baseStylesheet = null;
 let moduleStylesheets = {};
 
-// Mapping of views to required CSS modules
 const viewModuleMap = {
   'mainMenu': ['base', 'mainMenu'],
   'joinPoll': ['base', 'joinPoll'],
@@ -37,7 +29,6 @@ async function loadStylesheet(cssPath) {
     return sheet;
   } catch (error) {
     console.error(`Could not load ${cssPath}:`, error);
-    // Return empty stylesheet so the application doesn't crash
     return new CSSStyleSheet();
   }
 }
@@ -49,23 +40,21 @@ async function loadStylesheet(cssPath) {
  */
 export async function loadViewStyles(view) {
   if (!viewModuleMap[view]) {
-    console.warn(`Unknown view: ${view}, loading only Base CSS`);
-    view = 'mainMenu'; // Fallback to mainMenu
+    console.warn(`Unknown view: ${view}, loading only base CSS`);
+    view = 'mainMenu';
   }
   
   const requiredModules = viewModuleMap[view];
   const styles = [];
   
   try {
-    // Always load Base CSS first
     if (!baseStylesheet) {
       baseStylesheet = await loadStylesheet('./frontend/styles/base.css');
     }
     styles.push(baseStylesheet);
     
-    // Load only the modules needed for this view
     for (const moduleName of requiredModules) {
-      if (moduleName === 'base') continue; // Base already loaded
+      if (moduleName === 'base') continue;
       
       if (!moduleStylesheets[moduleName]) {
         const path = `./frontend/styles/${moduleName.replace(/([A-Z])/g, '-$1').toLowerCase()}.css`;
@@ -77,8 +66,7 @@ export async function loadViewStyles(view) {
     
     return styles;
   } catch (error) {
-    console.error(`Error loading styles for ${view}:`, error);
-    // Fallback: If an error occurs, return at least Base CSS
+    console.error(`Fehler beim Laden der Styles für ${view}:`, error);
     return baseStylesheet ? [baseStylesheet] : [];
   }
 }

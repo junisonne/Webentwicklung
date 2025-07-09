@@ -1,5 +1,6 @@
 import * as templates from "../templates.js";
 import * as api from "../api.js";
+import { generatePollResultsCSV, downloadCSV } from "./csvUtils.js";
 
 /**
  * Refreshes only the results section without reloading the entire admin panel
@@ -109,6 +110,32 @@ function updatePollMetadata(shadowRoot, poll) {
             <p>Total Responses: <span class="highlight">
             ${poll.totalResponses}</span></p>
         `;
+    }
+}
+
+/**
+ * Generates and downloads a CSV file containing poll results with user feedback
+ * Provides download functionality exclusively for the admin panel with success notifications
+ * @param {HTMLElement} shadowRoot - Shadow root to access DOM elements for feedback
+ * @param {Object} data - Complete poll data including results and metadata
+ * @param {Object} data.poll - Poll metadata with code and configuration
+ * @param {Array} data.results - Poll results with vote counts and statistics
+ */
+export function handleDownloadResultsCSV(shadowRoot, data) {
+    const csvContent = generatePollResultsCSV(data);
+    const fileName = `poll-${data.poll.code}-results.csv`;
+    downloadCSV(csvContent, fileName);
+
+    // Provide user feedback in available message containers
+    const messageEl =
+      shadowRoot.getElementById("banIPMessage") ||
+      shadowRoot.getElementById("banMessage");
+    if (messageEl) {
+      messageEl.innerHTML =
+        '<div class="success">CSV downloaded successfully!</div>';
+      setTimeout(() => {
+        messageEl.innerHTML = "";
+      }, 3000);
     }
 }
 

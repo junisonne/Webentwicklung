@@ -1,8 +1,8 @@
 import * as api from '../frontend/api';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://localhost:8500';
 
 beforeEach(() => {
-  // Mock global.fetch vor jedem Test
+  // Mock global.fetch before each test
   global.fetch = jest.fn();
 });
 
@@ -10,7 +10,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-// Hilfsfunktion, die ein fetch-ähnliches Response-Objekt zurückgibt
+// Helper function that returns a fetch-like Response object
 function mockFetch(status, body) {
   return Promise.resolve({
     ok: status >= 200 && status < 300,
@@ -22,7 +22,7 @@ function mockFetch(status, body) {
 
 describe('API client', () => {
   describe('joinPoll()', () => {
-    it('soll POST /poll/enter aufrufen und Daten zurückliefern', async () => {
+    it('should call POST /poll/enter and return data', async () => {
       const mockData = { code: 'X1', question: [] };
       fetch.mockReturnValueOnce(mockFetch(200, mockData));
 
@@ -38,7 +38,7 @@ describe('API client', () => {
       expect(result).toEqual(mockData);
     });
 
-    it('soll bei Fehlerstatus eine Exception mit Status werfen', async () => {
+    it('should throw an exception with status on error status', async () => {
       fetch.mockReturnValueOnce(mockFetch(403, { message: 'Banned' }));
       await expect(api.joinPoll('X1')).rejects.toMatchObject({
         message: 'Banned',
@@ -48,7 +48,7 @@ describe('API client', () => {
   });
 
   describe('submitResponses()', () => {
-    it('soll POST /poll/:code/respond aufrufen', async () => {
+    it('should call POST /poll/:code/respond', async () => {
       const responses = [{ q: 1, a: 'A' }];
       fetch.mockReturnValueOnce(mockFetch(200, { ok: true }));
       await api.submitResponses('C1', responses);
@@ -65,7 +65,7 @@ describe('API client', () => {
   });
 
   describe('createPoll()', () => {
-    it('soll POST /poll/create aufrufen und neuen Code liefern', async () => {
+    it('should call POST /poll/create and return new code', async () => {
       const pollData = { title: 'Test' };
       fetch.mockReturnValueOnce(mockFetch(201, { code: 'NEW' }));
 
@@ -83,7 +83,7 @@ describe('API client', () => {
   });
 
   describe('getAdminData()', () => {
-    it('soll POST /poll/:code/admin aufrufen', async () => {
+    it('should call POST /poll/:code/admin', async () => {
       fetch.mockReturnValueOnce(mockFetch(200, { results: [] }));
       const res = await api.getAdminData('C1', 'pw');
       expect(fetch).toHaveBeenCalledWith(
@@ -99,7 +99,7 @@ describe('API client', () => {
   });
 
   describe('togglePollStatus()', () => {
-    it('soll PUT /poll/:code/toggle aufrufen', async () => {
+    it('should call PUT /poll/:code/toggle', async () => {
       fetch.mockReturnValueOnce(mockFetch(200, { active: false }));
       const res = await api.togglePollStatus('C1', 'pw');
       expect(fetch).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('API client', () => {
   });
 
   describe('banIP() & unbanIP()', () => {
-    it('soll POST /poll/ban aufrufen', async () => {
+    it('should call POST /poll/ban', async () => {
       fetch.mockReturnValueOnce(mockFetch(200, { banned: true }));
       await api.banIP('1.2.3.4', 'C1');
       expect(fetch).toHaveBeenCalledWith(
@@ -128,7 +128,7 @@ describe('API client', () => {
       );
     });
 
-    it('soll POST /poll/unban aufrufen', async () => {
+    it('should call POST /poll/unban', async () => {
       fetch.mockReturnValueOnce(mockFetch(200, { unbanned: true }));
       await api.unbanIP('1.2.3.4', 'C1');
       expect(fetch).toHaveBeenCalledWith(
@@ -143,7 +143,7 @@ describe('API client', () => {
   });
 
   describe('getAllPolls()', () => {
-    it('soll GET /polls aufrufen und eine Liste zurückliefern', async () => {
+    it('should call GET /polls and return a list', async () => {
       const list = [{ code: 'A' }, { code: 'B' }];
       fetch.mockReturnValueOnce(mockFetch(200, list));
 

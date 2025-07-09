@@ -1,16 +1,9 @@
-/**
- * Poll API Server
- * Provides RESTful endpoints for creating and managing polls with user response tracking
- */
 import express from 'express';
 import cors from 'cors';
 
 const app = express();
-// Enable trusted proxy to get accurate IP addresses behind load balancers
 app.set('trust proxy', true);
 
-// Allow cross-origin requests from any domain for ease of development
-// Consider restricting in production environment
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -42,6 +35,7 @@ let polls = [
 /**
  * Generates a unique 6-character alphanumeric code for new polls
  * Uses base36 encoding (0-9, A-Z) and ensures no collisions with existing poll codes
+ * @returns {string} - A unique 6-character code
  */
 function generateUniqueCode() {
     let code;
@@ -73,15 +67,50 @@ function normalizeIP(ip) {
 }
 
 /**
- * Endpoint for users to enter a poll
- * - Tracks participant entry with IP for analytics
- * - Enforces IP banning system to prevent abuse
- * - Returns poll questions only when poll is active
+ * Calculates aggregated poll results from individual response data
+ * Processes both single and multiple choice questions and counts votes for each option
+ * @param {Object} poll - The poll object containing questions and responses
+ * @param {Array<Object>} poll.questions - Array of question objects with id, type, and options
+ * @param {Array<Object>} poll.responses - Array of response objects with individual answers
+ * @returns {Array<Object>} Array of result objects with vote counts for each question
  */
+function calculatePollResults(poll) {
+    return poll.questions.map(question => {
+        const questionResponses = poll.responses.map(r => r.responses[question.id - 1]);
+        const optionCounts = {};
+        
+        question.options.forEach(option => {
+            optionCounts[option] = 0;
+        });
+        
+        questionResponses.forEach(response => {
+            if (question.type === 'single') {
+                if (response && optionCounts.hasOwnProperty(response)) {
+                    optionCounts[response]++;
+                }
+            } else if (question.type === 'multiple' && Array.isArray(response)) {
+                response.forEach(answer => {
+                    if (optionCounts.hasOwnProperty(answer)) {
+                        optionCounts[answer]++;
+                    }
+                });
+            }
+        });
+        
+        return {
+            questionId: question.id,
+            question: question.question,
+            type: question.type,
+            options: question.options,
+            results: optionCounts,
+            totalResponses: poll.responses.length,
+        };
+    });
+}
+
 app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
-    // Get IP from various headers to handle proxy situations
     const rawIp = req.headers['x-forwarded-for'] ||
         req.headers['x-real-ip'] ||
         req.socket.remoteAddress || '';
@@ -108,18 +137,10 @@ app.post('/poll/enter', (req, res) => {
     }
 });
 
-// ===== POLL MANAGEMENT ENDPOINTS =====
-
-/**
- * Creates a new poll with validation for required fields
- * Automatically assigns a unique code for poll identification
- * Structures questions with proper formatting and defaults
- */
 app.post('/poll/create', (req, res) => {
     try {
         const { title, questions, adminPassword } = req.body;
         
-        // Input validation to ensure all required data is present
         if (!title || !questions || !adminPassword) {
             return res.status(400).json({ message: 'Title, questions, and admin password are required' });
         }
@@ -135,7 +156,7 @@ app.post('/poll/create', (req, res) => {
             questions: questions.map((q, index) => ({
                 id: index + 1,
                 question: q.question,
-                type: q.type || 'single', // Default to single choice for backward compatibility
+                type: q.type || 'single', 
                 options: q.options || []
             })),
             adminPassword,
@@ -161,11 +182,6 @@ app.post('/poll/create', (req, res) => {
     }
 });
 
-/**
- * Retrieves public poll information for participants
- * Returns 410 Gone if poll has been deactivated
- * Excludes sensitive data like admin password and IP addresses
- */
 app.get('/poll/:code', (req, res) => {
     try {
         const poll = findPoll(req.params.code);
@@ -189,11 +205,6 @@ app.get('/poll/:code', (req, res) => {
     }
 });
 
-/**
- * Records a participant's responses to a poll
- * Validates that all questions are answered and responses match the expected format
- * Records IP address for preventing duplicate submissions
- */
 app.post('/poll/:code/respond', (req, res) => {
     try {
         const { responses } = req.body;
@@ -238,11 +249,6 @@ app.post('/poll/:code/respond', (req, res) => {
     }
 });
 
-/**
- * Admin endpoint to retrieve poll with detailed results and participation metrics
- * Requires admin password authentication for security
- * Aggregates and transforms raw response data into actionable statistics
- */
 app.post('/poll/:code/admin', (req, res) => {
     try {
         const { adminPassword } = req.body;
@@ -260,39 +266,7 @@ app.post('/poll/:code/admin', (req, res) => {
             timestamp: res.timestamp,
         }));
         
-        // Calculate aggregated results from individual responses
-        const results = poll.questions.map(question => {
-            const questionResponses = poll.responses.map(r => r.responses[question.id - 1]);
-            const optionCounts = {};
-            
-            question.options.forEach(option => {
-                optionCounts[option] = 0;
-            });
-            
-            questionResponses.forEach(response => {
-                if (question.type === 'single') {
-                    if (response && optionCounts.hasOwnProperty(response)) {
-                        optionCounts[response]++;
-                    }
-                } else if (question.type === 'multiple' && Array.isArray(response)) {
-                    response.forEach(answer => {
-                        if (optionCounts.hasOwnProperty(answer)) {
-                            optionCounts[answer]++;
-                        }
-                    });
-                }
-            });
-            
-            
-            return {
-                questionId: question.id,
-                question: question.question,
-                type: question.type,
-                options: question.options,
-                results: optionCounts,
-                totalResponses: poll.responses.length,
-            };
-        });
+        const results = calculatePollResults(poll);
         
         res.json({
             poll: {
@@ -311,11 +285,6 @@ app.post('/poll/:code/admin', (req, res) => {
     }
 });
 
-/**
- * Admin endpoint to toggle poll active status
- * Enables administrators to activate/deactivate polls when needed
- * Returns the new active state for UI feedback
- */
 app.put('/poll/:code/toggle', (req, res) => {
     try {
         const { adminPassword } = req.body;
@@ -344,11 +313,6 @@ app.put('/poll/:code/toggle', (req, res) => {
     }
 });
 
-/**
- * Public endpoint to list all available polls
- * Used in the frontend to display polls that users can access
- * Security consideration: Currently exposes adminPassword which should be removed in production
- */
 app.get('/polls', (req, res) => {
     const pollsOverview = polls.map(poll => ({
         code: poll.code,
@@ -357,16 +321,12 @@ app.get('/polls', (req, res) => {
         createdAt: poll.createdAt,
         responseCount: poll.responses.length,
         questionCount: poll.questions.length,
-        adminPassword: poll.adminPassword, // TODO: Remove in production for security
+        adminPassword: poll.adminPassword,
     }));
     
     res.json({ polls: pollsOverview });
 });
 
-/**
- * Adds an IP address to the ban list for a specific poll
- * Used to prevent abuse or multiple submissions from the same source
- */
 app.post('/poll/ban', (req, res) => {
     const { code } = req.body;
     const poll = findPoll(code);
@@ -390,10 +350,6 @@ app.post('/poll/ban', (req, res) => {
     }
 });
 
-/**
- * Removes an IP address from the ban list for a specific poll
- * Provides control over ban management for poll administrators
- */
 app.post('/poll/unban', (req, res) => {
     const { code } = req.body;
     const poll = findPoll(code);
@@ -417,10 +373,8 @@ app.post('/poll/unban', (req, res) => {
     }
 });
 
-// Static files (für deine HTML/JS files)
 app.use(express.static('.'));
 
-// Für den redirect zu index.html falls unbekannte url
 app.get('*', (req, res) => {
     res.sendFile('index.html', { root: '.' });
 });
