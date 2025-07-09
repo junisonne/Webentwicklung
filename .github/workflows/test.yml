@@ -21,5 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run unit tests
-        run: npm run test
+      - name: Run Jest tests
+        run: npm run test:unit
+
+      - name: Run E2E tests with server
+        run: npm run test:cy

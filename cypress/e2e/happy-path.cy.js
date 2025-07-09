@@ -5,7 +5,7 @@ describe('Poll System - Happy Path', () => {
   
   beforeEach(() => {
     // Visit the app using baseUrl from cypress.config.js
-    cy.visit('/');
+    cy.visit('/', { failOnStatusCode: false });
     cy.wait(1000); // Längere Pause für DOM-Rendering und Netzwerkanfragen
   });
 

@@ -6,10 +6,12 @@
   "scripts": {
     "start": "node ./backend/server.js",
     "test": "jest --verbose --coverage && start-server-and-test start http://localhost:8500 test:e2e",
+    "test:cy": "start-server-and-test start http://localhost:8500 test:e2e",
+    "test:unit": "jest --verbose --coverage",
     "test:watch": "jest --watchAll --verbose --coverage",
     "test:e2e": "cypress run",
-    "cypress:open": "cypress open",
-    "cy:run": "start-server-and-test start http://localhost:8500 test:e2e"
+    "cypress:open": "cypress open"
+    
   },
   "dependencies": {
     "@types/jest": "^30.0.0",
