@@ -12,6 +12,7 @@ RUN npm install --production
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY index.html ./
+COPY *.html ./
 
 # Port für Express-Server
 EXPOSE 8500
