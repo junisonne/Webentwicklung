@@ -72,14 +72,14 @@ export async function loadViewStyles(view) {
 }
 
 /**
- * Wendet die für eine bestimmte Ansicht benötigten Stylesheets auf das Shadow DOM an
- * @param {ShadowRoot} shadowRoot - Das Shadow DOM der Komponente
- * @param {string} view - Name der aktuellen Ansicht
+ * Applies the stylesheets needed for a specific view to the Shadow DOM
+ * @param {ShadowRoot} shadowRoot - The Shadow DOM of the component
+ * @param {string} view - Name of the current view
  * @returns {Promise<void>}
  */
 export async function applyStylesToShadowRoot(shadowRoot, view = 'mainMenu') {
   if (!shadowRoot) {
-    console.warn("Kein Shadow Root zum Anwenden der Styles übergeben");
+    console.warn("No Shadow Root provided to apply styles");
     return;
   }
   
@@ -87,6 +87,6 @@ export async function applyStylesToShadowRoot(shadowRoot, view = 'mainMenu') {
     const viewStylesheets = await loadViewStyles(view);
     shadowRoot.adoptedStyleSheets = viewStylesheets;
   } catch (error) {
-    console.error("Fehler beim Anwenden der Styles:", error);
+    console.error("Error applying styles:", error);
   }
 }
