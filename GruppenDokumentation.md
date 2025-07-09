@@ -1,3 +1,9 @@
+# Dokumentation für die Gruppenarbeit
+
+## Jonathan
+
+## Leon
+
 ## Sergio
 
 Initialen Aufbau mit einigen Basisfunktionen bereitgestellt wie auch modularisiert. 
@@ -11,3 +17,5 @@ Bugfixing vorgenommen.
 Codekommentare bereinigt. 
 
 CSV-Download-Funktion implementiert.
+
+## Mika

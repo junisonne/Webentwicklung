@@ -77,7 +77,6 @@ export async function handleBanNewIP(shadowRoot, pollCode, adminPassword) {
  */
 async function handleBanIP(shadowRoot, ip, pollCode, adminPassword) {
   const messageEl = shadowRoot.getElementById("banMessage");
-  console.log("Banning IP:", ip, "for poll:", pollCode);
   
   try {
     messageEl.innerHTML = '<div class="loading">Banning IP...</div>';
