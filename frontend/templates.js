@@ -6,7 +6,7 @@
  */
 export const getMainMenuTemplate = () => `
     <main>
-        <div class="container">
+        <div class="container main-menu">
             <header>
                 <h1>📊 Poll System</h1>
             </header>
@@ -62,7 +62,9 @@ export const getPollQuestionsTemplate = (poll) => `
                 <form class="questions-form" onsubmit="return false;">
                     <fieldset>
                         <legend class="sr-only">Poll Questions</legend>
-                        ${poll.questions.map((q, i) => getQuestionTemplate(q, i)).join('')}
+                        ${poll.questions
+                          .map((q, i) => getQuestionTemplate(q, i))
+                          .join("")}
                     </fieldset>
                     <div class="action-buttons">
                         <button id="backToMenu" class="back-button" type="button">Back to Menu</button>
@@ -83,23 +85,37 @@ export const getPollQuestionsTemplate = (poll) => `
  * @param {Number} index - Question index for numbering and data attributes
  */
 const getQuestionTemplate = (question, index) => `
-    <article class="question-container ${question.type === 'single' ? 'single-choice' : 'multiple-choice'}">
+    <article class="question-container ${
+      question.type === "single" ? "single-choice" : "multiple-choice"
+    }">
         <header class="question-title">
             <h2>${index + 1}. ${question.question}</h2>
-            <p><small>(Select ${question.type === 'single' ? 'one option' : 'one or more options'})</small></p>
+            <p><small>(Select ${
+              question.type === "single" ? "one option" : "one or more options"
+            })</small></p>
         </header>
         <div class="options-group" role="group" aria-labelledby="question-${index}">
-            ${question.options.map(opt => `
+            ${question.options
+              .map(
+                (opt) => `
                 <button class="option-button" 
                         type="button" 
                         data-question="${index}" 
                         data-option="${opt}" 
-                        role="${question.type === 'single' ? 'radio' : 'checkbox'}" 
+                        role="${
+                          question.type === "single" ? "radio" : "checkbox"
+                        }" 
                         aria-checked="false">
-                    <span class="option-indicator" data-selected="${question.type === 'single' ? '◉' : '☑'}" data-unselected="${question.type === 'single' ? '○' : '□'}" aria-hidden="true"></span>
+                    <span class="option-indicator" data-selected="${
+                      question.type === "single" ? "◉" : "☑"
+                    }" data-unselected="${
+                  question.type === "single" ? "○" : "□"
+                }" aria-hidden="true"></span>
                     <span class="option-text">${opt}</span>
                 </button>
-            `).join('')}
+            `
+              )
+              .join("")}
         </div>
     </article>
 `;
@@ -108,7 +124,7 @@ const getQuestionTemplate = (question, index) => `
  * Generates the poll creation interface for administrators
  * Includes form fields for poll title, password, and dynamic question creation
  */
-export const getCreatePollTemplate = () => `
+export const getCreatePollTemplate = (hasInitial) => `
     <main>
         <div class="container">
             <header>
@@ -150,6 +166,11 @@ export const getCreatePollTemplate = () => `
                     </fieldset>
                     
                     <div class="action-buttons">
+                    ${
+                      hasInitial
+                        ? '<button type="button" id="loadTemplate">Load Template</button>'
+                        : ""
+                    }
                         <button type="button" id="backToMenu" class="back-button">Back</button>
                         <button type="submit" id="createPollBtn">Create Poll</button>
                     </div>
@@ -164,7 +185,11 @@ export const getCreatePollTemplate = () => `
  * Generates the admin panel interface with poll management capabilities
  * @param {Object} params - Object containing poll data, results, and participant information
  */
-export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
+export const getAdminPanelTemplate = ({
+  poll,
+  results,
+  participantEntries,
+}) => `
     <main>
         <div class="container">
             <header>
@@ -177,8 +202,10 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                         <h2>${poll.title}</h2>
                     </header>
                     <div class="poll-metadata">
-                        <p>Code: <span class="highlight">${poll.code}</span> | Status: ${poll.active ? '🟢 Active' : '🔴 Inactive'}</p>
-                        <p>Total Responses: <span class="highlight">${poll.totalResponses}</span></p>
+                        <p>Code: <span class="highlight">${poll.code}</span> | Status: 
+                        ${poll.active ? "🟢 Active" : "🔴 Inactive"}</p>
+                        <p>Total Responses: <span class="highlight">
+                        ${poll.totalResponses}</span></p>
                     </div>
                 </article>
                 
@@ -188,8 +215,11 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                 </aside>
                 
                 <nav class="admin-controls">
-                    <button id="togglePoll" type="button">${poll.active ? 'Deactivate' : 'Activate'} Poll</button>
+                    <button id="togglePoll" type="button">${
+                      poll.active ? "Deactivate" : "Activate"
+                    } Poll</button>
                     <button id="refreshResults" class="secondary" type="button">Refresh Results</button>
+                    <button id="downloadCSV" class="secondary" type="button">Download Results (CSV)</button>
                 </nav>
             </div>
             
@@ -198,8 +228,9 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                     <h2>Results</h2>
                 </header>
                 <div class="results-container-wrapper">
-                    ${results.map(getResultTemplate).join('')}
+                    ${results.map(getResultTemplate).join("")}
                 </div>
+                <div id="results-message" class="message-container" aria-live="polite"></div>
             </section>
             
             <section class="ip-management">
@@ -207,12 +238,24 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                     <h2>IP Addresses</h2>
                 </header>
                 <ul class="ip-list" role="list">
-                    ${participantEntries.length > 0 ? participantEntries.map(ip => `
+                    ${
+                      participantEntries.length > 0
+                        ? participantEntries
+                            .map(
+                              (ip) => `
                         <li class="ip-entry">
-                            <span class="ip-details">${ip.ip} <small>${new Date(ip.timestamp).toLocaleString()}</small></span>
-                            <button class="ban-ip-btn" data-ip="${ip.ip}" type="button">Ban</button>
+                            <span class="ip-details">${ip.ip} <small>${new Date(
+                                ip.timestamp
+                              ).toLocaleString()}</small></span>
+                            <button class="ban-ip-btn" data-ip="${
+                              ip.ip
+                            }" type="button">Ban</button>
                         </li>
-                    `).join('') : '<li><p>No IP addresses recorded.</p></li>'}
+                    `
+                            )
+                            .join("")
+                        : "<li><p>No IP addresses recorded.</p></li>"
+                    }
                 </ul>
                 <div id="banMessage" class="message-container" aria-live="polite"></div>
             </section>
@@ -235,12 +278,7 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
                     <h2>Banned IP Addresses</h2>
                 </header>
                 <ul id="bannedIPsList" class="banned-ip-list" role="list">
-                    ${poll.bannedIPs.length > 0 ? poll.bannedIPs.map(ip => `
-                        <li class="banned-ip-entry">
-                            <span class="banned-ip">${ip}</span>
-                            <button class="unban-btn" data-ip="${ip}" type="button">Unban</button>
-                        </li>
-                    `).join('') : '<li><p>No IP addresses are currently banned.</p></li>'}
+                    ${getBannedIPsListTemplate(poll.bannedIPs)}
                 </ul>
             </section>
             
@@ -255,30 +293,58 @@ export const getAdminPanelTemplate = ({ poll, results, participantEntries}) => `
  * Helper function that generates the HTML for displaying individual question results
  * @param {Object} result - Result data for a single question with options and vote counts
  */
-const getResultTemplate = (result) => {
-    // Calculate total responses for percentage calculations
-    const total = result.totalResponses;
-    return `
+export const getResultTemplate = (result) => {
+  // Calculate total responses for percentage calculations
+  const total = result.totalResponses;
+  return `
         <article class="results-container">
             <header>
                 <h3>${result.question}</h3>
-                <p><small>Type: ${result.type} choice | Total responses: ${total}</small></p>
+                <p><small>Type: ${
+                  result.type
+                } choice | Total responses: ${total}</small></p>
             </header>
             <section class="result-bars">
-                ${Object.entries(result.results).map(([option, count]) => {
+                ${Object.entries(result.results)
+                  .map(([option, count]) => {
                     // Calculate percentage with 1 decimal place, handling zero total case
-                    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    const percentage =
+                      total > 0 ? ((count / total) * 100).toFixed(1) : 0;
                     return `
                         <div class="result-bar" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100" data-percentage="${percentage}">
                             <div class="result-fill"></div>
                             <div class="result-text">${option}: ${count} votes (${percentage}%)</div>
                         </div>
                     `;
-                }).join('')}
+                  })
+                  .join("")}
             </section>
         </article>
     `;
 };
+
+/**
+ * Generates only the poll list items HTML (without the surrounding structure)
+ * @param {Array} polls - Array of poll objects to display
+ */
+export const getPollListItemsTemplate = (polls) => 
+    polls.length > 0 ? polls.map(poll => `
+        <li class="poll-item" data-code="${poll.code}">
+            <article class="poll-entry">
+                <header class="poll-header">
+                    <h3 class="poll-title">${poll.title} <span class="poll-code">Code: ${poll.code}</span></h3>
+                </header>
+                <div class="poll-admin-access">
+                    <form class="admin-access-form" onsubmit="return false;">
+                        <label for="admin-${poll.code}" class="sr-only">Admin Password for ${poll.title}</label>
+                        <input id="admin-${poll.code}" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" aria-required="true" />
+                        <button type="submit" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
+                    </form>
+                    <div class="message-container" aria-live="polite"></div>
+                </div>
+            </article>
+        </li>
+    `).join('') : '<li class="no-polls-message"><p>No polls available</p></li>';
 
 /**
  * Generates the polls list interface showing available polls and admin access forms
@@ -291,25 +357,16 @@ export const getPollListTemplate = (polls) => `
                 <h1>Available Polls</h1>
             </header>
             <section class="polls-section">
+                <form class="poll-search-form">
+                    <div class="input-group">
+                        <input type="text" id="pollSearchInput" placeholder="Search polls by title or code" aria-label="Search polls" />
+                        <button type="submit" id="pollSearchButton">🔎</button>
+                        <button type="reset" id="pollSearchReset" class="secondary" value="Reset">Reset</button>
+                    </div>
+                </form>
                 <nav>
                     <ul class="poll-list" role="list">
-                        ${polls.length > 0 ? polls.map(poll => `
-                            <li class="poll-item" data-code="${poll.code}">
-                                <article class="poll-entry">
-                                    <header class="poll-header">
-                                        <h3 class="poll-title">${poll.title} <span class="poll-code">Code: ${poll.code}</span></h3>
-                                    </header>
-                                    <div class="poll-admin-access">
-                                        <form class="admin-access-form" onsubmit="return false;">
-                                            <label for="admin-${poll.code}" class="sr-only">Admin Password for ${poll.title}</label>
-                                            <input id="admin-${poll.code}" type="password" class="admin-code-input" placeholder="Admin Code" data-code="${poll.adminPassword}" aria-required="true" />
-                                            <button type="submit" class="join-poll-btn" data-code="${poll.code}">Enter as Admin</button>
-                                        </form>
-                                        <div class="message-container" aria-live="polite"></div>
-                                    </div>
-                                </article>
-                            </li>
-                        `).join('') : '<li class="no-polls-message"><p>No polls available</p></li>'}
+                        ${getPollListItemsTemplate(polls)}
                     </ul>
                 </nav>
                 <footer class="polls-footer">
@@ -319,3 +376,17 @@ export const getPollListTemplate = (polls) => `
         </div>
     </main>
 `;
+
+/**
+ * Generates only the banned IPs list items HTML (without the surrounding ul element)
+ * @param {Array} bannedIPs - Array of banned IP addresses
+ */
+export const getBannedIPsListTemplate = (bannedIPs) => 
+    bannedIPs.length > 0 
+        ? bannedIPs.map(ip => `
+            <li class="banned-ip-entry">
+                <span class="banned-ip">${ip}</span>
+                <button class="unban-btn" data-ip="${ip}" type="button">Unban</button>
+            </li>
+        `).join('')
+        : '<li><p>No IP addresses are currently banned.</p></li>';

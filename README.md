@@ -1,5 +1,7 @@
 # 📊 Projektzusammenfassung: Umfrage-Tool als Webkomponente
 
+http://141.72.13.151:8500
+
 ## 🎯 Projektziel
 Entwicklung eines einfachen, kollaborativen **Umfrage-Tools**, das:
 - Ohne Benutzerkonten funktioniert
@@ -108,7 +110,6 @@ Entwicklung eines einfachen, kollaborativen **Umfrage-Tools**, das:
 
 ## 🌟 Erweiterungsideen (optional)
 - Live-Ergebnisanzeige für Teilnehmer
-- Exportfunktion für Ergebnisse (CSV)
 - QR-Code-Generierung für Umfragelinks
 - Dark-Mode
 - Zeitgesteuerte Umfragen

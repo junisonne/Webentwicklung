@@ -2,8 +2,14 @@
  * API client for poll application
  * Centralizes all backend communication to ensure consistent error handling and request formatting
  */
-const API_URL = 'http://localhost:3000';
+let API_URL = `http://localhost:3000`;
 
+/**
+ * 
+ * @param {string} url - Sets the base URL for API requests
+ * This function allows dynamic configuration of the API URL, useful for different environments
+ */
+export function setApiUrl(url) { API_URL = url; }
 /**
  * Generic request handler that standardizes:
  * - Error handling with appropriate status codes

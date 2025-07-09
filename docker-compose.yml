@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  poll-app:
+    image: ghcr.io/junisonne/poll-app:latest
+    container_name: poll-app
+    restart: unless-stopped
+    ports:
+      - "8500:8500"
+    environment:
+      - NODE_ENV=production
+    # Falls private Registry: Zugangsdaten via docker login nötig
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-junisonne
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: poll-app

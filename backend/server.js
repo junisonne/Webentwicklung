@@ -39,8 +39,6 @@ let polls = [
     }
 ];
 
-let pollEntries = [];
-
 /**
  * Generates a unique 6-character alphanumeric code for new polls
  * Uses base36 encoding (0-9, A-Z) and ensures no collisions with existing poll codes
@@ -63,6 +61,18 @@ function findPoll(code) {
 }
 
 /**
+ * Normalizes an IPv4 address that may be represented in IPv6-mapped format.
+ * @param {string} ip - The IP address to normalize.
+ * @returns {string} The normalized IPv4 address or the original IP address if no normalization is needed.
+ */
+function normalizeIP(ip) {
+    if (ip && ip.startsWith('::ffff:')) {
+        return ip.substring(7);
+    }
+    return ip;
+}
+
+/**
  * Endpoint for users to enter a poll
  * - Tracks participant entry with IP for analytics
  * - Enforces IP banning system to prevent abuse
@@ -72,19 +82,19 @@ app.post('/poll/enter', (req, res) => {
     const pollCode = req.body.code;
     const poll = findPoll(pollCode);
     // Get IP from various headers to handle proxy situations
-    const ip = req.headers['x-forwarded-for'] ||
+    const rawIp = req.headers['x-forwarded-for'] ||
         req.headers['x-real-ip'] ||
         req.socket.remoteAddress || '';
+
+    const ip = normalizeIP(rawIp);
     
     if(req.ip && poll.bannedIPs.includes(ip)) {
         return res.status(403).json({ message: 'Your IP address is banned from entering this poll.' });
     }
+    else if(poll.responses.find(entry => entry.ip === ip)) {
+        return res.status(400).json({ message: 'You have already entered this poll.' });
+    }
     else if (poll && poll.active) {
-        pollEntries.push({ 
-            code: pollCode, 
-            ip: ip,
-            timestamp: new Date() 
-        });
         res.status(200).json({ 
             message: 'Poll entry successful',
             poll: {
@@ -147,7 +157,7 @@ app.post('/poll/create', (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -175,7 +185,7 @@ app.get('/poll/:code', (req, res) => {
             responseCount: poll.responses.length
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -201,15 +211,19 @@ app.post('/poll/:code/respond', (req, res) => {
             return res.status(400).json({ message: 'Responses must be an array' });
         }
         
-        // Validate responses match questions
         if (responses.length !== poll.questions.length) {
             return res.status(400).json({ message: 'Response count must match question count' });
         }
+
+        const rawIp = req.headers['x-forwarded-for'] ||
+            req.headers['x-real-ip'] ||
+            req.socket.remoteAddress || '';
+        const ip = normalizeIP(rawIp);
         
         const newResponse = {
             id: poll.responses.length + 1,
             responses,
-            ip: req.ip,
+            ip: ip,
             timestamp: new Date()
         };
         
@@ -220,7 +234,7 @@ app.post('/poll/:code/respond', (req, res) => {
             responseId: newResponse.id
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+       console.error('Error creating poll:', error);
     }
 });
 
@@ -241,7 +255,10 @@ app.post('/poll/:code/admin', (req, res) => {
         if (poll.adminPassword !== adminPassword) {
             return res.status(401).json({ message: 'Invalid admin password' });
         }
-        const participantEntries = pollEntries.filter(entry => entry.code === req.params.code);
+        const participantEntries = poll.responses.map(res => ({
+            ip: res.ip,
+            timestamp: res.timestamp,
+        }));
         
         // Calculate aggregated results from individual responses
         const results = poll.questions.map(question => {
@@ -290,7 +307,7 @@ app.post('/poll/:code/admin', (req, res) => {
             participantEntries
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -316,10 +333,14 @@ app.put('/poll/:code/toggle', (req, res) => {
         
         res.json({ 
             message: `Poll ${poll.active ? 'activated' : 'deactivated'} successfully`,
-            active: poll.active
+            poll: {
+                code: poll.code,
+                active: poll.active,
+                totalResponses: poll.responses.length
+            }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error creating poll:', error);
     }
 });
 
@@ -347,8 +368,13 @@ app.get('/polls', (req, res) => {
  * Used to prevent abuse or multiple submissions from the same source
  */
 app.post('/poll/ban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     
     if (!ip) {
@@ -357,6 +383,7 @@ app.post('/poll/ban', (req, res) => {
     
     if (!poll.bannedIPs.includes(ip)) {
         poll.bannedIPs.push(ip);
+        poll.responses = poll.responses.filter(response => response.ip !== ip);
         res.json({ message: `IP ${ip} has been banned from entering poll ${code}` });
     } else {
         res.status(400).json({ message: `IP ${ip} is already banned` });
@@ -368,8 +395,13 @@ app.post('/poll/ban', (req, res) => {
  * Provides control over ban management for poll administrators
  */
 app.post('/poll/unban', (req, res) => {
-    const { ip, code } = req.body;
+    const { code } = req.body;
     const poll = findPoll(code);
+
+    const rawIp = req.headers['x-forwarded-for'] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress || '';
+    const ip = normalizeIP(rawIp);
 
     if (!ip) {
         return res.status(400).json({ message: 'IP address is required' });
@@ -393,15 +425,15 @@ app.get('*', (req, res) => {
     res.sendFile('index.html', { root: '.' });
 });
 
+const PORT = process.env.PORT || 8500;
+const HOST = process.env.HOST || 'http://localhost';
 
-
-if (process.env.NODE_ENV !== 'test') { //For the server.test.js to work, because there was an TypeError: app.address is not a function
-  const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
     console.log(`🚀 Poll Server running on port ${PORT}`);
-    console.log(`📊 Test poll available at: http://localhost:${PORT}/poll/test123`);
-    console.log(`📝 All polls overview: http://localhost:${PORT}/polls`);
-});
+    console.log(`📊 Test poll available at: ${HOST}:${PORT}/poll/test123`);
+    console.log(`📝 All polls overview: ${HOST}:${PORT}/polls`);
+  });
 }
 
 export default app;
