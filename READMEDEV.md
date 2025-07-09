@@ -104,12 +104,12 @@ The Web Component first checks for the `api-url` attribute, and if not found, fa
 
 The project uses Jest for unit tests and Cypress for end-to-end tests, configured via `jest.config.js` and `cypress.config.js` respectively.
 
-### Unit Tests and E2E Tests
+### Unit Tests
 
 ```bash
 npm test
 ```
-This runs both Jest unit tests and Cypress E2E tests with coverage reporting.
+This runs Jest unit tests with coverage reporting.
 
 ### Watch Mode for Unit Tests
 
@@ -117,20 +117,6 @@ This runs both Jest unit tests and Cypress E2E tests with coverage reporting.
 npm run test:watch
 ```
 Runs Jest in watch mode, re-running tests when files change.
-
-### E2E Tests Only
-
-```bash
-npm run test:e2e
-```
-Runs only the Cypress end-to-end tests.
-
-### Interactive Cypress Testing
-
-```bash
-npm run cypress:open
-```
-Opens the Cypress Test Runner for interactive testing.
 
 ### Running E2E Tests with Server
 
